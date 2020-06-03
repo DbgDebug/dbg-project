@@ -6,6 +6,7 @@ import club.dbg.cms.admin.service.account.AccountService;
 import club.dbg.cms.admin.service.account.pojo.AccountDTO;
 import club.dbg.cms.rpc.pojo.Operator;
 import club.dbg.cms.rpc.pojo.ResponseResultDTO;
+import club.dbg.cms.util.ResponseBuild;
 import com.alibaba.fastjson.JSON;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
@@ -133,5 +135,13 @@ public class AccountController {
         response.setCode(40000);
         response.setMessage("暂不提供服务");
         return ResponseEntity.ok(response);
+    }
+
+    @RequestMapping(value = "/update_password", method = RequestMethod.POST, name = "修改密码")
+    public ResponseEntity<ResponseBuild<Boolean>> changePassword(MyHttpServletRequest request,
+                                                                 @RequestParam("passwordOld") String passwordOld,
+                                                                 @RequestParam("passwordNew") String passwordNew) {
+        Integer id = request.getOperator().getId();
+        return ResponseBuild.build(accountService.changePassword(id, passwordOld, passwordNew));
     }
 }

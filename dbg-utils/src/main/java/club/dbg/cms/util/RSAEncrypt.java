@@ -3,6 +3,7 @@ package club.dbg.cms.util;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Cipher;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -18,23 +19,8 @@ import java.util.Map;
 public class RSAEncrypt {
     private static Map<Integer, String> keyMap = new HashMap<Integer, String>();  //用于封装随机产生的公钥与私钥
 
-    public static void main(String[] args) throws Exception {
-        //生成公钥和私钥
-        genKeyPair();
-        //加密字符串
-        String message = "df723820";
-        System.out.println("随机生成的公钥为:" + keyMap.get(0));
-        System.out.println("随机生成的私钥为:" + keyMap.get(1));
-        String messageEn = encrypt(message, keyMap.get(0));
-        System.out.println(message + "\t加密后的字符串为:" + messageEn);
-        String messageDe = decrypt(messageEn, keyMap.get(1));
-        System.out.println("还原后的字符串为:" + messageDe);
-    }
-
     /**
      * 随机生成密钥对
-     *
-     * @throws NoSuchAlgorithmException
      */
     public static void genKeyPair() throws NoSuchAlgorithmException {
         // KeyPairGenerator类用于生成公钥和私钥对，基于RSA算法生成对象
@@ -68,8 +54,7 @@ public class RSAEncrypt {
         //RSA加密
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-        String outStr = Base64.encodeBase64String(cipher.doFinal(str.getBytes("UTF-8")));
-        return outStr;
+        return Base64.encodeBase64String(cipher.doFinal(str.getBytes(StandardCharsets.UTF_8)));
     }
 
     /**
@@ -82,15 +67,14 @@ public class RSAEncrypt {
      */
     public static String decrypt(String str, String privateKey) throws Exception {
         //64位解码加密后的字符串
-        byte[] inputByte = Base64.decodeBase64(str.getBytes("UTF-8"));
+        byte[] inputByte = Base64.decodeBase64(str.getBytes(StandardCharsets.UTF_8));
         //base64编码的私钥
         byte[] decoded = Base64.decodeBase64(privateKey);
         RSAPrivateKey priKey = (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(decoded));
         //RSA解密
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.DECRYPT_MODE, priKey);
-        String outStr = new String(cipher.doFinal(inputByte));
-        return outStr;
+        return new String(cipher.doFinal(inputByte));
     }
 
 }

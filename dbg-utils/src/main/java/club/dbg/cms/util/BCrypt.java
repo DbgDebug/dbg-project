@@ -15,6 +15,7 @@
 package club.dbg.cms.util;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
 /**
@@ -770,15 +771,11 @@ public class BCrypt {
      * @return true if the passwords match, false otherwise
      */
     public static boolean checkpw(String plaintext, String hashed) {
-        byte hashed_bytes[];
-        byte try_bytes[];
-        try {
-            String try_pw = hashpw(plaintext, hashed);
-            hashed_bytes = hashed.getBytes("UTF-8");
-            try_bytes = try_pw.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-            return false;
-        }
+        byte[] hashed_bytes;
+        byte[] try_bytes;
+        String try_pw = hashpw(plaintext, hashed);
+        hashed_bytes = hashed.getBytes(StandardCharsets.UTF_8);
+        try_bytes = try_pw.getBytes(StandardCharsets.UTF_8);
         if (hashed_bytes.length != try_bytes.length) {
             return false;
         }

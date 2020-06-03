@@ -8,6 +8,7 @@ import club.dbg.cms.rpc.pojo.RoleDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -44,6 +45,7 @@ public class PermissionCacheServiceImpl implements PermissionCacheService {
     @Value("${redis.cache.timeOut}")
     private Integer cacheTimeOut;
 
+    @Scheduled(cron = "0 0 * * * ?")
     @Override
     public void init() {
         this.roleCache();

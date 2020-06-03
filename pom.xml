@@ -7,7 +7,7 @@
         <module>dbg-service-admin</module>
         <module>dbg-service-blog</module>
         <module>dbg-domain</module>
-        <module>dbg-util</module>
+        <module>dbg-utils</module>
         <module>dbg-service-content</module>
         <module>dbg-service-upload</module>
         <module>dbg-service-gateway</module>

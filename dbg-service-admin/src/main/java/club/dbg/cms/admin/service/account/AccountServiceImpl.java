@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+
 import java.util.HashSet;
 import java.util.List;
 
@@ -156,7 +157,7 @@ public class AccountServiceImpl implements AccountService {
                 }
                 isUpdate = true;
             }
-            if (isUpdate){
+            if (isUpdate) {
                 transactionManager.commit(transactionStatus);
             }
         } catch (Exception e) {
@@ -216,7 +217,16 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Boolean changePassword(int id, String passwordOld, String passwordNew) {
-        return false;
+        AccountDO accountDO = accountMapper.selectAccountById(id);
+        if (accountDO == null) {
+            throw new BusinessException("修改密码失败");
+        }
+        if (!BCrypt.checkpw(passwordOld, accountDO.getPassword())) {
+            return false;
+        }
+        accountDO.setPassword(BCrypt.hashpw(passwordNew, BCrypt.gensalt()));
+        accountMapper.updateAccountPassword(accountDO);
+        return true;
     }
 
     @Override
