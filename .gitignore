@@ -1,0 +1,14 @@
+temp
+cache
+target
+springboottemplate
+node_modules
+*.iml
+.idea
+.idea/**
+logs
+*.log
+*.jar
+.DS_Store
+dist
+web/docker/dist/**

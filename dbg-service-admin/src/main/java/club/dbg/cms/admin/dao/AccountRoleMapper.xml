@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="club.dbg.cms.admin.dao.AccountRoleMapper">
+    <resultMap id="BaseResultMap" type="club.dbg.cms.domain.admin.AccountRoleDO">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="account_id" property="accountId" jdbcType="INTEGER"/>
+        <result column="role_id" property="roleId" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="base_column_list">
+        id, account_id, role_id
+    </sql>
+    <resultMap id="AccountRoleDetailMap" type="club.dbg.cms.admin.service.role.pojo.AccountRoleDetail">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="account_id" property="accountId" jdbcType="INTEGER"/>
+        <result column="role_id" property="roleId" jdbcType="INTEGER"/>
+        <result column="role_level" property="roleLevel" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="selectAccountRoleByAccountId" resultMap="AccountRoleDetailMap">
+        select t.id, tb_role.creator_id, tb_role.role_level, t.account_id, t.role_id
+        from (select <include refid="base_column_list"/> from tb_account_role
+          where tb_account_role.account_id = #{accountId}) t
+        left join tb_role
+        on t.role_id = tb_role.id order by tb_role.role_level
+    </select>
+
+    <select id="selectAccountRoleByRoleId" resultMap="BaseResultMap">
+        select t.id, tb_role.role_level, t.account_id, t.role_id
+        from
+        (select <include refid="base_column_list"/> from tb_account_role where tb_account_role.role_id = #{roleId}) t
+        left join tb_role
+        on t.role_id = tb_role.id order by tb_role.role_level
+    </select>
+
+    <insert id="insertAccountRoles" parameterType="java.util.List">
+        insert into tb_account_role(account_id, role_id) values
+        <foreach collection="list" item="accountRole" separator=",">
+            (#{accountRole.accountId}, #{accountRole.roleId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteAccountRolesByAccountId" parameterType="int">
+        delete from tb_account_role where account_id = #{accountId}
+    </delete>
+</mapper>

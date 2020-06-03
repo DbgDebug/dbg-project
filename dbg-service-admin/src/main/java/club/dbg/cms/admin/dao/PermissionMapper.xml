@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="club.dbg.cms.admin.dao.PermissionMapper">
+    <resultMap id="BaseResultMap" type="club.dbg.cms.domain.admin.PermissionDO">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="service_id" property="serviceId" jdbcType="INTEGER"/>
+        <result column="permission_id" property="permissionId"/>
+        <result column="permission_name" property="permissionName"/>
+        <result column="path" property="path"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="method" property="method"/>
+    </resultMap>
+    <resultMap id="PermissionDetail" type="club.dbg.cms.admin.service.permission.pojo.PermissionDetailDTO">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="service_id" property="serviceId" jdbcType="INTEGER"/>
+        <result column="service_name" property="serviceName" jdbcType="VARCHAR"/>
+        <result column="display_name" property="displayName" jdbcType="VARCHAR"/>
+        <result column="permission_id" property="permissionId" jdbcType="VARCHAR"/>
+        <result column="permission_name" property="permissionName" jdbcType="VARCHAR"/>
+        <result column="path" property="path" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="method" property="method"/>
+    </resultMap>
+    <sql id="base_column_list">
+        tb_permission.id, tb_permission.service_id, tb_service.service_name, tb_service.display_name,
+        tb_permission.permission_id, tb_permission.permission_name, tb_permission.path,
+        tb_permission.create_time, tb_permission.update_time, tb_permission.status,
+        tb_permission.method
+    </sql>
+    <select id="selectByExample" resultMap="BaseResultMap">
+        select
+        <include refid="base_column_list"/>
+        from tb_permission limit 1
+    </select>
+
+    <select id="selectPermissionList" resultMap="PermissionDetail">
+        select
+        <include refid="base_column_list"/>
+        from tb_permission
+        left join tb_service on tb_permission.service_id = tb_service.id
+        where 1=1
+        <if test="permissionName != null and permissionName != ''">
+            and permission_name like #{permissionName}
+        </if>
+        <if test="serviceId != null and serviceId != -1">
+            and service_id = #{serviceId}
+        </if>
+        <if test="status != -1">
+            and tb_permission.status = #{status}
+        </if>
+        order by id desc limit #{page}, #{pageSize}
+    </select>
+
+    <select id="selectPermissionCount" resultType="int">
+        select count(*) from tb_permission
+        where 1=1
+        <if test="permissionName != null and permissionName != ''">
+            and permission_name like #{permissionName}
+        </if>
+        <if test="serviceId != null and serviceId != -1">
+            and service_id = #{serviceId}
+        </if>
+        <if test="status != -1">
+            and tb_permission.status = #{status}
+        </if>
+    </select>
+
+    <select id="selectByPermissionIds" resultMap="BaseResultMap">
+        select service_id, permission_id, permission_name, path, method,
+        status from tb_permission where permission_id in
+        <foreach collection="list" item="permission" open="(" separator="," close=")">
+            #{permission.permissionId}
+        </foreach>
+    </select>
+
+    <insert id="insertPermissions" useGeneratedKeys="true" keyProperty="id" parameterType="java.util.List">
+        insert into tb_permission(service_id, permission_id, permission_name, path, create_time,
+        update_time, status, method) values
+        <foreach collection="list" item="permission" separator=",">
+            (
+            #{permission.serviceId},
+            #{permission.permissionId},
+            #{permission.permissionName},
+            #{permission.path},
+            #{permission.createTime},
+            #{permission.updateTime},
+            #{permission.status},
+            #{permission.method}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updatePermissions" parameterType="java.util.List">
+        <foreach collection="list" separator=";" item="permission">
+            UPDATE tb_permission SET
+            <if test="permission.permissionName != null">
+                permission_name = #{permission.permissionName},
+            </if>
+            <if test="permission.path != null">
+                path = #{permission.path},
+            </if>
+            <if test="permission.status != null">
+                status = #{permission.status},
+            </if>
+            update_time = #{permission.updateTime}
+            WHERE id = #{permission.id}
+        </foreach>
+    </update>
+
+    <delete id="deletePermissions" parameterType="java.util.List">
+        DELETE FROM tb_permission WHERE id IN
+        <foreach collection="list" item="index" open="(" separator="," close=")">
+            #{index}
+        </foreach>
+    </delete>
+
+    <delete id="deletePermissionByServiceId" parameterType="java.lang.Integer">
+        delete from tb_permission where service_id = #{serviceId}
+    </delete>
+
+    <select id="selectPermissionByPath" resultMap="BaseResultMap">
+        select id, service_id, permission_id, permission_name, path,method,
+        status from tb_permission_tmp where path in
+        <foreach collection="list" item="permission" open="(" separator="," close=")">
+            #{permission.path}
+        </foreach>
+    </select>
+</mapper>

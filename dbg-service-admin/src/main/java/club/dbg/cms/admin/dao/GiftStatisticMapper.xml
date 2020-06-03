@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="club.dbg.cms.admin.dao.GiftStatisticMapper">
+    <resultMap id="BaseResultMap" type="club.dbg.cms.domain.admin.GiftStatisticDO">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="room_id" property="roomId"/>
+        <result column="gift" property="gift" jdbcType="VARCHAR"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+    </resultMap>
+    <sql id="base_column_list">
+        id, room_id, gift, start_time, end_time
+    </sql>
+    <select id="selectByExample" resultMap="BaseResultMap">
+        SELECT
+        <include refid="base_column_list"/>
+        FROM tb_gift_statistic
+        WHERE start_time <![CDATA[>=]]> #{startTime}
+        AND end_time <![CDATA[<=]]> #{endTime}
+        <if test="roomId != null and roomId != -1">
+            AND room_id = #{roomId}
+        </if>
+    </select>
+</mapper>

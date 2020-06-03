@@ -1,0 +1,92 @@
+server:
+  port: 8900
+  servlet:
+    context-path: "/v1/blog"
+spring:
+  application:
+    name: dbg-service-blog
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:192.168.99.100}:${DB_PORT:3306}/${DB_NAME:blog}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Hongkong&useSSL=FALSE
+    username: ${DB_USER:root}
+    password: ${DB_PWD:root}
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 初始化大小，最小，最大
+    minIdle: 5
+    maxActive: 20
+    #配置获取连接等待超时的时间
+    maxWait: 60000
+    #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    timeBetweenEvictionRunsMillis: 60000
+    #配置一个连接在池中最小生存的时间，单位是毫秒
+    minEvictableIdleTimeMillis: 300000
+    #验证连接是否有效。此参数必须设置为非空字符串，下面三项设置成true才能生效
+    validationQuery: SELECT 1
+    #指明连接是否被空闲连接回收器(如果有)进行检验.如果检测失败,则连接将被从池中去除.
+    testWhileIdle: true
+    #指明是否在从池中取出连接前进行检验,如果检验失败,则从池中去除连接并尝试取出另一个
+    testOnBorrow: true
+    #指明是否在归还到池中前进行检验
+    testOnReturn: false
+  redis:
+    host: ${REDIS_HOST:192.168.99.100}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PWD:}
+    timeout: 5000ms
+    jedis:
+      pool:
+        max-active: 200
+        max-idle: 10
+        min-idle: 0
+    database: 0
+  main:
+    allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 5MB
+  jackson:
+    # 当属性为null时忽略
+    # default-property-inclusion: non_null
+    date-format: "yyyy-MM-dd HH:mm:ss"
+    joda-date-time-format: "yyyy-MM-dd HH:mm:ss"
+    time-zone: "Asia/Shanghai"
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+mybatis:
+  config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath:club/dbg/cms/blog/dao/xml/*.xml
+
+system:
+  permissionRegister: ${PERMISSION_REHISTER:true}
+  permissionKey: ${PERMISSION_KEY:12345678}
+  permissionRegisterUrl: ${PERMISSION_REHISTER_URL:http://localhost/v1/rpc/permission/register}
+  isDebug: ${IS_DEBUG:true}
+
+session:
+  tokenHeader: ${TOKEN_HEADER:X-Access-Token}
+  initToken: ${INIT_TOKEN:web_token}
+  tokenName: ${COOKIE_NAME:dbg_token}
+  uuidName: ${UUID_NAME:uuid}
+
+redis:
+  cache:
+    timeOut: ${REDIS_CACHE_TIME_OUT:1800}
+    permissionHeader: ${PERMISSION_HERDER:permission_redis_cache}
+    roleHeader: ${ROLE_PERMISSION_HEADER:role_}
+    rolePermissionHeader: ${ROLE_PERMISSION_HEADER:role_permission_}
+
+login:
+  loginCount: ${LOGIN_COUNT:5}
+  loginFlag: ${LOGIN_FLAG:LF_}
+  timeout: ${LOGIN_TIMEOUT:3600}
+  redisHeader: ${LOGIN_REDIS_HEADER:UID_}
+
+swagger2:
+  host: ${SWAGGER2_HOST:http://127.0.0.1:8900}
+
+logging:
+  config: classpath:logback-spring.xml
+  path: ./logs

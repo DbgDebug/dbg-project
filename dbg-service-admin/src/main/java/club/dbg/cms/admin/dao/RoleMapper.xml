@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="club.dbg.cms.admin.dao.RoleMapper">
+    <resultMap id="BaseResultMap" type="club.dbg.cms.domain.admin.RoleDO">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="creator_id" property="creatorId" jdbcType="INTEGER"/>
+        <result column="role_level" property="roleLevel" jdbcType="INTEGER"/>
+        <result column="role_name" property="roleName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="RoleDTOMap" type="club.dbg.cms.rpc.pojo.RoleDTO">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="creator_id" property="creatorId" jdbcType="INTEGER"/>
+        <result column="role_level" property="roleLevel" jdbcType="INTEGER"/>
+        <result column="role_name" property="roleName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <collection property="permissionSet" ofType="java.lang.Integer" column="role_id">
+            <result column="permission_id" javaType="Integer"/>
+        </collection>
+    </resultMap>
+    <sql id="base_column_list">
+        id, creator_id, role_name, role_level, create_time, update_time, status
+    </sql>
+    <select id="selectRoleList" resultMap="RoleDTOMap">
+        select
+        tb_role.id, tb_role.creator_id, tb_role.role_name,
+        tb_role.role_level, tb_role.create_time,
+        tb_role.update_time, tb_role.status,
+        tb_role_permission.permission_id
+        from tb_role
+        join (select id from tb_role
+        <if test="roleName != null and roleName != ''">
+            where role_name = #{roleName}
+        </if>
+        ORDER BY id DESC limit #{page}, #{pageSize}) tid using(id)
+        left join tb_role_permission on tb_role.id = tb_role_permission.role_id
+    </select>
+
+    <select id="selectRoleDTOById" resultMap="RoleDTOMap">
+        select
+        tb_role.id, tb_role.creator_id, tb_role.role_name,
+        tb_role.role_level, tb_role.create_time,
+        tb_role.update_time, tb_role.status,
+        tb_role_permission.permission_id
+        from tb_role
+        join (select id from tb_role
+        where id = #{id}) tid using(id)
+        left join tb_role_permission on tb_role.id = tb_role_permission.role_id
+    </select>
+
+    <select id="selectRoleCount" resultType="int">
+        select count(*) from tb_role
+        <if test="roleName != null and roleName != ''">
+            where role_name = #{roleName}
+        </if>
+    </select>
+
+    <select id="selectRoleById" resultMap="BaseResultMap">
+        select <include refid="base_column_list"/>
+        from tb_role where id = #{id}
+    </select>
+
+    <select id="selectRoleByIds" resultMap="BaseResultMap">
+        select <include refid="base_column_list"/>
+        from tb_role where id in
+        <foreach collection="roleIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectRoleByRoleName" resultMap="BaseResultMap">
+        select <include refid="base_column_list"/>
+        from tb_role where role_name = #{roleName}
+    </select>
+
+    <insert useGeneratedKeys="true" keyColumn="id" keyProperty="id" id="insertRole" parameterType="club.dbg.cms.domain.admin.RoleDO">
+        insert into tb_role(creator_id, role_name, role_level, create_time, update_time, status)
+        values(#{creatorId}, #{roleName}, #{roleLevel}, #{createTime}, #{updateTime}, #{status})
+    </insert>
+
+    <update id="updateRole" parameterType="club.dbg.cms.domain.admin.RoleDO">
+        update tb_role set
+        <if test="roleName != null and roleName != ''">
+            role_name = #{roleName},
+        </if>
+        <if test="roleLevel != null and roleLevel != 0">
+            role_level = #{roleLevel},
+        </if>
+        <if test="status != null">
+            status = #{status},
+        </if>
+        update_time = #{updateTime}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRole" parameterType="int">
+        DELETE FROM tb_role WHERE id = #{id}
+    </delete>
+
+    <select id="selectRoleLevelByIds" parameterType="java.util.List">
+        select role_level from tb_role where id in
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <delete id="deleteRoles" parameterType="java.util.List">
+        DELETE FROM tb_role WHERE id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

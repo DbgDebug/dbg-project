@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="club.dbg.cms.admin.dao.RolePermissionMapper">
+    <resultMap id="BaseResultMap" type="club.dbg.cms.domain.admin.RolePermissionDO">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="role_id" property="roleId" jdbcType="INTEGER"/>
+        <result column="permission_id" property="permissionId" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="base_column_list">
+        id, role_id, permission_id
+    </sql>
+
+    <select id="selectByRoleId" resultMap="BaseResultMap">
+        select <include refid="base_column_list"/>
+        from tb_role_permission where role_id = #{roleId}
+    </select>
+
+    <select id="selectIdByRoleId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select distinct permission_id
+        from tb_role_permission where role_id = #{roleId}
+    </select>
+
+    <select id="selectPermissionIdByRoleIds" parameterType="java.util.List" resultType="java.lang.Integer">
+        select distinct permission_id
+        from tb_role_permission where role_id in
+        <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+    </select>
+
+    <insert id="insertRolePermission" parameterType="club.dbg.cms.domain.admin.RolePermissionDO">
+        insert into tb_role_permission(role_id, permission_id) values(#{roleId}, #{permissionId})
+    </insert>
+
+    <insert id="insertRolePermissions">
+        insert into tb_role_permission(role_id, permission_id) values
+        <foreach collection="rolePermissionList" item="rolePermission" separator=",">
+            (#{rolePermission.roleId}, #{rolePermission.permissionId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteByRoleId" parameterType="java.lang.Integer">
+        delete from tb_role_permission where role_id = #{roleId}
+    </delete>
+
+    <delete id="deleteByPermissionId" parameterType="java.lang.Integer">
+        delete from tb_role_permission where permission_id = #{permissionId}
+    </delete>
+
+    <delete id="deletePermissionByPermissionIds" parameterType="java.util.List">
+        delete from tb_role_permission where permission_id in
+        <foreach collection="list" item="permissionId" open="(" separator="," close=")">
+            #{permissionId}
+        </foreach>
+    </delete>
+</mapper>

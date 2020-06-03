@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="club.dbg.cms.admin.dao.DanmuMapper">
+    <resultMap id="BaseResultMap" type="club.dbg.cms.domain.admin.DanmuDO">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="uid" property="uid"/>
+        <result column="roomid" property="roomid"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="danmu" property="danmu" jdbcType="VARCHAR"/>
+        <result column="send_time" property="sendTime"/>
+    </resultMap>
+    <sql id="base_column_list">
+        id, uid, roomid, nickname, danmu, send_time
+    </sql>
+    <select id="selectByExample" resultMap="BaseResultMap">
+        select
+        <include refid="base_column_list"/>
+        from tb_bilibili_danmu limit 0, 1
+    </select>
+    <insert id="insertDanmuList" parameterType="java.util.List">
+        insert into tb_bilibili_danmu
+        (roomid, uid, nickname, danmu, send_time)
+        values
+        <foreach collection="list" item="danmu" index="index" separator=",">
+            (
+            #{danmu.roomid},
+            #{danmu.uid},
+            #{danmu.nickname},
+            #{danmu.danmu},
+            #{danmu.sendTime}
+            )
+        </foreach>
+    </insert>
+    <select id="selectDanmuByLimit" resultMap="BaseResultMap">
+        select tb_bilibili_danmu.* from tb_bilibili_danmu
+        where send_time <![CDATA[>=]]> #{startTime}
+        and send_time <![CDATA[<=]]> #{endTime}
+        <if test="roomid != -1">
+            and roomid = #{roomid}
+        </if>
+        ORDER BY id DESC limit #{page}, #{pageSize}
+    </select>
+    <select id="selectDanmuList" resultMap="BaseResultMap">
+        select tb_bilibili_danmu.* from tb_bilibili_danmu
+        join (select tb_bilibili_danmu.id from tb_bilibili_danmu
+        where send_time <![CDATA[>=]]> #{startTime}
+        and send_time <![CDATA[<=]]> #{endTime}
+        <if test="roomid != -1">
+            and roomid = #{roomid}
+        </if>
+        ORDER BY id DESC limit #{page}, #{pageSize}) tid using (id)
+    </select>
+    <select id="danmuCount" resultType="int">
+        select count(*) from tb_bilibili_danmu
+        where send_time <![CDATA[>=]]> #{startTime} and send_time <![CDATA[<=]]> #{endTime}
+        <if test="roomid != -1">
+            and roomid = #{roomid}
+        </if>
+    </select>
+</mapper>

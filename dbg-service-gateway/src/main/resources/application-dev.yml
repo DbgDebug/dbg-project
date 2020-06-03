@@ -1,0 +1,30 @@
+server:
+  port: 8620
+  #servlet:
+    #context-path: "/v1"
+spring:
+  application:
+    name: dbg-cms-gateway
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 5MB
+  cloud:
+    gateway:
+      routes:
+        - id: path_route
+          uri: http://localhost:8700
+          order: 0
+          predicates:
+            - Path=/test/**
+          filters:
+            - StripPrefix=1
+
+mybatis:
+  config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath:club/dbg/cms/login/dao/mapper/*.xml
+
+logging:
+  config: classpath:logback-spring.xml
+  path: ./logs

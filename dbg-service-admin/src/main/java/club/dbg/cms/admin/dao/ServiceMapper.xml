@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="club.dbg.cms.admin.dao.ServiceMapper">
+    <resultMap id="BaseResultMap" type="club.dbg.cms.domain.admin.ServiceDO">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="service_name" property="serviceName" jdbcType="VARCHAR"/>
+        <result column="display_name" property="displayName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+    <sql id="base_column_list">
+        id, service_name, `display_name`, create_time, update_time, status
+    </sql>
+    <select id="selectServiceList" resultMap="BaseResultMap">
+        select
+        <include refid="base_column_list"/>
+        from tb_service
+        join (select id from tb_service
+        <if test="serviceName != null and serviceName != ''">
+            where service_name like #{serviceName}
+        </if>
+        ORDER BY id DESC limit #{page}, #{pageSize}) tid using(id)
+    </select>
+
+    <select id="selectServiceCount" resultType="int">
+        select count(*) from tb_service
+        <if test="serviceName != null and serviceName != ''">
+            where service_name like #{serviceName}
+        </if>
+    </select>
+
+    <insert id="insertService" parameterType="club.dbg.cms.domain.admin.ServiceDO">
+        insert into tb_service(service_name, `display_name`, create_time, update_time, status)
+        values(#{serviceName}, #{displayName}, #{createTime}, #{updateTime}, #{status})
+    </insert>
+
+    <update id="updateService" parameterType="club.dbg.cms.domain.admin.ServiceDO">
+        update tb_service set service_name = #{serviceName},
+        display_name = #{displayName},
+        update_time = #{updateTime},
+        status = #{status}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteService" parameterType="int[]">
+        DELETE FROM tb_service WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteServices" parameterType="int[]">
+        DELETE FROM tb_service WHERE id IN
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

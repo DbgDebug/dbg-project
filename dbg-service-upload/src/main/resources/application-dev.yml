@@ -1,0 +1,33 @@
+server:
+  port: 8400
+  #servlet:
+    #context-path: "/v1"
+spring:
+  application:
+    name: dbg-service-upload
+  main:
+    allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 5MB
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:}
+        ip: ${NACOS_CLIENT_ADDR:}
+
+dubbo:
+  registry:
+    address: spring-cloud://localhost
+  cloud:
+    subscribed-services: dbg-service-content
+
+mybatis:
+  config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath:club/dbg/cms/login/dao/mapper/*.xml
+
+logging:
+  config: classpath:logback-spring.xml
+  path: ./logs
