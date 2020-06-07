@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>clud.dbg-test</groupId>
-            <artifactId>dbg-util</artifactId>
+            <artifactId>dbg-utils</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
