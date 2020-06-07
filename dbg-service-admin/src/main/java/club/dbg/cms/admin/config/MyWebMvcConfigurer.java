@@ -12,23 +12,29 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class MyWebMvcConfigurer implements WebMvcConfigurer {
+    private final String serviceName;
 
-    @Value("${spring.application.name}")
-    private String serviceName;
+    private final String roleHeader;
 
-    @Value("${redis.cache.roleHeader}")
-    private String roleHeader;
-
-    @Value("${redis.cache.permissionHeader}")
-    private String permissionHeader;
+    private final String permissionHeader;
 
     private final PublicApiConfig publicApiConfig;
 
     private final RedisUtils redisUtils;
 
 
-    public MyWebMvcConfigurer(PublicApiConfig publicApiConfig,
-                              RedisUtils redisUtils) {
+    public MyWebMvcConfigurer(
+            @Value("${spring.application.name}")
+                    String serviceName,
+            @Value("${redis.cache.roleHeader}")
+                    String roleHeader,
+            @Value("${redis.cache.permissionHeader}")
+                    String permissionHeader,
+            PublicApiConfig publicApiConfig,
+            RedisUtils redisUtils) {
+        this.serviceName = serviceName;
+        this.roleHeader = roleHeader;
+        this.permissionHeader = permissionHeader;
         this.publicApiConfig = publicApiConfig;
         this.redisUtils = redisUtils;
     }

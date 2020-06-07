@@ -11,11 +11,15 @@ import java.util.HashSet;
  * 无需验证的api
  */
 @Component
-public class PublicApiConfig   {
-    @Value("${spring.application.name}")
-    private String serviceName;
+public class PublicApiConfig {
+
+    private final String serviceName;
 
     private final HashSet<String> apiSet = new HashSet<>();
+
+    public PublicApiConfig(@Value("${spring.application.name}") String serviceName) {
+        this.serviceName = serviceName;
+    }
 
     @PostConstruct
     public void init(){

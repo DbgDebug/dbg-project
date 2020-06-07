@@ -31,14 +31,11 @@ import java.nio.charset.Charset;
 public class AuthFilter implements Filter {
     private static final Logger log = LoggerFactory.getLogger(AuthFilter.class);
 
-    @Value("${system.isDebug}")
-    private Boolean isDebug;
+    private final Boolean isDebug;
 
-    @Value("${login.timeout}")
-    private Integer loginTimeout;
+    private final Integer loginTimeout;
 
-    @Value("${login.redisHeader}")
-    private String loginRedisHeader;
+    private final String loginRedisHeader;
 
     private final PublicApiConfig publicApiConfig;
 
@@ -47,12 +44,22 @@ public class AuthFilter implements Filter {
     private final TokenUtils requestUtils;
 
     @Autowired
-    public AuthFilter(PublicApiConfig publicApiConfig,
-                      RedisUtils redisUtils,
-                      TokenUtils requestUtils) {
+    public AuthFilter(
+            @Value("${system.isDebug}")
+                    Boolean isDebug,
+            @Value("${login.timeout}")
+                    Integer loginTimeout,
+            @Value("${login.redisHeader}")
+                    String loginRedisHeader,
+            PublicApiConfig publicApiConfig,
+            RedisUtils redisUtils,
+            TokenUtils requestUtils) {
+        this.isDebug = isDebug;
+        this.loginTimeout = loginTimeout;
+        this.loginRedisHeader = loginRedisHeader;
         this.publicApiConfig = publicApiConfig;
         this.redisUtils = redisUtils;
-        this.requestUtils =requestUtils;
+        this.requestUtils = requestUtils;
     }
 
     @Override
@@ -62,10 +69,11 @@ public class AuthFilter implements Filter {
 
     /**
      * 验证是否登录
-     * @param servletRequest 请求
+     *
+     * @param servletRequest  请求
      * @param servletResponse 响应
-     * @param filterChain filterChain
-     * @throws IOException IOException
+     * @param filterChain     filterChain
+     * @throws IOException      IOException
      * @throws ServletException ServletException
      */
     @Override
