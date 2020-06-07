@@ -9,17 +9,24 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EmailUtils {
-    @Value("${email.user}")
-    private String emailUser;
+    private final String emailUser;
 
-    @Value("${email.password}")
-    private String emailPwd;
+    private final String emailPwd;
 
-    public boolean sendEmail(String email, String title, String content){
+    public EmailUtils(
+            @Value("${email.user}")
+                    String emailUser,
+            @Value("${email.password}")
+                    String emailPwd) {
+        this.emailUser = emailUser;
+        this.emailPwd = emailPwd;
+    }
+
+    public boolean sendEmail(String email, String title, String content) {
         return Email.sendEmail(emailUser, emailPwd, email, title, content);
     }
 
-    public boolean sendEmail(String[] emails, String title, String content){
+    public boolean sendEmail(String[] emails, String title, String content) {
 
         return Email.sendEmail(emailUser, emailPwd, emails, title, content);
     }

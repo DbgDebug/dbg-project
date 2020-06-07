@@ -29,3 +29,25 @@ CREATE TABLE `dbg`.`tb_welcome_statistic` (
   `start_time` INT NOT NULL,
   `end_time` INT NOT NULL,
   PRIMARY KEY (`id`));
+
+CREATE TABLE `dbg`.`tb_guard` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `uid` INT NOT NULL,
+  `username` CHAR(20) NOT NULL,
+  `guard_level` INT NOT NULL,
+  `gift_name` CHAR(10) NOT NULL,
+  `num` INT NOT NULL,
+  `price` INT NOT NULL,
+  `send_time` INT NOT NULL,
+  `room_id` INT NOT NULL,
+  PRIMARY KEY (`id`));
+
+CREATE TABLE `dbg`.`tb_gift_statistics` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `room_id` INT NOT NULL,
+  `gift_name` CHAR(10) NOT NULL,
+  `num` INT NOT NULL,
+  `price` INT NOT NULL,
+  `send_time` INT NOT NULL,
+  PRIMARY KEY (`id`));
+

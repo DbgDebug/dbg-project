@@ -87,6 +87,7 @@ public class BilibiliServiceTest {
 
     @Test
     public void danmuTest() {
+        String danmu = "{\"cmd\":\"GUARD_BUY\",\"data\":{\"uid\":99212186,\"username\":\"biliの小电视\",\"guard_level\":3,\"num\":1,\"price\":198000,\"role_name\":10003,\"gift_name\":\"舰长\",\"start_time\":1590761565,\"end_time\":1590761565}}";
         String s = "{\"cmd\":\"DANMU_MSG\",\"info\":[[0,1,25,16777215,1590565272460,1590564193,0,\"2bf457d5\",0,0,0],\"敌国另一个黑科技要来了\",[12336935,\"虾饺w\",0,0,0,10000,1,\"\"],[1,\"剧毒\",\"在剧毒中心呼唤爱\",37034,6406234,\"\",0],[29,0,5805790,\"\\u003e50000\"],[\"cake-flour\",\"title-1-1\"],0,0,null,{\"ts\":1590565272,\"ct\":\"2E44493B\"},0,0,null,null,0]}";
         System.out.println(ZLibUtils.compress(s.getBytes()).length);
     }

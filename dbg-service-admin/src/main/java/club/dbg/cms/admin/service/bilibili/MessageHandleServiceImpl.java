@@ -1,17 +1,11 @@
 package club.dbg.cms.admin.service.bilibili;
 
-import club.dbg.cms.admin.dao.DanmuMapper;
-import club.dbg.cms.admin.dao.GiftMapper;
-import club.dbg.cms.admin.dao.GiftStatisticMapper;
-import club.dbg.cms.admin.dao.WelcomeStatisticMapper;
+import club.dbg.cms.admin.dao.*;
 import club.dbg.cms.admin.redis.RedisUtils;
 import club.dbg.cms.admin.service.bilibili.pojo.GiftStatistic;
 import club.dbg.cms.admin.service.bilibili.pojo.WelcomeStatistic;
 import club.dbg.cms.admin.service.database.DataBaseService;
-import club.dbg.cms.domain.admin.DanmuDO;
-import club.dbg.cms.domain.admin.GiftDO;
-import club.dbg.cms.domain.admin.GiftStatisticDO;
-import club.dbg.cms.domain.admin.WelcomeStatisticDO;
+import club.dbg.cms.domain.admin.*;
 import com.alibaba.fastjson.JSON;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +18,8 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service
 public class MessageHandleServiceImpl implements MessageHandleService {
     private final DanmuMapper danmuMapper;
+
+    private final GuardMapper guardMapper;
 
     private final GiftMapper giftMapper;
 
@@ -48,12 +44,13 @@ public class MessageHandleServiceImpl implements MessageHandleService {
     public MessageHandleServiceImpl(DanmuMapper danmuMapper, GiftMapper giftMapper,
                                     GiftStatisticMapper giftStatisticMapper,
                                     WelcomeStatisticMapper welcomeStatisticMapper,
-                                    DataBaseService dataBaseService, RedisUtils redisUtils) {
+                                    DataBaseService dataBaseService, RedisUtils redisUtils, GuardMapper guardMapper) {
         this.danmuMapper = danmuMapper;
         this.giftMapper = giftMapper;
         this.giftStatisticMapper = giftStatisticMapper;
         this.welcomeStatisticMapper = welcomeStatisticMapper;
         this.dataBaseService = dataBaseService;
+        this.guardMapper = guardMapper;
     }
 
     @Override
@@ -96,6 +93,12 @@ public class MessageHandleServiceImpl implements MessageHandleService {
                 danmuLock.unlock();
             }
         }
+    }
+
+    @Override
+    public void guardHandle(GuardDO guardDO) throws InterruptedException {
+        GuardWriteTask guardWriteTask = new GuardWriteTask(guardMapper, guardDO);
+        dataBaseService.submitTask(guardWriteTask);
     }
 
     private final LongAdder giftCount = new LongAdder();

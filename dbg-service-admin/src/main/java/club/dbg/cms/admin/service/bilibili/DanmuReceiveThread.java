@@ -3,6 +3,7 @@ package club.dbg.cms.admin.service.bilibili;
 import club.dbg.cms.admin.service.bilibili.pojo.*;
 import club.dbg.cms.domain.admin.DanmuDO;
 import club.dbg.cms.domain.admin.GiftDO;
+import club.dbg.cms.domain.admin.GuardDO;
 import club.dbg.cms.util.ZLibUtils;
 import club.dbg.cms.util.bilibili.DanmuPatternUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -195,23 +196,23 @@ public class DanmuReceiveThread implements Runnable {
     }
 
     private void actionFive(byte[] bodyByte) {
-        String bodyString = new String(bodyByte, StandardCharsets.UTF_8);
+        String msg = new String(bodyByte, StandardCharsets.UTF_8);
         String msgType = "";
-        Matcher mCmd = DanmuPatternUtils.readCmd.matcher(bodyString);
+        Matcher mCmd = DanmuPatternUtils.readCmd.matcher(msg);
         if (mCmd.find()) {
             msgType = mCmd.group(1);
         }
         switch (msgType) {
             case "DANMU_MSG":
                 try {
-                    danmuMsg(bodyString);
+                    danmuMsg(msg);
                 } catch (InterruptedException ie) {
                     log.info("弹幕处理异常:", ie);
                 }
                 break;
             case "SEND_GIFT":
                 try {
-                    gifMsg(bodyString);
+                    gifMsg(msg);
                 } catch (InterruptedException ie) {
                     log.info("礼物处理异常:", ie);
                 }
@@ -220,10 +221,15 @@ public class DanmuReceiveThread implements Runnable {
                 // welcomeMsg(bodyString);
                 break;
             case "GUARD_MSG":
-                log.info("开通舰长信息:{}", bodyString);
+                log.info("开通舰长信息:{}", msg);
+                try {
+                    guardMsg(msg);
+                } catch (Exception e) {
+                    log.warn("舰长开通处理异常:", e);
+                }
                 break;
             case "GUARD_BUY":
-                log.info("购买舰长信息:{}", bodyString);
+                log.info("购买舰长信息:{}", msg);
                 break;
             case "ROOM_SILENT_OFF":
                 // log.info("直播结束roomId:{}", roomId);
@@ -235,16 +241,18 @@ public class DanmuReceiveThread implements Runnable {
         }
     }
 
-    private void danmuMsg(String bodyString) throws InterruptedException {
-        Matcher mDanmu = DanmuPatternUtils.readDanmuInfo.matcher(bodyString);
-        Matcher mUid = DanmuPatternUtils.readDanmuUid.matcher(bodyString);
-        Matcher mNickname = DanmuPatternUtils.readDanmuUser.matcher(bodyString);
-        Matcher mSendTime = DanmuPatternUtils.readDanmuSendTime.matcher(bodyString);
-        if(!(mDanmu.find() && mUid.find()
-                && mNickname.find() && mSendTime.find())){
-            log.warn("弹幕信息解析失败:{}", bodyString);
+    private void danmuMsg(String msg) throws InterruptedException {
+        Matcher mDanmu = DanmuPatternUtils.readDanmuInfo.matcher(msg);
+        Matcher mUid = DanmuPatternUtils.readDanmuUid.matcher(msg);
+        Matcher mNickname = DanmuPatternUtils.readDanmuUser.matcher(msg);
+        Matcher mSendTime = DanmuPatternUtils.readDanmuSendTime.matcher(msg);
+
+        if (!(mDanmu.find() && mUid.find()
+                && mNickname.find() && mSendTime.find())) {
+            log.warn("弹幕信息解析失败:{}", msg);
             return;
         }
+
         String danmuText = mDanmu.group(1);
         int uid = Integer.parseInt(mUid.group(1));
         String nickname = mNickname.group(1);
@@ -258,23 +266,24 @@ public class DanmuReceiveThread implements Runnable {
         messageHandleService.danmuHandle(danmu);
     }
 
-    private void gifMsg(String bodyString) throws InterruptedException {
+    private void gifMsg(String msg) throws InterruptedException {
         // 正则匹配
-        Matcher mGiftName = DanmuPatternUtils.readGiftName.matcher(bodyString);
-        Matcher mNum = DanmuPatternUtils.readGiftNum.matcher(bodyString);
-        Matcher mUser = DanmuPatternUtils.readGiftUser.matcher(bodyString);
-        Matcher mUid = DanmuPatternUtils.readUserId.matcher(bodyString);
-        Matcher mGiftId = DanmuPatternUtils.readGiftId.matcher(bodyString);
-        Matcher mPrice = DanmuPatternUtils.readGiftPrice.matcher(bodyString);
-        Matcher mTimestamp = DanmuPatternUtils.readGiftSendTime.matcher(bodyString);
+        Matcher mGiftName = DanmuPatternUtils.readGiftName.matcher(msg);
+        Matcher mNum = DanmuPatternUtils.readGiftNum.matcher(msg);
+        Matcher mUser = DanmuPatternUtils.readGiftUser.matcher(msg);
+        Matcher mUid = DanmuPatternUtils.readUserId.matcher(msg);
+        Matcher mGiftId = DanmuPatternUtils.readGiftId.matcher(msg);
+        Matcher mPrice = DanmuPatternUtils.readGiftPrice.matcher(msg);
+        Matcher mTimestamp = DanmuPatternUtils.readGiftSendTime.matcher(msg);
 
         if (!(mGiftName.find() && mNum.find()
                 && mGiftId.find() && mUid.find()
                 && mUser.find() && mPrice.find()
                 && mTimestamp.find())) {
-            log.warn("礼物信息解析失败:{}", bodyString);
+            log.warn("礼物信息解析失败:{}", msg);
             return;
         }
+
         int giftId = Integer.parseInt(mGiftId.group(1));
         String giftName = DanmuPatternUtils.unicodeToString(mGiftName.group(1));
         int num = Integer.parseInt(mNum.group(1));
@@ -307,9 +316,45 @@ public class DanmuReceiveThread implements Runnable {
         }
     }
 
-    private void welcomeMsg(String bodyString) {
-        // Matcher mUser = readWelcomeUser.matcher(bodyString);
-        Matcher mUid = DanmuPatternUtils.readUserId.matcher(bodyString);
+    private void guardMsg(String msg) throws InterruptedException {
+        Matcher mUid = DanmuPatternUtils.readUserId.matcher(msg);
+        Matcher mUsername = DanmuPatternUtils.readUsername.matcher(msg);
+        Matcher mGuardLevel = DanmuPatternUtils.readGuardLevel.matcher(msg);
+        Matcher mGiftName = DanmuPatternUtils.readGiftName.matcher(msg);
+        Matcher mNum = DanmuPatternUtils.readGiftNum.matcher(msg);
+        Matcher mPrice = DanmuPatternUtils.readGiftNum.matcher(msg);
+        Matcher mSendTime = DanmuPatternUtils.readStartTime.matcher(msg);
+
+        if (!(mUid.find() && mUsername.find()
+                && mGuardLevel.find() && mGiftName.find()
+                && mNum.find() && mPrice.find()
+                && mSendTime.find())) {
+            log.warn("舰长购买信息解析失败:{}", msg);
+            return;
+        }
+
+        int uid = Integer.parseInt(mUid.group(1));
+        String username = mUsername.group(1);
+        int guardLevel = Integer.parseInt(mGuardLevel.group(1));
+        String giftName = mGiftName.group(1);
+        int num = Integer.parseInt(mNum.group(1));
+        int price = Integer.parseInt(mPrice.group(1));
+        int sendTime = Integer.parseInt(mSendTime.group(1));
+
+        GuardDO guardDO = new GuardDO();
+        guardDO.setUid(uid);
+        guardDO.setUsername(username);
+        guardDO.setGuardLevel(guardLevel);
+        guardDO.setGiftName(giftName);
+        guardDO.setNum(num);
+        guardDO.setPrice(price);
+        guardDO.setSendTime(sendTime);
+        guardDO.setRoomId(roomId);
+        messageHandleService.guardHandle(guardDO);
+    }
+
+    private void welcomeMsg(String msg) {
+        Matcher mUid = DanmuPatternUtils.readUserId.matcher(msg);
         if (mUid.find()) {
             welcomeStatistic.getWelcomeSet().add(Integer.parseInt(mUid.group(1)));
         }

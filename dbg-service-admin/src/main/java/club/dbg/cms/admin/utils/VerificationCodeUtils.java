@@ -1,5 +1,6 @@
 package club.dbg.cms.admin.utils;
 
+import club.dbg.cms.admin.exception.BusinessException;
 import club.dbg.cms.admin.pojo.VerificationCodeDTO;
 import club.dbg.cms.admin.redis.RedisUtils;
 import club.dbg.cms.util.ImageUtils;
@@ -17,30 +18,11 @@ import java.util.Random;
 
 @Component
 public class VerificationCodeUtils {
-    @Value("${verificationCode.redisHeader}")
-    private String redisHeader;
+    private final String redisHeader;
 
-    private Integer timeout;
+    private final Integer timeout;
 
-    @Value("${verificationCode.timeout}")
-    public void setTimeout(Integer timeout) {
-        if (timeout != null && timeout > 0) {
-            this.timeout = timeout;
-        } else {
-            this.timeout = 300;
-        }
-    }
-
-    private Integer length;
-
-    @Value("${verificationCode.length}")
-    public void setLength(Integer length) {
-        if (length != null && length > 0) {
-            this.length = length;
-        } else {
-            this.length = 4;
-        }
-    }
+    private final Integer length;
 
     private final
     RedisUtils redisUtils;
@@ -48,18 +30,38 @@ public class VerificationCodeUtils {
     private final
     EmailUtils emailUtils;
 
-    @Autowired
-    public VerificationCodeUtils(RedisUtils redisUtils, EmailUtils emailUtils) {
+    public VerificationCodeUtils(
+            @Value("${verificationCode.redisHeader}")
+                    String redisHeader,
+            @Value("${verificationCode.timeout}")
+                    Integer timeout,
+            @Value("${verificationCode.length}")
+                    Integer length,
+            RedisUtils redisUtils,
+            EmailUtils emailUtils) {
+        this.redisHeader = redisHeader;
         this.redisUtils = redisUtils;
         this.emailUtils = emailUtils;
+
+        if (timeout != null && timeout > 0) {
+            this.timeout = timeout;
+        } else {
+            this.timeout = 300;
+        }
+
+        if (length != null && length > 0) {
+            this.length = length;
+        } else {
+            this.length = 4;
+        }
     }
 
     /**
      * 确认验证码
      *
-     * @param code
-     * @param token
-     * @return
+     * @param code String
+     * @param token String
+     * @return  boolean
      */
     public boolean confirmCode(String code, String token) {
         String checkCode = (String) redisUtils.get(redisHeader + token);
@@ -90,18 +92,13 @@ public class VerificationCodeUtils {
         return verificationCode;
     }
 
-    public VerificationCodeDTO getEmailCode(String email) {
+    public void getEmailCode(String email) {
         String token = UUIDUtils.getUUIDNotHyphen();
-        VerificationCodeDTO verificationCode = new VerificationCodeDTO();
         String code = getCode();
         if (!redisUtils.set(redisHeader + token, code, timeout)) {
-
+            throw new BusinessException("获取邮件验证码失败");
         }
-        String imageBase64 = ImageUtils.getImageByBase64(code);
-        verificationCode.setVerificationToken(token);
-        verificationCode.setVerificationCode(imageBase64);
         emailUtils.sendEmail(email, "登录验证", code);
-        return verificationCode;
     }
 
     private String getCode() {

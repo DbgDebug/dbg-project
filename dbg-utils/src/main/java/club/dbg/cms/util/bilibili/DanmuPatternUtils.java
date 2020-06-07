@@ -8,6 +8,13 @@ public class DanmuPatternUtils {
      * 读取 CMD 的
      */
     public static final Pattern readCmd = Pattern.compile("\"cmd\":\"(.*?)\"");
+
+    public static final Pattern readStartTime = Pattern.compile("\"start_time\":\"(\\d+)\"");
+
+    public static final Pattern readUsername = Pattern.compile("\"username\":\"(.*?)\"");
+
+    public static final Pattern readGuardLevel = Pattern.compile("\"guard_level\":\"(\\d+)\"");
+
     /**
      * 读取弹幕发送者UID
      */

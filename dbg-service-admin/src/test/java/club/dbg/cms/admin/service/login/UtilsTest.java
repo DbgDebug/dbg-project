@@ -20,9 +20,23 @@ public class UtilsTest {
 
     @Test
     public void byteTest() {
-        int a = 1;
-        int b = a & 0x3;
-        System.out.println(b);
+        System.out.println(sum(10));
+    }
+    int sum(int n) {
+        if(n < 2){
+            return 0;
+        }
+        int c = n / 2;
+        return c + count(c);
+    }
+
+    int count(int c){
+        if(c < 4) {
+            return 0;
+        }
+        int t = c / 4;
+        c = c % 4;
+        return t  + count(t + c);
     }
 
     @Test

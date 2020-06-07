@@ -8,17 +8,20 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 
 @Component
-public class TokenUtils
-{
-    @Value("${session.tokenHeader}")
-    private String tokenHeader;
+public class TokenUtils {
+    private final String tokenHeader;
 
-    @Value("${login.redisHeader}")
-    private String loginRedisHeader;
+    private final String loginRedisHeader;
 
     private final RedisUtils redisUtils;
 
-    public TokenUtils(RedisUtils redisUtils) {
+    public TokenUtils(@Value("${session.tokenHeader}")
+                              String tokenHeader,
+                      @Value("${login.redisHeader}")
+                              String loginRedisHeader,
+                      RedisUtils redisUtils) {
+        this.tokenHeader = tokenHeader;
+        this.loginRedisHeader = loginRedisHeader;
         this.redisUtils = redisUtils;
     }
 

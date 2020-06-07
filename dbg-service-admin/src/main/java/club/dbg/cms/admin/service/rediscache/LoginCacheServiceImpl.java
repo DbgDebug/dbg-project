@@ -10,15 +10,20 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class LoginCacheServiceImpl implements LoginCacheService {
-    @Value("${login.timeout}")
-    private Integer loginTimeOut;
+    private final Integer loginTimeOut;
 
-    @Value("${login.redisHeader}")
-    private String loginRedisHeader;
+    private final String loginRedisHeader;
 
     private final RedisUtils redisUtils;
 
-    public LoginCacheServiceImpl(RedisUtils redisUtils) {
+    public LoginCacheServiceImpl(
+            @Value("${login.timeout}")
+                    Integer loginTimeOut,
+            @Value("${login.redisHeader}")
+                    String loginRedisHeader,
+            RedisUtils redisUtils) {
+        this.loginTimeOut = loginTimeOut;
+        this.loginRedisHeader = loginRedisHeader;
         this.redisUtils = redisUtils;
     }
 

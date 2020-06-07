@@ -24,10 +24,6 @@ import java.util.function.Function;
 @Configuration
 @EnableSwagger2
 public class Swagger2 {
-
-    @Value("${swagger2.host}")
-    public String swagger2Host;
-
     /**
      * 创建API应用
      * apiInfo() 增加API相关信息

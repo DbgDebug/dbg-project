@@ -27,22 +27,35 @@ import java.util.List;
 public class PermissionRegister {
     private static final Logger log = LoggerFactory.getLogger(PermissionRegister.class);
 
-    @Value("${server.servlet.context-path}")
-    private String contextPath;
+    private final String contextPath;
 
-    @Value("${spring.application.name}")
-    private String serviceName;
+    private final String serviceName;
 
-    @Value("${system.permissionRegister}")
-    private Boolean isRegister;
+    private final Boolean isRegister;
 
-    @Value("${system.permissionKey}")
-    private String permissionKey;
+    private final String permissionKey;
 
-    @Value("${system.permissionRegisterUrl}")
-    private String permissionRegisterUrl;
+    private final String permissionRegisterUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
+
+    public PermissionRegister(
+            @Value("${server.servlet.context-path}")
+                    String contextPath,
+            @Value("${spring.application.name}")
+                    String serviceName,
+            @Value("${system.permissionRegister}")
+                    Boolean isRegister,
+            @Value("${system.permissionKey}")
+                    String permissionKey,
+            @Value("${system.permissionRegisterUrl}")
+                    String permissionRegisterUrl) {
+        this.contextPath = contextPath;
+        this.serviceName = serviceName;
+        this.isRegister = isRegister;
+        this.permissionKey = permissionKey;
+        this.permissionRegisterUrl = permissionRegisterUrl;
+    }
 
     @PostConstruct
     public void init() {
@@ -106,11 +119,14 @@ public class PermissionRegister {
     }
 
     private List<PermissionDO> permissionBuild(List<Class<?>> classes) {
+        String contextPath = this.contextPath;
+
         if (contextPath == null) {
             contextPath = "";
         } else if (contextPath.indexOf("/") != 0) {
             contextPath = "/" + contextPath;
         }
+
         List<PermissionDO> permissions = new ArrayList<>();
         for (Class<?> classed : classes) {
             String classPath = "";
