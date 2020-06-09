@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 public class DanmuReceiveThread implements Runnable {
     private final static Logger log = LoggerFactory.getLogger(DanmuReceiveThread.class);
 
-    private final BiliBiliServiceImpl bilibiliService;
+    private final BiliBiliServiceImpl biliBiliService;
 
     private final MessageHandleService messageHandleService;
 
@@ -35,8 +35,6 @@ public class DanmuReceiveThread implements Runnable {
     private final int id;
 
     private final int roomId;
-
-    private final int localPort;
 
     private final WelcomeStatistic welcomeStatistic = new WelcomeStatistic();
 
@@ -55,11 +53,10 @@ public class DanmuReceiveThread implements Runnable {
                        MessageHandleService messageHandleService,
                        RoomInfo roomInfo, HeartBeatTask heartBeatTask,
                        BiliBiliApi biliBiliApi) {
-        this.bilibiliService = bilibiliService;
+        this.biliBiliService = bilibiliService;
         this.messageHandleService = messageHandleService;
         this.id = roomInfo.getId();
         this.roomId = roomInfo.getRoomid();
-        this.localPort = roomInfo.getPort();
         this.heartBeatTask = heartBeatTask;
         this.biliBiliApi = biliBiliApi;
         int time = (int) (System.currentTimeMillis() / 1000);
@@ -78,11 +75,11 @@ public class DanmuReceiveThread implements Runnable {
         try {
             DanmuConf danmuConf = biliBiliApi.getDanmuConf(roomId);
             if (danmuConf == null) {
-                bilibiliService.stop(id);
+                biliBiliService.stop(id);
                 return;
             }
             // 连接
-            socket = new Socket(danmuConf.getHost(), danmuConf.getPort(), null, localPort);
+            socket = new Socket(danmuConf.getHost(), danmuConf.getPort());
             // 获取数据输出流
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
             // 获取输出流
@@ -114,7 +111,7 @@ public class DanmuReceiveThread implements Runnable {
                 }
             }
             if (!isShutdown) {
-                bilibiliService.stop(id);
+                biliBiliService.stop(id);
             }
         }
     }
@@ -221,15 +218,15 @@ public class DanmuReceiveThread implements Runnable {
                 // welcomeMsg(bodyString);
                 break;
             case "GUARD_MSG":
-                log.info("开通舰长信息:{}", msg);
+                log.info("舰长消息:{}", msg);
+                break;
+            case "GUARD_BUY":
+                log.info("购买舰长信息:{}", msg);
                 try {
                     guardMsg(msg);
                 } catch (Exception e) {
                     log.warn("舰长开通处理异常:", e);
                 }
-                break;
-            case "GUARD_BUY":
-                log.info("购买舰长信息:{}", msg);
                 break;
             case "ROOM_SILENT_OFF":
                 // log.info("直播结束roomId:{}", roomId);
@@ -424,7 +421,7 @@ public class DanmuReceiveThread implements Runnable {
             // 写入输出数据流中
             dataOutputStream.write(byteBuffer.array());
         } catch (IOException e) {
-            bilibiliService.stop(id);
+            biliBiliService.stop(id);
             log.error("数据发送失败，roomId:" + this.roomId, e);
         }
     }

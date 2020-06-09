@@ -48,6 +48,6 @@ CREATE TABLE `dbg`.`tb_gift_statistics` (
   `gift_name` CHAR(10) NOT NULL,
   `num` INT NOT NULL,
   `price` INT NOT NULL,
-  `send_time` INT NOT NULL,
+  `date` INT NOT NULL,
   PRIMARY KEY (`id`));
 
