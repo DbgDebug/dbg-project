@@ -1,6 +1,7 @@
 package club.dbg.cms.admin.service.bilibili;
 
 import club.dbg.cms.admin.dao.DanmuMapper;
+import club.dbg.cms.admin.dao.GiftStatisticsMapper;
 import club.dbg.cms.admin.service.bilibili.pojo.GiftCount;
 import club.dbg.cms.domain.admin.DanmuDO;
 import club.dbg.cms.util.ZLibUtils;
@@ -10,9 +11,11 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -25,7 +28,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 // @SpringBootTest
-// @RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@MybatisTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class BilibiliServiceTest {
     private final static Logger log = LoggerFactory.getLogger(BilibiliServiceTest.class);
     /*
@@ -51,6 +56,9 @@ public class BilibiliServiceTest {
     @Autowired
     DanmuMapper danmuMapper;
 
+    @Autowired
+    GiftStatisticsMapper giftStatisticsMapper;
+
     @Test
     public void webSocketTest() throws IOException, InterruptedException {
 
@@ -71,18 +79,7 @@ public class BilibiliServiceTest {
 
     @Test
     public void sqlTest() {
-        /*
-        Danmu danmu = new Danmu();
-        danmu.setRoomid(111);
-        danmu.setUid(1);
-        danmu.setNickname("dbg");
-        danmu.setDanmu("测试");
-        danmu.setSendTime(1568384690000);
-        List<Danmu> danmus = new ArrayList<>();
-        danmus.add(danmu);
-        */
-        //List<Danmu> danmus = danmuMapper.selectDanmuList(1, 1568907150L,1568907170L, 0, 20);
-        System.out.println(danmuMapper.danmuCount(1, 1568907150L, 1568907170L));
+        giftStatisticsMapper.guardStatistics(123123L, 1590854400L, 1590940799L);
     }
 
     @Test
