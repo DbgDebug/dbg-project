@@ -1,12 +1,8 @@
 package club.dbg.cms.admin.service.bilibili;
 
 import club.dbg.cms.admin.service.bilibili.pojo.*;
-import club.dbg.cms.domain.admin.DanmuDO;
-import club.dbg.cms.domain.admin.GiftDO;
-import club.dbg.cms.domain.admin.GuardDO;
 import club.dbg.cms.util.ZLibUtils;
 import club.dbg.cms.util.bilibili.DanmuPatternUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +32,6 @@ public class DanmuReceiveThread implements Runnable {
 
     private final int roomId;
 
-    private final WelcomeStatistic welcomeStatistic = new WelcomeStatistic();
-
-    private final GiftStatistic giftStatistic = new GiftStatistic();
-
     private Socket socket = null;
 
     private Boolean isShutdown = false;
@@ -59,11 +51,6 @@ public class DanmuReceiveThread implements Runnable {
         this.roomId = roomInfo.getRoomid();
         this.heartBeatTask = heartBeatTask;
         this.biliBiliApi = biliBiliApi;
-        int time = (int) (System.currentTimeMillis() / 1000);
-        giftStatistic.setRoomId(roomId);
-        giftStatistic.setStartTime(time);
-        welcomeStatistic.setRoomId(roomId);
-        welcomeStatistic.setStartTime(time);
     }
 
     @Override
@@ -72,47 +59,41 @@ public class DanmuReceiveThread implements Runnable {
     }
 
     private void createSocket() {
-        try {
-            DanmuConf danmuConf = biliBiliApi.getDanmuConf(roomId);
-            if (danmuConf == null) {
-                biliBiliService.stop(id);
-                return;
-            }
-            // 连接
-            socket = new Socket(danmuConf.getHost(), danmuConf.getPort());
-            // 获取数据输出流
-            dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            // 获取输出流
-            InputStream inputStream = socket.getInputStream();
-            // 发送加入信息
-            sendJoinMsg(roomId, danmuConf.getToken());
-            // 提示，已经连接
-            log.info("ip:{},端口:{}", socket.getLocalAddress().toString(), socket.getLocalPort());
-            log.info("房间{}已经连接", roomId);
-            // 心跳包
-            heartBeatTask.submit(this);
-            // 接收信息处理
-            inputStreamHandel(inputStream);
-        } catch (Exception e) {
-            if (!isShutdown) {
-                log.error("Exception:", e);
-                log.info("房间{}已退出", roomId);
-            }
-        } finally {
-            if (!giftStatistic.getGiftMap().isEmpty()) {
-                int time = (int) (System.currentTimeMillis() / 1000);
-                giftStatistic.setEndTime(time);
-                welcomeStatistic.setEndTime(time);
-                try {
-                    messageHandleService.giftStatisticHandle(giftStatistic);
-                    messageHandleService.welcomeStatisticHandle(welcomeStatistic);
-                } catch (InterruptedException e) {
-                    log.info("数据统计处理异常:", e);
+
+        DanmuConf danmuConf = biliBiliApi.getDanmuConf(roomId);
+        if (danmuConf == null) {
+            biliBiliService.stop(id);
+            return;
+        }
+        int count = 0;
+        while (count < 3) {
+            count++;
+            try {
+                // 连接
+                socket = new Socket(danmuConf.getHost(), danmuConf.getPort());
+                // 获取数据输出流
+                dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                // 获取输出流
+                InputStream inputStream = socket.getInputStream();
+                // 发送加入信息
+                sendJoinMsg(roomId, danmuConf.getToken());
+                // 提示，已经连接
+                log.info("房间{}已经连接", roomId);
+                // 心跳包
+                heartBeatTask.submit(this);
+                // 接收信息处理
+                inputStreamHandel(inputStream);
+            } catch (Exception e) {
+                if (!isShutdown) {
+                    log.error("Exception:", e);
+                    log.info("房间{}已退出", roomId);
+                } else {
+                    count = 3;
                 }
             }
-            if (!isShutdown) {
-                biliBiliService.stop(id);
-            }
+        }
+        if (!isShutdown) {
+            biliBiliService.stop(id);
         }
     }
 
@@ -202,14 +183,14 @@ public class DanmuReceiveThread implements Runnable {
         switch (msgType) {
             case "DANMU_MSG":
                 try {
-                    danmuMsg(msg);
+                    messageHandleService.danmuMsg(roomId, msg);
                 } catch (InterruptedException ie) {
                     log.info("弹幕处理异常:", ie);
                 }
                 break;
             case "SEND_GIFT":
                 try {
-                    gifMsg(msg);
+                    messageHandleService.gifMsg(roomId, msg);
                 } catch (InterruptedException ie) {
                     log.info("礼物处理异常:", ie);
                 }
@@ -223,7 +204,7 @@ public class DanmuReceiveThread implements Runnable {
             case "GUARD_BUY":
                 log.info("购买舰长信息:{}", msg);
                 try {
-                    guardMsg(msg);
+                    messageHandleService.guardMsg(roomId, msg);
                 } catch (Exception e) {
                     log.warn("舰长开通处理异常:", e);
                 }
@@ -233,127 +214,7 @@ public class DanmuReceiveThread implements Runnable {
                 // bilibiliService.stop(id);
                 break;
             default:
-                // log.info(bodyString);
                 break;
-        }
-    }
-
-    private void danmuMsg(String msg) throws InterruptedException {
-        Matcher mDanmu = DanmuPatternUtils.readDanmuInfo.matcher(msg);
-        Matcher mUid = DanmuPatternUtils.readDanmuUid.matcher(msg);
-        Matcher mNickname = DanmuPatternUtils.readDanmuUser.matcher(msg);
-        Matcher mSendTime = DanmuPatternUtils.readDanmuSendTime.matcher(msg);
-
-        if (!(mDanmu.find() && mUid.find()
-                && mNickname.find() && mSendTime.find())) {
-            log.warn("弹幕信息解析失败:{}", msg);
-            return;
-        }
-
-        String danmuText = mDanmu.group(1);
-        int uid = Integer.parseInt(mUid.group(1));
-        String nickname = mNickname.group(1);
-        long sendTime = Long.parseLong(mSendTime.group(1));
-        DanmuDO danmu = new DanmuDO();
-        danmu.setRoomid(roomId);
-        danmu.setUid(uid);
-        danmu.setDanmu(danmuText);
-        danmu.setNickname(nickname.length() > 20 ? nickname.substring(0, 20) : nickname);
-        danmu.setSendTime(sendTime / 1000);
-        messageHandleService.danmuHandle(danmu);
-    }
-
-    private void gifMsg(String msg) throws InterruptedException {
-        // 正则匹配
-        Matcher mGiftName = DanmuPatternUtils.readGiftName.matcher(msg);
-        Matcher mNum = DanmuPatternUtils.readGiftNum.matcher(msg);
-        Matcher mUser = DanmuPatternUtils.readGiftUser.matcher(msg);
-        Matcher mUid = DanmuPatternUtils.readUserId.matcher(msg);
-        Matcher mGiftId = DanmuPatternUtils.readGiftId.matcher(msg);
-        Matcher mPrice = DanmuPatternUtils.readGiftPrice.matcher(msg);
-        Matcher mTimestamp = DanmuPatternUtils.readGiftSendTime.matcher(msg);
-
-        if (!(mGiftName.find() && mNum.find()
-                && mGiftId.find() && mUid.find()
-                && mUser.find() && mPrice.find()
-                && mTimestamp.find())) {
-            log.warn("礼物信息解析失败:{}", msg);
-            return;
-        }
-
-        int giftId = Integer.parseInt(mGiftId.group(1));
-        String giftName = DanmuPatternUtils.unicodeToString(mGiftName.group(1));
-        int num = Integer.parseInt(mNum.group(1));
-        String user = DanmuPatternUtils.unicodeToString(mUser.group(1));
-        int uid = Integer.parseInt(mUid.group(1));
-        int price = Integer.parseInt(mPrice.group(1));
-        int sendTime = Integer.parseInt(mTimestamp.group(1));
-
-        GiftDO giftDO = new GiftDO();
-        giftDO.setRoomId(roomId);
-        giftDO.setUid(uid);
-        giftDO.setUsername(user.length() > 20 ? user.substring(0, 20) : user);
-        giftDO.setGiftNum(num);
-        giftDO.setGiftId(giftId);
-        giftDO.setPrice(price);
-        giftDO.setGiftName(giftName);
-        giftDO.setSendTime(sendTime);
-        messageHandleService.giftHandle(giftDO);
-
-        GiftCount giftCount = giftStatistic.getGiftMap().get(giftId);
-        if (giftCount != null) {
-            giftCount.setCount(giftCount.getCount() + num);
-        } else {
-            giftCount = new GiftCount();
-            giftCount.setGiftId(giftId);
-            giftCount.setGiftName(giftName);
-            giftCount.setCount(num);
-            giftCount.setPrice(price);
-            giftStatistic.getGiftMap().put(giftId, giftCount);
-        }
-    }
-
-    private void guardMsg(String msg) throws InterruptedException {
-        Matcher mUid = DanmuPatternUtils.readUserId.matcher(msg);
-        Matcher mUsername = DanmuPatternUtils.readUsername.matcher(msg);
-        Matcher mGuardLevel = DanmuPatternUtils.readGuardLevel.matcher(msg);
-        Matcher mGiftName = DanmuPatternUtils.readGiftName.matcher(msg);
-        Matcher mNum = DanmuPatternUtils.readGiftNum.matcher(msg);
-        Matcher mPrice = DanmuPatternUtils.readGiftNum.matcher(msg);
-        Matcher mSendTime = DanmuPatternUtils.readStartTime.matcher(msg);
-
-        if (!(mUid.find() && mUsername.find()
-                && mGuardLevel.find() && mGiftName.find()
-                && mNum.find() && mPrice.find()
-                && mSendTime.find())) {
-            log.warn("舰长购买信息解析失败:{}", msg);
-            return;
-        }
-
-        int uid = Integer.parseInt(mUid.group(1));
-        String username = mUsername.group(1);
-        int guardLevel = Integer.parseInt(mGuardLevel.group(1));
-        String giftName = mGiftName.group(1);
-        int num = Integer.parseInt(mNum.group(1));
-        int price = Integer.parseInt(mPrice.group(1));
-        int sendTime = Integer.parseInt(mSendTime.group(1));
-
-        GuardDO guardDO = new GuardDO();
-        guardDO.setUid(uid);
-        guardDO.setUsername(username);
-        guardDO.setGuardLevel(guardLevel);
-        guardDO.setGiftName(giftName);
-        guardDO.setNum(num);
-        guardDO.setPrice(price);
-        guardDO.setSendTime(sendTime);
-        guardDO.setRoomId(roomId);
-        messageHandleService.guardHandle(guardDO);
-    }
-
-    private void welcomeMsg(String msg) {
-        Matcher mUid = DanmuPatternUtils.readUserId.matcher(msg);
-        if (mUid.find()) {
-            welcomeStatistic.getWelcomeSet().add(Integer.parseInt(mUid.group(1)));
         }
     }
 
@@ -364,7 +225,7 @@ public class DanmuReceiveThread implements Runnable {
      */
     private void sendJoinMsg(Integer roomId, String token) {
         // 生成随机的 UID
-        long clientId = RandomUtils.nextLong(100000000000000L, 300000000000000L);
+        long clientId = System.currentTimeMillis();
         // 发送验证包
         sendDataPack(7,
                 String.format("{\"uid\": %d, " +

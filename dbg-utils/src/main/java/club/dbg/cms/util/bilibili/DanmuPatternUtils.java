@@ -9,11 +9,11 @@ public class DanmuPatternUtils {
      */
     public static final Pattern readCmd = Pattern.compile("\"cmd\":\"(.*?)\"");
 
-    public static final Pattern readStartTime = Pattern.compile("\"start_time\":\"(\\d+)\"");
+    public static final Pattern readStartTime = Pattern.compile("\"start_time\":(\\d+)");
 
     public static final Pattern readUsername = Pattern.compile("\"username\":\"(.*?)\"");
 
-    public static final Pattern readGuardLevel = Pattern.compile("\"guard_level\":\"(\\d+)\"");
+    public static final Pattern readGuardLevel = Pattern.compile("\"guard_level\":(\\d+)");
 
     /**
      * 读取弹幕发送者UID
@@ -29,10 +29,20 @@ public class DanmuPatternUtils {
     public static final Pattern readDanmuInfo = Pattern.compile("],\"(.*?)\",\\[");
 
     public static final Pattern readDanmuSendTime = Pattern.compile("\\[\\[\\d+,\\d+,\\d+,\\d+,(\\d+)");
+
+    /**
+     * 送礼action
+     */
+    public static final Pattern readGiftAction = Pattern.compile("\"action\":\"(.*?)\"");
+
+    public static final Pattern readSuperGiftNum = Pattern.compile("\"super_gift_num\":(\\d+)");
+
     /**
      * 读取礼物名称
      */
     public static final Pattern readGiftName = Pattern.compile("\"giftName\":\"(.*?)\"");
+
+    public static final Pattern readGuardGiftName = Pattern.compile("\"gift_name\":\"(.*?)\"");
     /**
      * 读取礼物数量
      */

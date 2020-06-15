@@ -43,16 +43,15 @@
     <select id="selectDanmuList" resultMap="BaseResultMap">
         select tb_bilibili_danmu.* from tb_bilibili_danmu
         join (select tb_bilibili_danmu.id from tb_bilibili_danmu
-        where send_time <![CDATA[>=]]> #{startTime}
-        and send_time <![CDATA[<=]]> #{endTime}
+        where send_time between #{startTime} and #{endTime}
         <if test="roomid != -1">
             and roomid = #{roomid}
         </if>
-        ORDER BY id DESC limit #{page}, #{pageSize}) tid using (id)
+        ORDER BY send_time DESC limit #{page}, #{pageSize}) tid using (id)
     </select>
     <select id="danmuCount" resultType="int">
         select count(*) from tb_bilibili_danmu
-        where send_time <![CDATA[>=]]> #{startTime} and send_time <![CDATA[<=]]> #{endTime}
+        where send_time between #{startTime} and #{endTime}
         <if test="roomid != -1">
             and roomid = #{roomid}
         </if>

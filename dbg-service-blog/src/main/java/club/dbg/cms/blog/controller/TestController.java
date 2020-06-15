@@ -38,7 +38,7 @@ public class TestController {
         return ResponseBuild.build(uList);
     }
 
-    class UrlMethod {
+    static class UrlMethod {
         private List<String> url;
         private String method;
 

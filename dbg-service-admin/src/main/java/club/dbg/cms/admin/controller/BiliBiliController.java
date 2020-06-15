@@ -142,15 +142,21 @@ public class BiliBiliController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-    @PermissionMapping(name = "获取真实房间号")
-    @RequestMapping(value = "get_real_room_id", method = RequestMethod.GET)
-    public ResponseEntity<ResponseDTO> getRealRoomId(
-            @Range(min = 0, max = 999999999, message = "房间id范围0-999999999")
-            @RequestParam(value = "room_id") Integer roomId) {
-        ResponseDTO response = new ResponseDTO();
-        response.setData(bilibiliService.getRoomId(roomId));
-        return ResponseEntity.ok(response);
+    @RequestMapping(value = "refresh_statistics", name = "刷新统计数据", method = RequestMethod.GET)
+    public ResponseEntity<ResponseBuild<Boolean>> refreshStatistics(@Range(min = 0, max = Integer.MAX_VALUE, message = "范围0-2147483647")
+                                                                    @RequestParam("date") Integer date) {
+        return ResponseBuild.build(bilibiliService.refreshStatistics(date));
     }
+
+    /**
+     @PermissionMapping(name = "获取真实房间号")
+     @RequestMapping(value = "get_real_room_id", method = RequestMethod.GET)
+     public ResponseEntity<ResponseDTO> getRealRoomId(
+     @Range(min = 0, max = 999999999, message = "房间id范围0-999999999")
+     @RequestParam(value = "room_id") Integer roomId) {
+     ResponseDTO response = new ResponseDTO();
+     response.setData(bilibiliService.getRoomId(roomId));
+     return ResponseEntity.ok(response);
+     }
      */
 }

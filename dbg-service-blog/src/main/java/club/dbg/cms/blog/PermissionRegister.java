@@ -71,7 +71,6 @@ public class PermissionRegister {
             log.info("没有需要注册的权限");
             return;
         }
-        log.info(JSON.toJSONString(permissions));
         PermissionRegisterDTO permissionRegisterDTO = new PermissionRegisterDTO();
         permissionRegisterDTO.setServiceName(serviceName);
         permissionRegisterDTO.setPermissionList(permissions);

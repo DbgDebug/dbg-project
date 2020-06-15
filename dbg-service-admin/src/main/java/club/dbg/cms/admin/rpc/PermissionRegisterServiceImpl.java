@@ -28,8 +28,7 @@ import java.util.List;
 public class PermissionRegisterServiceImpl implements PermissionRegisterService {
     private static final Logger log = LoggerFactory.getLogger(PermissionRegisterServiceImpl.class);
 
-    @Value("${system.permissionKey}")
-    private String permissionKey;
+    private final String permissionKey;
 
     private final RoleConfig roleConfig;
 
@@ -41,11 +40,14 @@ public class PermissionRegisterServiceImpl implements PermissionRegisterService 
 
     private final PermissionCacheService permissionCacheService;
 
-    public PermissionRegisterServiceImpl(RoleConfig roleConfig,
-                                         PermissionMapper permissionMapper,
-                                         ServiceMapper serviceMapper,
-                                         RolePermissionMapper rolePermissionMapper,
-                                         PermissionCacheService permissionCacheService) {
+    public PermissionRegisterServiceImpl(
+            @Value("${system.permissionKey}")
+                    String permissionKey, RoleConfig roleConfig,
+            PermissionMapper permissionMapper,
+            ServiceMapper serviceMapper,
+            RolePermissionMapper rolePermissionMapper,
+            PermissionCacheService permissionCacheService) {
+        this.permissionKey = permissionKey;
         this.roleConfig = roleConfig;
         this.permissionMapper = permissionMapper;
         this.serviceMapper = serviceMapper;
@@ -54,7 +56,7 @@ public class PermissionRegisterServiceImpl implements PermissionRegisterService 
     }
 
     /**
-     * 验证需要注册的权限的服务是否已添加到服务表，没有则不能注册
+     * 验证需要注册权限的服务是否已添加到服务表，没有则不能注册
      * 检测注册权限是否已存在，存在则更新，不存在则添加
      * 当新注册的权限与该服务原有注册权限不一致时，将不存在于该次注册中的旧权限设置为停用
      * 新加权限默认赋予超级管理员
@@ -135,7 +137,7 @@ public class PermissionRegisterServiceImpl implements PermissionRegisterService 
         }
         // 取差集，status更新为0
         if (permissionsDb.removeAll(permissionRegisterDTO.getPermissionList())) {
-            if(!permissionsDb.isEmpty()){
+            if (!permissionsDb.isEmpty()) {
                 for (PermissionDO permissionDO : permissionsDb) {
                     permissionDO.setPermissionName(null);
                     permissionDO.setPath(null);

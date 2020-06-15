@@ -28,4 +28,6 @@ public interface BiliBiliService {
     Boolean stop(Integer id);
 
     Boolean stopNow(Integer id);
+
+    boolean refreshStatistics(Integer date);
 }

@@ -5,6 +5,7 @@ import club.dbg.cms.admin.dao.GiftStatisticsMapper;
 import club.dbg.cms.admin.service.bilibili.pojo.GiftCount;
 import club.dbg.cms.domain.admin.DanmuDO;
 import club.dbg.cms.util.ZLibUtils;
+import club.dbg.cms.util.bilibili.DanmuPatternUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;

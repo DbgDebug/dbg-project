@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.reflect.Method;
@@ -19,7 +20,7 @@ import java.util.List;
 /**
  * @author dbg
  */
-@Component
+@Service
 public class PermissionRegister {
     private static final Logger log = LoggerFactory.getLogger(PermissionRegister.class);
 
@@ -63,7 +64,6 @@ public class PermissionRegister {
             log.info("没有需要注册的权限");
             return;
         }
-        log.info(JSON.toJSONString(permissions));
         PermissionRegisterDTO permissionRegisterDTO = new PermissionRegisterDTO();
         permissionRegisterDTO.setServiceName(serviceName);
         permissionRegisterDTO.setPermissionList(permissions);

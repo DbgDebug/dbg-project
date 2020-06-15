@@ -10,13 +10,14 @@
         <result column="gift_id" property="giftId" jdbcType="INTEGER"/>
         <result column="gift_name" property="giftName" jdbcType="VARCHAR"/>
         <result column="send_time" property="sendTime" jdbcType="INTEGER"/>
+        <result column="paid_gift" property="paidGift" jdbcType="INTEGER"/>
     </resultMap>
     <sql id="base_column_list">
-        id, uid, room_id, username, gift_num, gift_id, gift_name, send_time
+        id, uid, room_id, username, gift_num, gift_id, gift_name, send_time, paid_gift
     </sql>
     <insert id="insertGifts" parameterType="java.util.List">
         INSERT INTO tb_gift
-        (room_id, uid, gift_num, gift_id, price, gift_name, username, send_time)
+        (room_id, uid, gift_num, gift_id, price, gift_name, username, send_time, paid_gift)
         VALUES
         <foreach collection="list" item="gift" index="index" separator=",">
             (
@@ -27,7 +28,8 @@
             #{gift.price},
             #{gift.giftName},
             #{gift.username},
-            #{gift.sendTime}
+            #{gift.sendTime},
+            #{gift.paidGift}
             )
         </foreach>
     </insert>

@@ -34,6 +34,8 @@ public class BiliBiliServiceImpl implements BiliBiliService {
 
     private final BiliBiliApi bilibiliApi;
 
+    private final BiliBiliStatistics biliBiliStatistics;
+
     private final ConcurrentHashMap<Integer, RoomInfo> roomMap = new ConcurrentHashMap<>();
 
     /**
@@ -68,12 +70,14 @@ public class BiliBiliServiceImpl implements BiliBiliService {
     public BiliBiliServiceImpl(DanmuMapper danmuMapper,
                                BiliBiliApi bilibiliApi,
                                LiveRoomMapper liveRoomMapper,
-                               MessageHandleService messageHandleService, HeartBeatTask heartBeatTask) {
+                               MessageHandleService messageHandleService,
+                               HeartBeatTask heartBeatTask, BiliBiliStatistics biliBiliStatistics) {
         this.danmuMapper = danmuMapper;
         this.bilibiliApi = bilibiliApi;
         this.liveRoomMapper = liveRoomMapper;
         this.messageHandleService = messageHandleService;
         this.heartBeatTask = heartBeatTask;
+        this.biliBiliStatistics = biliBiliStatistics;
         for (int i = 0; i < ROOM_MAXIMUM_SIZE; i++) {
             int baseLocalPort = 50000;
             portList.add(baseLocalPort + i);
@@ -321,11 +325,8 @@ public class BiliBiliServiceImpl implements BiliBiliService {
         return true;
     }
 
-    /**
-     * 将缓存弹幕写入数据库
-     *
-     */
-    private synchronized void insertDanmu() {
-
+    @Override
+    public boolean refreshStatistics(Integer date) {
+        return biliBiliStatistics.refreshStatistics(date);
     }
 }

@@ -102,11 +102,9 @@ public class AuthInterceptor implements HandlerInterceptor {
             return false;
         }
         RoleDTO roleTemp = new RoleDTO();
-        HashSet<Integer> permissionSet = new HashSet<>();
         HashSet<Integer> roleIds = operator.getRoleIds();
         for (Integer roleId : roleIds) {
             RoleDTO roleDTO = (RoleDTO) redisUtils.get(roleHeader + roleId);
-            permissionSet.addAll(roleDTO.getPermissionSet());
             if (roleDTO.getPermissionSet().contains(permissionId)) {
                 if (roleTemp.getRoleLevel() == null || roleDTO.getRoleLevel() < roleTemp.getRoleLevel()) {
                     roleTemp.setId(roleDTO.getId());
@@ -115,9 +113,6 @@ public class AuthInterceptor implements HandlerInterceptor {
                 }
             }
         }
-        operator.setRoleId(roleTemp.getId());
-        operator.setRoleLevel(roleTemp.getRoleLevel());
-        operator.setPermissionSet(permissionSet);
         return result;
     }
 }

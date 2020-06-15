@@ -30,4 +30,12 @@ public interface MessageHandleService {
     void welcomeStatisticHandle(WelcomeStatistic welcomeStatistic) throws InterruptedException;
 
     void insertCacheDanmu() throws InterruptedException;
+
+    void insertCacheGift() throws InterruptedException;
+
+    void danmuMsg(Integer roomId, String msg) throws InterruptedException;
+
+    void gifMsg(Integer roomId, String msg) throws InterruptedException;
+
+    void guardMsg(Integer roomId, String msg) throws InterruptedException;
 }

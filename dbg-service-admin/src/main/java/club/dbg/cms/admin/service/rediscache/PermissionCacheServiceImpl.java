@@ -28,15 +28,16 @@ public class PermissionCacheServiceImpl implements PermissionCacheService {
 
     private final PermissionMapper permissionMapper;
 
-    public PermissionCacheServiceImpl(RedisUtils redisUtils,
-                                      RoleMapper roleMapper,
-                                      PermissionMapper permissionMapper,
-                                      @Value("${redis.cache.permissionHeader}")
-                                              String permissionHeader,
-                                      @Value("${redis.cache.roleHeader}")
-                                              String roleHeader,
-                                      @Value("${redis.cache.timeOut}")
-                                              Integer cacheTimeOut) {
+    public PermissionCacheServiceImpl(
+            RedisUtils redisUtils,
+            RoleMapper roleMapper,
+            PermissionMapper permissionMapper,
+            @Value("${redis.cache.permissionHeader}")
+                    String permissionHeader,
+            @Value("${redis.cache.roleHeader}")
+                    String roleHeader,
+            @Value("${redis.cache.timeOut}")
+                    Integer cacheTimeOut) {
         this.redisUtils = redisUtils;
         this.roleMapper = roleMapper;
         this.permissionMapper = permissionMapper;

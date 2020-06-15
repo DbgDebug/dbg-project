@@ -42,11 +42,12 @@ public class RoleServiceImpl implements RoleService {
 
     private final PermissionCacheService permissionCacheService;
 
-    public RoleServiceImpl(RoleMapper roleMapper,
-                           AccountRoleMapper accountRoleMapper,
-                           RolePermissionMapper rolePermissionMapper,
-                           DataSourceTransactionManager transactionManager,
-                           PermissionCacheService permissionCacheService) {
+    public RoleServiceImpl(
+            RoleMapper roleMapper,
+            AccountRoleMapper accountRoleMapper,
+            RolePermissionMapper rolePermissionMapper,
+            DataSourceTransactionManager transactionManager,
+            PermissionCacheService permissionCacheService) {
         this.roleMapper = roleMapper;
         this.accountRoleMapper = accountRoleMapper;
         this.rolePermissionMapper = rolePermissionMapper;

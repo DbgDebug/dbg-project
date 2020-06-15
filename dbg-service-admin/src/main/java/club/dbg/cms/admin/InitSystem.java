@@ -3,6 +3,7 @@ package club.dbg.cms.admin;
 import club.dbg.cms.admin.service.rediscache.PermissionCacheService;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.concurrent.ScheduledExecutorService;
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author dbg
  */
-@Component
+@Service
 public class InitSystem {
     private final PermissionRegister permissionRegister;
 
@@ -26,10 +27,6 @@ public class InitSystem {
     @PostConstruct
     public void init() {
         permissionRegister.init();
-        permissionCache();
-    }
-
-    private void permissionCache() {
         permissionCacheService.init();
     }
 }

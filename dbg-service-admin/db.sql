@@ -9,8 +9,9 @@ CREATE TABLE `tb_gift` (
   `gift_name` varchar(10) NOT NULL,
   `username` varchar(20) NOT NULL,
   `send_time` int(11) NOT NULL,
+  `super_gift` TINYINT(2) NOT NULL
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
+);
 
 DROP TABLE IF EXISTS `tb_gift_statistic`;
 CREATE TABLE `tb_gift_statistic` (
@@ -49,5 +50,6 @@ CREATE TABLE `dbg`.`tb_gift_statistics` (
   `num` INT NOT NULL,
   `price` INT NOT NULL,
   `date` INT NOT NULL,
+  `super_gift` TINYINT(2) NOT NULL
   PRIMARY KEY (`id`));
 

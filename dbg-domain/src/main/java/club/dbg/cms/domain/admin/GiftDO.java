@@ -10,6 +10,7 @@ public class GiftDO {
     private String giftName;
     private String username;
     private Integer sendTime;
+    private Integer paidGift;
 
     public Integer getId() {
         return id;
@@ -81,5 +82,13 @@ public class GiftDO {
 
     public void setSendTime(Integer sendTime) {
         this.sendTime = sendTime;
+    }
+
+    public Integer getPaidGift() {
+        return paidGift;
+    }
+
+    public void setPaidGift(Integer paidGift) {
+        this.paidGift = paidGift;
     }
 }
