@@ -1,7 +1,6 @@
 package club.dbg.cms.admin.service.bilibili;
 
 import club.dbg.cms.admin.dao.*;
-import club.dbg.cms.admin.redis.RedisUtils;
 import club.dbg.cms.admin.service.bilibili.pojo.GiftStatistic;
 import club.dbg.cms.admin.service.bilibili.pojo.WelcomeStatistic;
 import club.dbg.cms.admin.service.database.DataBaseService;
@@ -50,7 +49,7 @@ public class MessageHandleServiceImpl implements MessageHandleService {
     public MessageHandleServiceImpl(DanmuMapper danmuMapper, GiftMapper giftMapper,
                                     GiftStatisticMapper giftStatisticMapper,
                                     WelcomeStatisticMapper welcomeStatisticMapper,
-                                    DataBaseService dataBaseService, RedisUtils redisUtils, GuardMapper guardMapper) {
+                                    DataBaseService dataBaseService, GuardMapper guardMapper) {
         this.danmuMapper = danmuMapper;
         this.giftMapper = giftMapper;
         this.giftStatisticMapper = giftStatisticMapper;
@@ -60,42 +59,35 @@ public class MessageHandleServiceImpl implements MessageHandleService {
     }
 
     @Override
-    public List<DanmuDO> getDanmuCacheList() {
-        return new ArrayList<>(danmuLinkedQueue);
+    public void insertCacheDanmu() throws InterruptedException {
+        danmuHandle(null, true);
     }
 
     @Override
-    public ConcurrentLinkedQueue<DanmuDO> getDanmuCacheQueue() {
-        return danmuLinkedQueue;
-    }
-
-    @Override
-    public List<GiftDO> getGiftCacheList() {
-        return new ArrayList<>(giftLinkedQueue);
-    }
-
-    @Override
-    public ConcurrentLinkedQueue<GiftDO> getGiftCacheQueue() {
-        return giftLinkedQueue;
+    public void insertCacheGift() throws InterruptedException {
+        giftHandle(null, true);
     }
 
     private final LongAdder danmuCount = new LongAdder();
+
     @Override
-    public void danmuHandle(DanmuDO danmu) throws InterruptedException {
+    public void danmuHandle(DanmuDO danmu, Boolean writeNow) throws InterruptedException {
         int danmuListMax = 100;
         danmuCount.add(1L);
-        danmuLinkedQueue.offer(danmu);
-        if(danmuCount.longValue() > danmuListMax){
+        if (!writeNow) {
+            danmuLinkedQueue.offer(danmu);
+        }
+        if (danmuCount.longValue() > danmuListMax || writeNow) {
             final ReentrantLock danmuLock = this.danmuLock;
             danmuLock.lockInterruptibly();
             try {
-                if(danmuCount.longValue() > danmuListMax){
+                if (danmuCount.longValue() > danmuListMax || writeNow) {
+                    danmuCount.reset();
                     DanmuWriteTask danmuWriteTask = new DanmuWriteTask(danmuMapper, danmuLinkedQueue);
                     danmuLinkedQueue = new ConcurrentLinkedQueue<>();
                     dataBaseService.submitTask(danmuWriteTask);
                 }
-                danmuCount.reset();
-            }finally {
+            } finally {
                 danmuLock.unlock();
             }
         }
@@ -108,22 +100,25 @@ public class MessageHandleServiceImpl implements MessageHandleService {
     }
 
     private final LongAdder giftCount = new LongAdder();
+
     @Override
-    public void giftHandle(GiftDO giftDO) throws InterruptedException {
+    public void giftHandle(GiftDO giftDO, Boolean writeNow) throws InterruptedException {
         int giftListMax = 200;
         giftCount.add(1L);
-        giftLinkedQueue.offer(giftDO);
-        if(giftCount.longValue() > giftListMax){
+        if (!writeNow) {
+            giftLinkedQueue.offer(giftDO);
+        }
+        if (giftCount.longValue() > giftListMax || writeNow) {
             final ReentrantLock giftLock = this.giftLock;
             giftLock.lockInterruptibly();
             try {
-                if(giftCount.longValue() > giftListMax){
+                if (giftCount.longValue() > giftListMax || writeNow) {
+                    giftCount.reset();
                     GiftWriteTask giftWriteTask = new GiftWriteTask(giftMapper, giftLinkedQueue);
                     giftLinkedQueue = new ConcurrentLinkedQueue<>();
                     dataBaseService.submitTask(giftWriteTask);
                 }
-                giftCount.reset();
-            }finally {
+            } finally {
                 giftLock.unlock();
             }
         }
@@ -150,28 +145,6 @@ public class MessageHandleServiceImpl implements MessageHandleService {
     }
 
     @Override
-    public void insertCacheDanmu() throws InterruptedException {
-        ConcurrentLinkedQueue<DanmuDO> linkedQueue = danmuLinkedQueue;
-        danmuLinkedQueue = new ConcurrentLinkedQueue<>();
-        if(linkedQueue.isEmpty()){
-            return;
-        }
-        DanmuWriteTask danmuWriteTask = new DanmuWriteTask(danmuMapper, linkedQueue);
-        dataBaseService.submitTask(danmuWriteTask);
-    }
-
-    @Override
-    public void insertCacheGift() throws InterruptedException {
-        ConcurrentLinkedQueue<GiftDO> linkedQueue = giftLinkedQueue;
-        danmuLinkedQueue = new ConcurrentLinkedQueue<>();
-        if(linkedQueue.isEmpty()){
-            return;
-        }
-        GiftWriteTask giftWriteTask = new GiftWriteTask(giftMapper, linkedQueue);
-        dataBaseService.submitTask(giftWriteTask);
-    }
-
-    @Override
     public void danmuMsg(Integer roomId, String msg) throws InterruptedException {
         Matcher mDanmu = DanmuPatternUtils.readDanmuInfo.matcher(msg);
         Matcher mUid = DanmuPatternUtils.readDanmuUid.matcher(msg);
@@ -194,7 +167,7 @@ public class MessageHandleServiceImpl implements MessageHandleService {
         danmu.setDanmu(danmuText.length() > 30 ? danmuText.substring(0, 30) : danmuText);
         danmu.setNickname(nickname.length() > 20 ? nickname.substring(0, 20) : nickname);
         danmu.setSendTime(sendTime / 1000);
-        danmuHandle(danmu);
+        danmuHandle(danmu, false);
     }
 
     @Override
@@ -208,12 +181,14 @@ public class MessageHandleServiceImpl implements MessageHandleService {
         Matcher mPrice = DanmuPatternUtils.readGiftPrice.matcher(msg);
         Matcher mTimestamp = DanmuPatternUtils.readGiftSendTime.matcher(msg);
         Matcher mAction = DanmuPatternUtils.readGiftAction.matcher(msg);
+        Matcher mSuperGiftNum = DanmuPatternUtils.readSuperGiftNum.matcher(msg);
 
         if (!(mGiftName.find() && mNum.find()
                 && mGiftId.find() && mUid.find()
                 && mUser.find() && mPrice.find()
                 && mTimestamp.find()
-                && mAction.find())) {
+                && mAction.find()
+                && mSuperGiftNum.find())) {
             log.warn("礼物信息解析失败:{}", msg);
             return;
         }
@@ -225,7 +200,7 @@ public class MessageHandleServiceImpl implements MessageHandleService {
         int uid = Integer.parseInt(mUid.group(1));
         int price = Integer.parseInt(mPrice.group(1));
         int sendTime = Integer.parseInt(mTimestamp.group(1));
-        String action = mAction.group(1);
+        int sNum = Integer.parseInt(mSuperGiftNum.group(1));
 
         GiftDO giftDO = new GiftDO();
         giftDO.setRoomId(roomId);
@@ -236,8 +211,8 @@ public class MessageHandleServiceImpl implements MessageHandleService {
         giftDO.setPrice(price);
         giftDO.setGiftName(giftName);
         giftDO.setSendTime(sendTime);
-        giftDO.setPaidGift("\\u6295\\u5582".equals(action) ? 1 : 0);
-        giftHandle(giftDO);
+        giftDO.setPaidGift(sNum > 0 && price > 0 ? 1 : 0);
+        giftHandle(giftDO, false);
     }
 
     @Override
@@ -276,5 +251,25 @@ public class MessageHandleServiceImpl implements MessageHandleService {
         guardDO.setSendTime(sendTime);
         guardDO.setRoomId(roomId);
         guardHandle(guardDO);
+    }
+
+    @Override
+    public List<DanmuDO> getDanmuCacheList() {
+        return new ArrayList<>(danmuLinkedQueue);
+    }
+
+    @Override
+    public ConcurrentLinkedQueue<DanmuDO> getDanmuCacheQueue() {
+        return danmuLinkedQueue;
+    }
+
+    @Override
+    public List<GiftDO> getGiftCacheList() {
+        return new ArrayList<>(giftLinkedQueue);
+    }
+
+    @Override
+    public ConcurrentLinkedQueue<GiftDO> getGiftCacheQueue() {
+        return giftLinkedQueue;
     }
 }

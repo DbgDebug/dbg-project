@@ -65,10 +65,10 @@ public class BiliBiliStatistics {
         if(!sdf.format(new Date(date * 1000L)).equals("00:00:00")){
             throw new BusinessException("输入时间不正确");
         }
-        giftStatisticsMapper.deleteByDate(date);
         long endTime = date + 24 * 60 * 60 - 1;
         TransactionStatus transactionStatus = getTransactionStatus();
         try {
+            giftStatisticsMapper.deleteByDate(date);
             int count = giftStatisticsMapper.countByDate(date);
             if(count != 0){
                 throw new BusinessException("统计数据已存在");

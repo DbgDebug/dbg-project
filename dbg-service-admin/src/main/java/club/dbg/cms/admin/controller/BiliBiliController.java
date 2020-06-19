@@ -98,7 +98,7 @@ public class BiliBiliController {
 
     @RequestMapping(value = "edit_room", name = "编辑直播间", method = RequestMethod.POST)
     public ResponseEntity<ResponseResultDTO> editRoom(
-            @Range(min = 0, max = 2147483647, message = "id范围0-2147483647")
+            @Range(max = Integer.MAX_VALUE, message = "id范围0-2147483647")
             @RequestParam("id") Integer id,
             @Range(min = 0, max = 999999999, message = "房间id范围0-999999999")
             @RequestParam("roomid") Integer roomid,
@@ -115,7 +115,7 @@ public class BiliBiliController {
 
     @RequestMapping(value = "delete_room", name = "删除直播间", method = RequestMethod.POST)
     public ResponseEntity<ResponseResultDTO> deleteRoom(
-            @Range(min = 0, max = 2147483647, message = "id范围0-2147483647")
+            @Range(max = Integer.MAX_VALUE, message = "id范围0-2147483647")
             @RequestParam("id") Integer id) {
         boolean result = bilibiliService.deleteRoom(id);
         ResponseResultDTO response = new ResponseResultDTO();
@@ -125,7 +125,7 @@ public class BiliBiliController {
 
     @RequestMapping(value = "start", name = "直播间弹幕服务连接", method = RequestMethod.POST)
     public ResponseEntity<ResponseResultDTO> start(
-            @Range(min = 0, max = 2147483647, message = "id范围0-2147483647")
+            @Range(max = Integer.MAX_VALUE, message = "id范围0-2147483647")
             @RequestParam("id") Integer id) {
         ResponseResultDTO response = new ResponseResultDTO();
         response.setData(bilibiliService.start(id));
@@ -134,7 +134,7 @@ public class BiliBiliController {
 
     @RequestMapping(value = "stop", name = "直播间弹幕服务切断", method = RequestMethod.POST)
     public ResponseEntity<ResponseResultDTO> stop(
-            @Range(min = 0, max = 2147483647, message = "id范围0-2147483647")
+            @Range(max = Integer.MAX_VALUE, message = "id范围0-2147483647")
             @RequestParam("id") Integer id) {
         boolean result = bilibiliService.stop(id);
         ResponseResultDTO response = new ResponseResultDTO();

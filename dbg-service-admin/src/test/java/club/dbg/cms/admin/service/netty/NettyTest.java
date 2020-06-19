@@ -218,14 +218,31 @@ class MessageHandle extends ChannelInboundHandlerAdapter {
                 // log.info("DANMU_MSG:{}", msg);
                 break;
             case "SEND_GIFT":
-                Matcher mGiftId = DanmuPatternUtils.readGiftId.matcher(msg);
-                if(!mGiftId.find()){
-                    return;
+                try {
+                    Matcher mGiftId = DanmuPatternUtils.readGiftId.matcher(msg);
+                    Matcher mGiftName = DanmuPatternUtils.readGiftName.matcher(msg);
+                    Matcher mNum = DanmuPatternUtils.readGiftNum.matcher(msg);
+                    Matcher mPrice = DanmuPatternUtils.readGiftPrice.matcher(msg);
+                    Matcher mAction = DanmuPatternUtils.readGiftAction.matcher(msg);
+                    Matcher mSuperGiftNum = DanmuPatternUtils.readSuperGiftNum.matcher(msg);
+                    if (!(mGiftId.find() && mGiftName.find()
+                            && mNum.find() && mPrice.find() & mAction.find()
+                            && mSuperGiftNum.find())) {
+                        return;
+                    }
+                    int gid = Integer.parseInt(mGiftId.group(1));
+                    String giftName = DanmuPatternUtils.unicodeToString(mGiftName.group(1));
+                    int num = Integer.parseInt(mNum.group(1));
+                    int price = Integer.parseInt(mPrice.group(1));
+                    String action = DanmuPatternUtils.unicodeToString(mAction.group(1));
+                    int sNum =  Integer.parseInt(mSuperGiftNum.group(1));
+                    if (gid != 1) {
+                        log.info("giftName:{}, num:{}, price:{}, action:{}, sNum:{}", giftName, num, price, action, sNum);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                int gid = Integer.parseInt(mGiftId.group(1));
-                if(gid != 1){
-                    log.info("SEND_GIFT:{}", msg);
-                }
+
                 break;
             case "WELCOME":
                 // welcomeMsg(bodyString);

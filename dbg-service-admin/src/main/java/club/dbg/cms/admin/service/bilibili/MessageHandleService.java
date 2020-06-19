@@ -19,11 +19,11 @@ public interface MessageHandleService {
 
     ConcurrentLinkedQueue<GiftDO> getGiftCacheQueue();
 
-    void danmuHandle(DanmuDO danmuDO) throws InterruptedException;
+    void danmuHandle(DanmuDO danmu, Boolean writeNow) throws InterruptedException;
 
     void guardHandle(GuardDO guardDO) throws InterruptedException;
 
-    void giftHandle(GiftDO giftDO) throws InterruptedException;
+    void giftHandle(GiftDO giftDO, Boolean writeNow) throws InterruptedException;
 
     void giftStatisticHandle(GiftStatistic giftStatistic) throws InterruptedException;
 
