@@ -126,7 +126,7 @@ public class AuthFilter implements Filter {
 
     private void responseResult(HttpServletResponse response) throws IOException {
         ResponseResultDTO serviceResponse = new ResponseResultDTO();
-        serviceResponse.setCode(ResponseCode.AUTHENTICATION_FAILED);
+        serviceResponse.setCode(50014);
         serviceResponse.setMessage("Authentication Failed");
         IOUtils.write(JSON.toJSONString(serviceResponse), response.getOutputStream(), Charset.defaultCharset());
     }

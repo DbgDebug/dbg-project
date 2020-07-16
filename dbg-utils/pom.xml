@@ -46,5 +46,13 @@
             <artifactId>commons-text</artifactId>
             <version>1.8</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.bytedeco.javacpp-presets/ffmpeg -->
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>ffmpeg</artifactId>
+            <version>4.1-1.4.4</version>
+        </dependency>
+
     </dependencies>
 </project>

@@ -80,7 +80,7 @@ public class BilibiliServiceTest {
 
     @Test
     public void sqlTest() {
-        giftStatisticsMapper.guardStatistics(123123L, 1590854400L, 1590940799L);
+        giftStatisticsMapper.guardStatistics(123123, 1590854400, 1590940799);
     }
 
     @Test

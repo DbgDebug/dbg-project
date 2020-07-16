@@ -42,10 +42,10 @@ public class BiliBiliStatistics {
         long current = System.currentTimeMillis();
         long zero = (current / (1000 * 3600 * 24) * (1000 * 3600 * 24)
                 - TimeZone.getTimeZone("Asia/Shanghai").getRawOffset() + 24 * 60 * 60 * 1000) / 1000;
-        long date = zero - 24 * 60 * 60;
-        long endTime = date + 24 * 60 * 60 - 1;
+        int date = (int)zero - 24 * 60 * 60;
+        int endTime = date + 24 * 60 * 60 - 1;
         try {
-            int count = giftStatisticsMapper.countByDate((int)date);
+            int count = giftStatisticsMapper.countByDate(date);
             if(count != 0){
                 log.info("统计数据已存在");
                 return false;
@@ -65,7 +65,7 @@ public class BiliBiliStatistics {
         if(!sdf.format(new Date(date * 1000L)).equals("00:00:00")){
             throw new BusinessException("输入时间不正确");
         }
-        long endTime = date + 24 * 60 * 60 - 1;
+        int endTime = date + 24 * 60 * 60 - 1;
         TransactionStatus transactionStatus = getTransactionStatus();
         try {
             giftStatisticsMapper.deleteByDate(date);
@@ -75,8 +75,8 @@ public class BiliBiliStatistics {
             }
 
             messageHandleService.insertCacheGift();
-            giftStatisticsMapper.guardStatistics((long)date, (long)date, endTime);
-            giftStatisticsMapper.giftStatistics((long)date, (long)date, endTime);
+            giftStatisticsMapper.guardStatistics(date, date, endTime);
+            giftStatisticsMapper.giftStatistics(date, date, endTime);
 
             transactionManager.commit(transactionStatus);
         } catch (Exception e) {

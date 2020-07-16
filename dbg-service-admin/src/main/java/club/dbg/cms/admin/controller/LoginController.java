@@ -57,9 +57,10 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/logout", name = "登出", method = RequestMethod.POST)
-    public ResponseEntity<ResponseResultDTO> logout() {
-
-        return ResponseEntity.ok(new ResponseResultDTO());
+    public ResponseEntity<ResponseResultDTO> logout(MyHttpServletRequest request) {
+        int id = request.getOperator().getId();
+        String token = request.getOperator().getAccessToken();
+        return ResponseEntity.ok(new ResponseResultDTO(loginService.logout(id, token)));
     }
 
     @RequestMapping(value = "/get_verification_code", name = "获取验证码", method = RequestMethod.POST)

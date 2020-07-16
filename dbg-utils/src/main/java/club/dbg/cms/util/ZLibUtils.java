@@ -15,7 +15,7 @@ public class ZLibUtils {
         byte[] output;
 
         Deflater compresser = new Deflater();
-
+        compresser.setLevel(6);
         compresser.reset();
         compresser.setInput(data);
         compresser.finish();

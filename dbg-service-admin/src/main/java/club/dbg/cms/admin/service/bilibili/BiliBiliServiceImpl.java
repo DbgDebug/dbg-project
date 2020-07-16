@@ -62,11 +62,6 @@ public class BiliBiliServiceImpl implements BiliBiliService {
             new SynchronousQueue<>(),
             new ThreadPoolExecutor.AbortPolicy());
 
-    /**
-     * 使用的端口，使用指定端口方便防火墙设置和docker映射
-     */
-    private static final List<Integer> portList = new LinkedList<>();
-
     public BiliBiliServiceImpl(DanmuMapper danmuMapper,
                                BiliBiliApi bilibiliApi,
                                LiveRoomMapper liveRoomMapper,
@@ -78,10 +73,6 @@ public class BiliBiliServiceImpl implements BiliBiliService {
         this.messageHandleService = messageHandleService;
         this.heartBeatTask = heartBeatTask;
         this.biliBiliStatistics = biliBiliStatistics;
-        for (int i = 0; i < ROOM_MAXIMUM_SIZE; i++) {
-            int baseLocalPort = 50000;
-            portList.add(baseLocalPort + i);
-        }
     }
 
     /**
@@ -254,10 +245,6 @@ public class BiliBiliServiceImpl implements BiliBiliService {
             if (roomMap.containsKey(id)) {
                 return true;
             }
-            if (portList.size() == 0) {
-                throw new BusinessException("已达到最大连接数");
-            }
-            roomInfo.setPort(portList.remove(0));
             roomMap.put(id, roomInfo);
             if (roomPoolExecutor.getActiveCount() >= ROOM_MAXIMUM_SIZE) {
                 roomMap.remove(id);
@@ -299,7 +286,6 @@ public class BiliBiliServiceImpl implements BiliBiliService {
         RoomInfo roomInfo = roomMap.remove(id);
         if (roomInfo != null) {
             roomInfo.close();
-            portList.add(roomInfo.getPort());
         } else {
             return false;
         }
@@ -317,7 +303,6 @@ public class BiliBiliServiceImpl implements BiliBiliService {
         RoomInfo roomInfo = roomMap.remove(id);
         if (roomInfo != null) {
             roomInfo.closeNow();
-            portList.add(roomInfo.getPort());
         } else {
             return false;
         }

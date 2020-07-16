@@ -132,7 +132,6 @@ public class PermissionServiceImpl implements PermissionService {
                                                Integer page, Integer pageSize) {
         page = (page - 1) * pageSize;
         if(permissionName != null && !permissionName.isEmpty()){
-            log.info("null");
             permissionName = "%" + permissionName + "%";
         }
         PermissionListDTO permissionList = new PermissionListDTO();

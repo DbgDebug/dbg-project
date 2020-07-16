@@ -98,17 +98,12 @@ public class DanmuReceiveThread implements Runnable {
     }
 
     /**
-     * 如果长度大于 16，说明是有数据的
-     * 3：人气值
-     * 5：弹幕
-     * // 头部长度 int headLength =
-     * // byteBuffer.getShort();
-     * // 协议 protocol
-     * // byteBuffer.getShort();
-     * // 操作码 action
-     * // byteBuffer.getInt();
-     * // 协议 sequence
-     * // byteBuffer.getInt();
+     * 头部长度为16个字节
+     * 数据长度（包含头部长度） int
+     * 头部长度 short int
+     * 协议 protocol short int
+     * 操作码 action int
+     * 协议 sequence int
      */
     private void inputStreamHandel(InputStream inputStream) throws Exception {
         while (!Thread.currentThread().isInterrupted()) {
@@ -122,13 +117,14 @@ public class DanmuReceiveThread implements Runnable {
                 readCount += inputStream.read(buf, readCount, count - readCount);
             }
             ByteBuffer byteBuffer = ByteBuffer.wrap(buf);
+            byteBuffer.getInt(2);
             // 头部的长度数据
             int length = byteBuffer.getInt();
             // 如果长度小于等于 16，谨防万一，加一个上限
             if (length <= headerSize || length > 65534) {
                 continue;
             }
-            // 剔除头部，进行读取
+            // 剔除头部长度，进行读取
             byte[] bodyByte = new byte[length - headerSize];
             count = length - headerSize;
             // 已经成功读取的字节的个数

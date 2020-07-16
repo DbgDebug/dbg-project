@@ -38,9 +38,9 @@ public interface GiftStatisticsMapper {
             "GROUP BY room_id, gift_name, price, paid_gift;"
     })
     void giftStatistics(
-            @Param("date") Long date,
-            @Param("startTime") Long startTime,
-            @Param("endTime") Long entTime);
+            @Param("date") Integer date,
+            @Param("startTime") Integer startTime,
+            @Param("endTime") Integer entTime);
 
     @Insert({
             "INSERT INTO tb_gift_statistics(room_id, gift_name, num, price, `date`, paid_gift)",
@@ -48,7 +48,7 @@ public interface GiftStatisticsMapper {
             "FROM tb_guard WHERE send_time >= #{startTime} AND send_time <= #{endTime}",
             "GROUP BY room_id, gift_name, price;"
     })
-    void guardStatistics(@Param("date") Long date,
-                         @Param("startTime") Long startTime,
-                         @Param("endTime") Long entTime);
+    void guardStatistics(@Param("date") Integer date,
+                         @Param("startTime") Integer startTime,
+                         @Param("endTime") Integer entTime);
 }

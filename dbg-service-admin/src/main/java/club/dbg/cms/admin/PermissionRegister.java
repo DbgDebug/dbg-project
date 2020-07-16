@@ -18,6 +18,8 @@ import java.util.List;
 
 /**
  * @author dbg
+ *
+ * 访问路径不是必须生成的（contextPath/controllerPath/methodPath）
  */
 @Service
 public class PermissionRegister {

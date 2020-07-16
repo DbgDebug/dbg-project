@@ -24,13 +24,15 @@ public class PublicApiConfig {
     @PostConstruct
     public void init(){
         apiSet.add("/login");
-        apiSet.add("/get_verification_code");
-        apiSet.add("/get_email_code");
-        apiSet.add("/jmeter");
         apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.LoginControllerlogin"));
+        apiSet.add("/get_verification_code");
         apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.LoginControllergetVerificationCode"));
+        apiSet.add("/get_email_code");
         apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.LoginControllergetEmailCode"));
+        apiSet.add("/jmeter");
         apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.TestControllerjmeter"));
+        apiSet.add("/logout");
+        apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.LoginControllerlogout"));
         apiSet.add("/rpc/permission/register");
         apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.PermissionRegisterControllerpermissionRegister"));
 

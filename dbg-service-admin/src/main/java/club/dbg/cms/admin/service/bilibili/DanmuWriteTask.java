@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 
 public class DanmuWriteTask implements DataWriteTask {
     private static final Logger log = LoggerFactory.getLogger(DataWriteTask.class);
