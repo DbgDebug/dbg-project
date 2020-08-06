@@ -30,7 +30,7 @@ public class BiliBiliServiceImpl implements BiliBiliService {
 
     private final MessageHandleService messageHandleService;
 
-    private final HeartBeatTask heartBeatTask;
+    private final HeartBeatScheduled heartBeatTask;
 
     private final BiliBiliApi bilibiliApi;
 
@@ -66,7 +66,7 @@ public class BiliBiliServiceImpl implements BiliBiliService {
                                BiliBiliApi bilibiliApi,
                                LiveRoomMapper liveRoomMapper,
                                MessageHandleService messageHandleService,
-                               HeartBeatTask heartBeatTask, BiliBiliStatistics biliBiliStatistics) {
+                               HeartBeatScheduled heartBeatTask, BiliBiliStatistics biliBiliStatistics) {
         this.danmuMapper = danmuMapper;
         this.bilibiliApi = bilibiliApi;
         this.liveRoomMapper = liveRoomMapper;

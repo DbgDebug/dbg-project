@@ -24,7 +24,7 @@ public class DanmuReceiveThread implements Runnable {
 
     private final MessageHandleService messageHandleService;
 
-    private final HeartBeatTask heartBeatTask;
+    private final HeartBeatScheduled heartBeatTask;
 
     private final BiliBiliApi biliBiliApi;
 
@@ -43,7 +43,7 @@ public class DanmuReceiveThread implements Runnable {
 
     DanmuReceiveThread(BiliBiliServiceImpl bilibiliService,
                        MessageHandleService messageHandleService,
-                       RoomInfo roomInfo, HeartBeatTask heartBeatTask,
+                       RoomInfo roomInfo, HeartBeatScheduled heartBeatTask,
                        BiliBiliApi biliBiliApi) {
         this.biliBiliService = bilibiliService;
         this.messageHandleService = messageHandleService;
