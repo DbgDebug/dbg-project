@@ -7,7 +7,7 @@
 * 模块下的 docker 目录包含 Dockerfile 和 run.sh，run.sh 是容器启动后运行的脚本
 * 需要手动创建数据库，执行 dump.sql 导入数据
 * [在线演示](https://dbg-dev.icu:9700/) 账号：reader 密码：12345678 ，不能重复登录，重复登录先登录的会被踢下线
-* 该项目不包含前端，前端请转[dbg-front-end](https://github.com/DbgDebug/dbg-front-end)
+* 该项目不包含前端，前端请转 [dbg-front-end](https://github.com/DbgDebug/dbg-front-end)
   
 ### 依赖
 * mysql >= 5.7
