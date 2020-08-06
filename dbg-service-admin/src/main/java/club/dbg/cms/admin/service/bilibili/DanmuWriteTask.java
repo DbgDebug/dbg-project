@@ -26,6 +26,9 @@ public class DanmuWriteTask implements DataWriteTask {
     public void write() {
         try {
             List<DanmuDO> danmuDOList = new ArrayList<>(danmuLinkedQueue);
+            if(danmuDOList.isEmpty()) {
+                return;
+            }
             danmuDOList.sort((danmu1, danmu2) -> {
                 long diff = danmu1.getSendTime() - danmu2.getSendTime();
                 return diff < 0 ? -1 : diff == 0 ? 0 : 1;
