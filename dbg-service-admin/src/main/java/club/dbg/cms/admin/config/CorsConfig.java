@@ -11,13 +11,8 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 跨域请求处理
- *
- * @author Guoqing
- */
 @Configuration
-public class CrosConfig {
+public class CorsConfig {
     private final List<String> allowedOriginList = new ArrayList<>();
 
     public List<String> getAllowedOriginList() {
