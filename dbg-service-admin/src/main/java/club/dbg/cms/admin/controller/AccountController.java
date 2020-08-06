@@ -48,11 +48,6 @@ public class AccountController {
         return ResponseEntity.ok(new ResponseResultDTO(accountService.getAccountDetail(accountId)));
     }
 
-    @RequestMapping(value = "/info", name = "获取用户信息", method = RequestMethod.GET)
-    public ResponseEntity<String> info() {
-        return ResponseEntity.ok("{\"code\":20000,\"data\":{\"user\":{\"id\":1,\"username\":\"admin\",\"password\":\"any\",\"name\":\"Normal Editor\",\"avatar\":\"https://dbg-test.club:9700/qe.jpg\",\"introduction\":\"I am an editor\",\"email\":\"editor@test.com\",\"phone\":\"1234567890\",\"roles\":[\"admin\"]}}}");
-    }
-
     @RequestMapping(value = "/add_account", method = RequestMethod.POST, name = "创建账号")
     public ResponseEntity<ResponseResultDTO> addAccount(
             MyHttpServletRequest request,
