@@ -180,6 +180,10 @@ CREATE TABLE `tb_welcome_statistic` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `tb_role` VALUES (1,0,0,'system',20191026140000,20191026140000,1),(2,0,1,'admin',20191026140000,20191026140000,1),(23,2,10,'reader',20191124174756,20200320172219,1);
+INSERT INTO `tb_account` VALUES (1,'admin','$2a$10$VUgTuDlQtoBc.KCrYu3JuOQqNLLnGWMBnmvRRDEkSxAqQBoM1fM8u','admin',unix_timestamp(now()),unix_timestamp(now()),unix_timestamp(now()),unix_timestamp(now()),1,'admin@qq.com','127.0.0.1','https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',1);
 
-INSERT INTO `tb_service` VALUES (9,'dbg-service-admin','后台管理模块',20191118215352,20200326155627,1),(10,'dbg-service-blog','博客服务',1589952315,1589952322,1);
+INSERT INTO `tb_account_role` VALUES (1,1,2);
+
+INSERT INTO `tb_role` VALUES (1,0,0,'system',unix_timestamp(now()),unix_timestamp(now()),1),(2,0,1,'admin',unix_timestamp(now()),unix_timestamp(now()),1);
+
+INSERT INTO `tb_service` VALUES (1,'dbg-service-admin','后台管理模块',unix_timestamp(now()),unix_timestamp(now()),1),(2,'dbg-service-blog','博客服务',unix_timestamp(now()),unix_timestamp(now()),1);
