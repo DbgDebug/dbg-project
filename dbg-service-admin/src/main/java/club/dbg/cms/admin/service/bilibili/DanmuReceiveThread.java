@@ -77,12 +77,11 @@ public class DanmuReceiveThread implements Runnable {
                 InputStream inputStream = socket.getInputStream();
                 // 发送加入信息
                 sendJoinMsg(roomId, danmuConf.getToken());
-                // 提示，已经连接
                 log.info("房间{}已经连接", roomId);
                 // 心跳包
                 heartBeatTask.submit(this);
                 // 接收信息处理
-                inputStreamHandel(inputStream);
+                inputStreamHandle(inputStream);
             } catch (Exception e) {
                 if (!isShutdown) {
                     log.error("Exception:", e);
@@ -105,7 +104,7 @@ public class DanmuReceiveThread implements Runnable {
      * 操作码 action int
      * 协议 sequence int
      */
-    private void inputStreamHandel(InputStream inputStream) throws Exception {
+    private void inputStreamHandle(InputStream inputStream) throws Exception {
         while (!Thread.currentThread().isInterrupted()) {
             // 开始读取数据流，先开辟缓存区
             int headerSize = 16;
@@ -117,9 +116,10 @@ public class DanmuReceiveThread implements Runnable {
                 readCount += inputStream.read(buf, readCount, count - readCount);
             }
             ByteBuffer byteBuffer = ByteBuffer.wrap(buf);
-            byteBuffer.getInt(2);
             // 头部的长度数据
             int length = byteBuffer.getInt();
+            short hs = byteBuffer.getShort();
+            log.info("length: {}", hs);
             // 如果长度小于等于 16，谨防万一，加一个上限
             if (length <= headerSize || length > 65534) {
                 continue;

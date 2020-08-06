@@ -84,14 +84,17 @@ public class AccountServiceImpl implements AccountService {
         HashSet<Integer> roleIds = accountRoleMapper.selectRoleIdByAccountId(accountId);
         List<RoleDO> roleList = roleMapper.selectRoleByIds(roleIds);
         HashSet<Integer> roleLevels = new HashSet<>();
+        HashSet<String> roles = new HashSet<>();
         for (RoleDO roleDO : roleList) {
             roleLevels.add(roleDO.getRoleLevel());
+            roles.add(roleDO.getRoleName());
         }
         accountDTO.setRoleIds(roleIds);
+        accountDTO.setRoles(roles);
         accountDTO.setRoleLevels(roleLevels);
         // 获取所拥有的权限
-        HashSet<Integer> permissionList = rolePermissionMapper.selectPermissionIdByRoleIds(roleIds);
-        accountDTO.setPermissionSet(permissionList);
+        //HashSet<Integer> permissionList = rolePermissionMapper.selectPermissionIdByRoleIds(roleIds);
+        //accountDTO.setPermissionSet(permissionList);
         return accountDTO;
     }
 

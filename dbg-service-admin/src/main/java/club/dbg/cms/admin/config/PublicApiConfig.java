@@ -31,8 +31,8 @@ public class PublicApiConfig {
         apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.LoginControllergetEmailCode"));
         apiSet.add("/jmeter");
         apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.TestControllerjmeter"));
-        apiSet.add("/logout");
-        apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.LoginControllerlogout"));
+        //apiSet.add("/logout");
+        //apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.LoginControllerlogout"));
         apiSet.add("/rpc/permission/register");
         apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.PermissionRegisterControllerpermissionRegister"));
 

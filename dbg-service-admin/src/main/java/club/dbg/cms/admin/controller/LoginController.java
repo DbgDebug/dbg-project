@@ -56,21 +56,21 @@ public class LoginController {
         return ResponseEntity.ok(response);
     }
 
-    @RequestMapping(value = "/logout", name = "登出", method = RequestMethod.POST)
+    @RequestMapping(value = "/logout", name = "登出", method = RequestMethod.GET)
     public ResponseEntity<ResponseResultDTO> logout(MyHttpServletRequest request) {
         int id = request.getOperator().getId();
         String token = request.getOperator().getAccessToken();
         return ResponseEntity.ok(new ResponseResultDTO(loginService.logout(id, token)));
     }
 
-    @RequestMapping(value = "/get_verification_code", name = "获取验证码", method = RequestMethod.POST)
+    @RequestMapping(value = "/get_verification_code", name = "获取验证码", method = RequestMethod.GET)
     public ResponseEntity<ResponseResultDTO> getVerificationCode() {
         ResponseResultDTO response = new ResponseResultDTO();
         response.setData(loginService.getVerificationCode());
         return ResponseEntity.ok(response);
     }
 
-    @RequestMapping(value = "/get_email_code", name = "获取邮箱验证码", method = RequestMethod.POST)
+    @RequestMapping(value = "/get_email_code", name = "获取邮箱验证码", method = RequestMethod.GET)
     public ResponseEntity<ResponseResultDTO> getEmailCode() {
         return ResponseEntity.ok(null);
     }

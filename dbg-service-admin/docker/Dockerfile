@@ -1,5 +1,4 @@
 FROM mcr.microsoft.com/java/jdk:8u222-zulu-ubuntu
-
 WORKDIR /opt/
 COPY dbg-service-admin-1.0.0-SNAPSHOT.jar /opt/
 COPY run.sh /opt/run.sh

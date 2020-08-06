@@ -18,23 +18,7 @@ import java.util.List;
  */
 @Configuration
 public class CrosConfig {
-
-    private CorsConfiguration buildConfig() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("*"); // 1
-        corsConfiguration.addAllowedHeader("*"); // 2
-        corsConfiguration.addAllowedMethod("*"); // 3
-        return corsConfiguration;
-    }
-
-    /*@Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", buildConfig()); // 4
-        return new CorsFilter(source);
-    }*/
-
-    private List<String> allowedOriginList = new ArrayList<>();
+    private final List<String> allowedOriginList = new ArrayList<>();
 
     public List<String> getAllowedOriginList() {
         return allowedOriginList;
@@ -51,23 +35,10 @@ public class CrosConfig {
         }
 
         // 允许所有访问
-        //TODO:
-        //config.addAllowedOrigin("*");
-
-        //https://www.dbg-test.club:9700
         config.addAllowedOrigin("*");
         // 限制 HEADER 或 METHOD
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-
-        /*
-        CorsConfiguration allowAllConfig = new CorsConfiguration();
-        allowAllConfig.addAllowedOrigin("*");
-        allowAllConfig.addAllowedHeader("*");
-        allowAllConfig.addAllowedMethod("*");
-
-        source.registerCorsConfiguration("/api/**", allowAllConfig);
-        */
 
         source.registerCorsConfiguration("/**", config);
 

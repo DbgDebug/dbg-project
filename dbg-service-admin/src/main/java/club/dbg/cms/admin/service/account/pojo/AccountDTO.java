@@ -20,6 +20,7 @@ public class AccountDTO {
     private Integer sex;
     private Integer status;
     private HashSet<Integer> roleIds;
+    private HashSet<String> roles;
     private HashSet<Integer> roleLevels;
     private HashSet<Integer> permissionSet;
 
@@ -143,6 +144,14 @@ public class AccountDTO {
         this.permissionSet = permissionSet;
     }
 
+    public HashSet<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(HashSet<String> roles) {
+        this.roles = roles;
+    }
+
     @Override
     public String toString() {
         return "AccountDTO{" +
@@ -159,6 +168,7 @@ public class AccountDTO {
                 ", sex=" + sex +
                 ", status=" + status +
                 ", roleIds=" + roleIds +
+                ", roles=" + roles +
                 ", roleLevels=" + roleLevels +
                 ", permissionSet=" + permissionSet +
                 '}';

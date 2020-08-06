@@ -34,7 +34,7 @@ public class BiliBiliController {
     }
 
     @RequestMapping(value = "get_danmu_list", name = "获取弹幕列表", method = RequestMethod.GET)
-    public ResponseEntity<ResponseResultDTO> getDanmuList(
+    public ResponseEntity<ResponseBuild<DanmuList>> getDanmuList(
             @Range(min = -1, max = 999999999, message = "房间id范围-1-999999999")
             @RequestParam(value = "roomid", defaultValue = "-1") Integer roomid,
             @Min(value = 1, message = "开始时间不能小于1")
@@ -46,9 +46,7 @@ public class BiliBiliController {
             @Range(min = 1, max = 200, message = "页大小为1-200")
             @RequestParam(value = "pageSize") Integer pageSize) {
         DanmuList danmuList = bilibiliService.getDanmuList(roomid, startTime, endTime, page, pageSize);
-        ResponseResultDTO response = new ResponseResultDTO();
-        response.setData(danmuList);
-        return ResponseEntity.ok(response);
+        return ResponseBuild.build(danmuList);
     }
 
     @RequestMapping(value = "get_cache_danmu", name = "获取缓存弹幕", method = RequestMethod.GET)

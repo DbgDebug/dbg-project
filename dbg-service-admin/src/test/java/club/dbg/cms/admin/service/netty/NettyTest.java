@@ -27,7 +27,7 @@ import java.util.regex.Matcher;
 public class NettyTest implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(NettyTest.class);
 
-    private final int roomId = 1016;
+    private final int roomId = 1512103;
 
     @Override
     public void run() {
@@ -62,6 +62,7 @@ public class NettyTest implements Runnable {
             });
             ChannelFuture channelFuture = bootstrap.connect().sync();
             channelFuture.channel().closeFuture().sync();
+            log.info("已连接");
         } catch (InterruptedException e) {
             log.warn("连接异常:", e);
         } finally {
@@ -141,6 +142,7 @@ class MessageHandle extends ChannelInboundHandlerAdapter {
         log.info("socket已连接");
         log.info(Thread.currentThread().getName());
         ctx.writeAndFlush(nettyTest.sendJoinMsg(Unpooled.buffer(), roomId, danmuConf.getToken()));
+        //Thread.sleep(30000);
     }
 
     @Override
@@ -215,9 +217,11 @@ class MessageHandle extends ChannelInboundHandlerAdapter {
         }
         switch (msgType) {
             case "DANMU_MSG":
-                // log.info("DANMU_MSG:{}", msg);
+                log.info("DANMU_MSG:{}", msg);
                 break;
             case "SEND_GIFT":
+                log.info("SEND_GIFT:{}", msg);
+                /*
                 try {
                     Matcher mGiftId = DanmuPatternUtils.readGiftId.matcher(msg);
                     Matcher mGiftName = DanmuPatternUtils.readGiftName.matcher(msg);
@@ -242,6 +246,8 @@ class MessageHandle extends ChannelInboundHandlerAdapter {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                */
 
                 break;
             case "WELCOME":
