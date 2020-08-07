@@ -2,7 +2,7 @@
 这是一个练习使用的项目
 
 ### 说明
-* 项目使用 spring boot 2.1.6.RELEASE 开发
+* 项目基于 spring boot 开发
 * 模块下的 build.sh 文件用于打包当前模块、构建 docker 镜像并上传到私有镜像仓库
 * 模块下的 docker 目录包含 Dockerfile 和 run.sh，run.sh 是容器启动后运行的脚本
 * 需要手动创建数据库，执行模块下的 sql 导入数据，默认账号：admin 密码：12345678
