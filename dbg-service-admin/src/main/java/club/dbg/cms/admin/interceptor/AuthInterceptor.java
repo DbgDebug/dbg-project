@@ -10,6 +10,7 @@ import club.dbg.cms.util.MD5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -32,11 +33,16 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private final PublicApiConfig publicApiConfig;
 
-    public AuthInterceptor(String serviceName,
-                           String roleHeader,
-                           String permissionHeader,
-                           RedisUtils redisUtils,
-                           PublicApiConfig publicApiConfig) {
+    private final Boolean isDebug;
+
+    public AuthInterceptor(
+            Boolean isDebug,
+            String serviceName,
+            String roleHeader,
+            String permissionHeader,
+            RedisUtils redisUtils,
+            PublicApiConfig publicApiConfig) {
+        this.isDebug = isDebug;
         this.serviceName = serviceName;
         this.roleHeader = roleHeader;
         this.redisUtils = redisUtils;
@@ -57,6 +63,10 @@ public class AuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest httpServletRequest,
                              HttpServletResponse httpServletResponse,
                              Object handler) throws Exception {
+        if (isDebug) {
+            return true;
+        }
+        
         HandlerMethod handlerMethod;
         if (handler instanceof HandlerMethod) {
             handlerMethod = (HandlerMethod) handler;
@@ -90,8 +100,8 @@ public class AuthInterceptor implements HandlerInterceptor {
      * 验证访问权限，设置操作人员信息
      * 使用权限等级最高的角色进行访问
      *
-     * @param operator 操作人员
-     * @param pathMD5Value     访问的类和方法的MD5值（MD5(serviceName + className + methodName)）
+     * @param operator     操作人员
+     * @param pathMD5Value 访问的类和方法的MD5值（MD5(serviceName + className + methodName)）
      */
     private Boolean permissionVerification(Operator operator, String pathMD5Value) {
         boolean result = false;

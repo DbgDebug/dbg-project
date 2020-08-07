@@ -82,6 +82,11 @@ public class AuthFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         log.info("{}:{}", request.getMethod(), request.getServletPath());
 
+        if (isDebug) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         MyHttpServletRequest myHttpServletRequest;
         // 公开的接口不进行验证，可以直接访问
         if (publicApiConfig.contains(request.getServletPath())) {

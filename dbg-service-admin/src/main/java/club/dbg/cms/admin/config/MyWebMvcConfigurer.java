@@ -22,8 +22,12 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
 
     private final RedisUtils redisUtils;
 
+    private final Boolean isDebug;
+
 
     public MyWebMvcConfigurer(
+            @Value("${system.isDebug}")
+                    Boolean isDebug,
             @Value("${spring.application.name}")
                     String serviceName,
             @Value("${redis.cache.roleHeader}")
@@ -32,6 +36,7 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
                     String permissionHeader,
             PublicApiConfig publicApiConfig,
             RedisUtils redisUtils) {
+        this.isDebug = isDebug;
         this.serviceName = serviceName;
         this.roleHeader = roleHeader;
         this.permissionHeader = permissionHeader;
@@ -42,6 +47,7 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthInterceptor(
+                isDebug,
                 serviceName,
                 roleHeader,
                 permissionHeader,
