@@ -38,12 +38,12 @@
 
     <select id="selectArticleList" resultMap="ArticleResultMap">
         SELECT <include refid="base_column_list"/> FROM Article
-        JOIN (SELECT DISTINCT Article.Id FROM Article
+        JOIN (SELECT Article.Id FROM Article
             <if test="keyWord != null and keyWord != ''">
                 WHERE Article.Title LIKE #{keyWord}
             </if>
-        ORDER BY Id DESC LIMIT #{page}, #{pageSize}) tid USING(Id)
-        LEFT JOIN ArticleCategory ON Article.Id = ArticleCategory.ArticleId
+        ORDER BY Article.Id DESC LIMIT #{page}, #{pageSize}) tid USING(Id)
+        LEFT JOIN ArticleCategory ON Article.Id = ArticleCategory.ArticleId ORDER BY Article.Id DESC
     </select>
 
     <select id="articleListCount" resultType="int">
