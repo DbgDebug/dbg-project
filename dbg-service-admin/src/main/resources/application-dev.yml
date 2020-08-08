@@ -61,7 +61,7 @@ logging:
 system:
   permissionRegister: ${PERMISSION_REHISTER:true}
   permissionKey: ${PERMISSION_KEY:12345678}
-  isDebug: ${IS_DEBUG:false}
+  isDebug: ${IS_DEBUG:true}
 
 session:
   tokenHeader: ${TOKEN_HEADER:X-Access-Token}
