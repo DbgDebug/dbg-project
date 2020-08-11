@@ -13,6 +13,7 @@
         <module>dbg-service-gateway</module>
         <module>dbg-interface-rpc</module>
         <module>dbg-common</module>
+        <module>dbg-service-video</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
