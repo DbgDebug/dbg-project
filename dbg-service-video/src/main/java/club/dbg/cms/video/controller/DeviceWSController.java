@@ -78,7 +78,7 @@ public class DeviceWSController {
      * @param session    会话信息
      */
     @OnMessage
-    public void onMessage(ByteBuffer byteBuffer, Session session) throws IOException {
+    public void onMessage(ByteBuffer byteBuffer, Session session) throws InterruptedException {
         if(deviceId == null){
             return;
         }
