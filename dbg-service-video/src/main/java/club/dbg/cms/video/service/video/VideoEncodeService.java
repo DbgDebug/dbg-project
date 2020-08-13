@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class VideoEncodeService implements IVideoEncodeService {
@@ -19,10 +20,13 @@ public class VideoEncodeService implements IVideoEncodeService {
             new SynchronousQueue<>(),
             new ThreadPoolExecutor.AbortPolicy());
 
+    private final ReentrantLock reentrantLock = new ReentrantLock();
+
     @Override
-    public boolean submit(Integer deviceId, IVideoEncodeTask videoEncodeTask) {
+    public boolean submit(Integer deviceId, IVideoEncodeTask videoEncodeTask) throws InterruptedException {
         if (!h264Map.containsKey(deviceId)) {
-            synchronized (this) {
+            reentrantLock.lockInterruptibly();
+            try {
                 if (encodePoolExecutor.getActiveCount() >= 2) {
                     return false;
                 }
@@ -31,6 +35,8 @@ public class VideoEncodeService implements IVideoEncodeService {
                 VideoEncodeThread encodeThread = new VideoEncodeThread(deviceId, this, videoEncodeTasks);
                 encodeThreadMap.put(deviceId, encodeThread);
                 encodePoolExecutor.execute(encodeThread);
+            } finally {
+                reentrantLock.unlock();
             }
         }
         LinkedBlockingQueue<IVideoEncodeTask> queue = h264Map.get(deviceId);
