@@ -119,7 +119,6 @@ public class DanmuReceiveThread implements Runnable {
             // 头部的长度数据
             int length = byteBuffer.getInt();
             short hs = byteBuffer.getShort();
-            log.info("length: {}", hs);
             // 如果长度小于等于 16，谨防万一，加一个上限
             if (length <= headerSize || length > 65534) {
                 continue;
