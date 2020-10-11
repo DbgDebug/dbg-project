@@ -85,9 +85,6 @@ public class DeviceWSController {
         ImageByte imageByte = new ImageByte(deviceId, byteBuffer);
         H264CallbackTask h264CallbackTask = new H264CallbackTask(deviceId);
         ImagesToH264Task imagesToH264Task = new ImagesToH264Task(imageByte, h264CallbackTask);
-        if(deviceId == null){
-            return;
-        }
         videoEncodeService.submit(deviceId, imagesToH264Task);
     }
 

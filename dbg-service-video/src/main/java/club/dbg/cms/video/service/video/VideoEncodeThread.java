@@ -85,7 +85,7 @@ public class VideoEncodeThread implements Runnable {
     /**
      * 读取数据
      * 头部：
-     * [0, 3] - 长度数据 int
+     * [0, 3] - 数据长度 int
      * [4, 7] - 用户标识 int
      *
      * @param inputStream 输入流
