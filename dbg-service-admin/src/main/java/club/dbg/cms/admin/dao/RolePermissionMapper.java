@@ -12,9 +12,9 @@ import java.util.List;
  */
 @Repository
 public interface RolePermissionMapper {
-    RolePermissionDO selectByRoleId(@Param("roleId") Integer roleId);
+    List<RolePermissionDO> selectByRoleId(@Param("roleId") Integer roleId);
 
-    HashSet<Integer> selectIdByRoleId(@Param("roleId") Integer roleId);
+    HashSet<Integer> selectPermissionIdByRoleId(@Param("roleId") Integer roleId);
 
     HashSet<Integer> selectPermissionIdByRoleIds(@Param("roleIds") HashSet<Integer> roleIds);
 
@@ -27,4 +27,6 @@ public interface RolePermissionMapper {
     int deleteByPermissionId(@Param("permissionId") Integer permissionId);
 
     int deletePermissionByPermissionIds(List<Integer> permissionIds);
+
+    int deleteByIds(@Param("ids") HashSet<Integer> ids);
 }

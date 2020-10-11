@@ -96,7 +96,7 @@ public class RoleServiceImpl implements RoleService {
                 throw new BusinessException("添加角色失败");
             }
             role.setId(roleDO.getId());
-            if (rolePermissionMapper.insertRolePermissions(getRolePermissionList(role)) != role.getPermissionSet().size()) {
+            if (rolePermissionMapper.insertRolePermissions(getRolePermissionDOList(role)) != role.getPermissionSet().size()) {
                 log.info("添加角色，写入权限错误");
                 throw new BusinessException("添加角色失败");
             }
@@ -115,12 +115,12 @@ public class RoleServiceImpl implements RoleService {
      * 刷新redis缓存
      */
     @Override
-    synchronized public Boolean editRole(Operator operator, RoleDTO role) {
-        RoleDO roleCheck = roleMapper.selectRoleByRoleName(role.getRoleName());
-        if (roleCheck != null && !roleCheck.getId().equals(role.getId())) {
+    synchronized public Boolean editRole(Operator operator, RoleDTO roleDTO) {
+        RoleDO roleCheck = roleMapper.selectRoleByRoleName(roleDTO.getRoleName());
+        if (roleCheck != null && !roleCheck.getId().equals(roleDTO.getId())) {
             throw new BusinessException("角色名已存在");
         }
-        roleCheck = roleMapper.selectRoleById(role.getId());
+        roleCheck = roleMapper.selectRoleById(roleDTO.getId());
         if (roleCheck == null) {
             throw new BusinessException("编辑角色不存在");
         }
@@ -132,27 +132,26 @@ public class RoleServiceImpl implements RoleService {
                 && !roleCheck.getCreatorId().equals(operator.getRoleId())) {
             throw new BusinessException("无权限编辑此角色");
         }
-        if (role.getRoleLevel() <= operator.getRoleLevel()) {
+        if (roleDTO.getRoleLevel() <= operator.getRoleLevel()) {
             throw new BusinessException("角色等级设置错误");
         }
 
         // 判断操作人员是否拥有所操作权限的权限
         HashSet<Integer> operatorPermissionSet = rolePermissionMapper.selectPermissionIdByRoleIds(operator.getRoleIds());
-        if (!checkRolePermission(operatorPermissionSet, role.getPermissionSet())) {
+        if (!checkRolePermission(operatorPermissionSet, roleDTO.getPermissionSet())) {
             throw new BusinessException("未拥有的权限无法操作");
         }
-
         boolean isUpdate = false;
         TransactionStatus transStatus = this.getTransactionStatus();
         try {
-            if (!(roleCheck.getRoleName().equals(role.getRoleName())
-                    && roleCheck.getRoleLevel().equals(role.getRoleLevel())
-                    && roleCheck.getStatus().equals(role.getStatus()))) {
+            if (!(roleCheck.getRoleName().equals(roleDTO.getRoleName())
+                    && roleCheck.getRoleLevel().equals(roleDTO.getRoleLevel())
+                    && roleCheck.getStatus().equals(roleDTO.getStatus()))) {
                 RoleDO roleDO = new RoleDO();
-                roleDO.setId(role.getId());
-                roleDO.setRoleName(role.getRoleName());
-                roleDO.setRoleLevel(role.getRoleLevel());
-                roleDO.setStatus(role.getStatus());
+                roleDO.setId(roleDTO.getId());
+                roleDO.setRoleName(roleDTO.getRoleName());
+                roleDO.setRoleLevel(roleDTO.getRoleLevel());
+                roleDO.setStatus(roleDTO.getStatus());
                 roleDO.setUpdateTime(System.currentTimeMillis() / 1000);
                 if (roleMapper.updateRole(roleDO) != 1) {
                     throw new BusinessException("编辑角色失败");
@@ -160,22 +159,48 @@ public class RoleServiceImpl implements RoleService {
                 isUpdate = true;
             }
 
+            List<RolePermissionDO> rolePermissionDOS = rolePermissionMapper.selectByRoleId(roleDTO.getId());
+            HashSet<Integer> rolePermissionSetOld = new HashSet<>();
+            for(RolePermissionDO rolePermissionDO : rolePermissionDOS) {
+                rolePermissionSetOld.add(rolePermissionDO.getPermissionId());
+            }
             // 判断权限是否相同，相同则不进行修改
-            HashSet<Integer> rolePermissionSet = rolePermissionMapper.selectIdByRoleId(role.getId());
-            if (!checkRolePermission(rolePermissionSet, role.getPermissionSet()) || rolePermissionSet.size() != role.getPermissionSet().size()) {
-                if (rolePermissionMapper.deleteByRoleId(role.getId()) != rolePermissionSet.size()) {
-                    log.info("删除旧权限错误");
-                    throw new BusinessException("编辑角色失败");
+            if (rolePermissionSetOld.size() != roleDTO.getPermissionSet().size()
+                || !checkRolePermission(rolePermissionSetOld, roleDTO.getPermissionSet())) {
+                HashSet<Integer> rolePermissionSetNew = roleDTO.getPermissionSet();
+                // 新权限对旧权限取差集，写入差集
+                HashSet<Integer> differenceSet = new HashSet<>();
+                for (Integer permissionId : roleDTO.getPermissionSet()) {
+                    if(!rolePermissionSetOld.contains(permissionId)){
+                        differenceSet.add(permissionId);
+                    }
                 }
-                if (rolePermissionMapper.insertRolePermissions(getRolePermissionList(role)) != role.getPermissionSet().size()) {
-                    log.info("插入新权限错误");
-                    throw new BusinessException("编辑角色失败");
+                roleDTO.setPermissionSet(differenceSet);
+                if (!roleDTO.getPermissionSet().isEmpty()) {
+                    if (rolePermissionMapper.insertRolePermissions(getRolePermissionDOList(roleDTO)) < 0) {
+                        log.warn("插入新权限错误");
+                        throw new BusinessException("编辑角色失败");
+                    }
+                }
+                // 旧权限对新权限取差集，删除差集
+                rolePermissionSetOld.removeAll(rolePermissionSetNew);
+                rolePermissionDOS.removeIf(rolePermission -> !rolePermissionSetOld.contains(rolePermission.getPermissionId()));
+                HashSet<Integer> rolePermissionIds = new HashSet<>();
+                for(RolePermissionDO rolePermissionDO : rolePermissionDOS) {
+                    rolePermissionIds.add(rolePermissionDO.getId());
+                }
+                System.out.println(JSON.toJSONString(rolePermissionIds));
+                if (!rolePermissionSetOld.isEmpty()) {
+                    if (rolePermissionMapper.deleteByIds(rolePermissionIds) < 0) {
+                        log.info("删除旧权限错误");
+                        throw new BusinessException("编辑角色失败");
+                    }
                 }
                 isUpdate = true;
             }
             if (isUpdate) {
                 RoleDO roleDO = new RoleDO();
-                roleDO.setId(role.getId());
+                roleDO.setId(roleDTO.getId());
                 roleDO.setUpdateTime(System.currentTimeMillis() / 1000);
                 if (roleMapper.updateRole(roleDO) != 1) {
                     log.info("更新最后更新时间失败");
@@ -192,7 +217,7 @@ public class RoleServiceImpl implements RoleService {
         if (!isUpdate) {
             throw new BusinessException("未作出任何修改");
         }
-        permissionCacheService.refreshRoleCache(role.getId());
+        permissionCacheService.refreshRoleCache(roleDTO.getId());
         return true;
     }
 
@@ -303,7 +328,7 @@ public class RoleServiceImpl implements RoleService {
         return transactionManager.getTransaction(transDefinition);
     }
 
-    private List<RolePermissionDO> getRolePermissionList(RoleDTO roleDTO) {
+    private List<RolePermissionDO> getRolePermissionDOList(RoleDTO roleDTO) {
         List<RolePermissionDO> rolePermissions = new ArrayList<>();
         for (Integer permissionId : roleDTO.getPermissionSet()) {
             RolePermissionDO permissionDO = new RolePermissionDO();

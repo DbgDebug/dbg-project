@@ -15,7 +15,7 @@
         from tb_role_permission where role_id = #{roleId}
     </select>
 
-    <select id="selectIdByRoleId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    <select id="selectPermissionIdByRoleId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
         select distinct permission_id
         from tb_role_permission where role_id = #{roleId}
     </select>
@@ -48,9 +48,16 @@
     </delete>
 
     <delete id="deletePermissionByPermissionIds" parameterType="java.util.List">
-        delete from tb_role_permission where permission_id in
+        DELETE FROM tb_role_permission WHERE permission_id IN
         <foreach collection="list" item="permissionId" open="(" separator="," close=")">
             #{permissionId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="java.util.List">
+        DELETE FROM tb_role_permission WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
 </mapper>

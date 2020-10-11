@@ -1,15 +1,30 @@
 package club.dbg.cms.admin;
 
+import club.dbg.cms.admin.dao.AccountMapper;
 import club.dbg.cms.util.AESUtils;
 import club.dbg.cms.util.MD5;
+import com.alibaba.fastjson.JSON;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.*;
 import java.util.Arrays;
 
-public class PermissionRegisterTest {
+@RunWith(SpringRunner.class)
+@MybatisTest
+@AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE )
+public class PermissionRegisterTest extends ClassLoader {
+
+    @Autowired
+    AccountMapper accountMapper;
 
     @Test
     public void permissionMakeTest() {
+        System.out.println(JSON.toJSONString(accountMapper.selectAccountById(1)));
     }
 
     @Test
@@ -24,8 +39,33 @@ public class PermissionRegisterTest {
 
     @Test
     public void permissionAES() throws Exception {
-        byte[] bytes = AESUtils.aesEncryptToBytes("aesssss", "1111111241223125");
-        System.out.println(Arrays.toString(bytes));
-        System.out.println(AESUtils.aesDecryptByBytes(bytes, "1111111241223125"));
+        Class<?> c = findClass("./Test.class");
+        c.getMethod("task").invoke(c.newInstance());//方法名字
+        //Class<?> c = defineClass();
+        //byte[] bytes = AESUtils.aesEncryptToBytes("aesssss", "1111111241223125");
+        //System.out.println(Arrays.toString(bytes));
+        //System.out.println(AESUtils.aesDecryptByBytes(bytes, "1111111241223125"));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    protected Class<?> findClass(String className){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        FileInputStream in = null;
+        byte[] b = new byte[1024];
+        int len;
+        try{
+            in = new FileInputStream(new File("./Test.class"));
+            while((len = in.read(b)) != -1){
+                baos.write(b,0, len);
+            }
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(baos.toByteArray().length == 0){
+            return null;
+        }
+        return defineClass(baos.toByteArray(), 0, baos.toByteArray().length);
     }
 }
