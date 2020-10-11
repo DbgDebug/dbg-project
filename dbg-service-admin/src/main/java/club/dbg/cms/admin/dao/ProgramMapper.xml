@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="club.dbg.cms.admin.dao.ProgramMapper">
+    <resultMap id="BaseResultMap" type="club.dbg.cms.domain.admin.ProgramDO">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="INTEGER"/>
+        <result column="update_time" property="updateTime" jdbcType="INTEGER"/>
+        <result column="program_language" property="language" jdbcType="VARCHAR"/>
+        <result column="described" property="described" jdbcType="VARCHAR"/>
+        <result column="source_code" property="sourceCode" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="base_column_list">
+        id, status, create_time, update_time, program_language, described, source_code
+    </sql>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="base_column_list"/>
+        FROM tb_program WHERE program_language = #{language}
+        <if test="described != null and described != ''">
+            AND described like #{described}
+        </if>
+        LIMIT #{page}, #{pageSize}
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="base_column_list"/>
+        FROM tb_program WHERE id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="id" parameterType="club.dbg.cms.domain.admin.ProgramDO">
+        INSERT INTO tb_program(status, create_time, update_time, program_language, described, source_code)
+        VALUES(#{status}, #{createTime}, #{updateTime}, #{language}, #{described}, #{sourceCode})
+    </insert>
+</mapper>
