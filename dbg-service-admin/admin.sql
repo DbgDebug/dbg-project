@@ -180,6 +180,19 @@ CREATE TABLE `tb_welcome_statistic` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+DROP TABLE IF EXISTS `tb_program`;
+CREATE TABLE `tb_program` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `status` INT NOT NULL COMMENT '0 - 未编译，不可执行\n1 - 已编译，可正常执行',
+  `create_time` INT NOT NULL,
+  `update_time` INT NOT NULL
+  `program_language` VARCHAR(30) NOT NULL,
+  `described` VARCHAR(120) NOT NULL,
+  `source_code` TEXT NOT NULL,
+  PRIMARY KEY (`id`)
+)  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
 INSERT INTO `tb_account` VALUES (1,'admin','$2a$10$VUgTuDlQtoBc.KCrYu3JuOQqNLLnGWMBnmvRRDEkSxAqQBoM1fM8u','admin',unix_timestamp(now()),unix_timestamp(now()),unix_timestamp(now()),unix_timestamp(now()),1,'admin@qq.com','127.0.0.1','https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',1);
 
 INSERT INTO `tb_account_role` VALUES (1,1,2);
