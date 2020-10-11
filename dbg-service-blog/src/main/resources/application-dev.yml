@@ -63,7 +63,7 @@ system:
   permissionRegister: ${PERMISSION_REHISTER:true}
   permissionKey: ${PERMISSION_KEY:12345678}
   permissionRegisterUrl: ${PERMISSION_REHISTER_URL:http://localhost/v1/rpc/permission/register}
-  isDebug: ${IS_DEBUG:true}
+  isDebug: ${IS_DEBUG:false}
 
 session:
   tokenHeader: ${TOKEN_HEADER:X-Access-Token}

@@ -58,7 +58,7 @@ public class AuthFilter implements Filter {
         log.info("{}:{}", request.getMethod(), request.getServletPath());
 
         if (isDebug) {
-            filterChain.doFilter(request, response);
+            filterChain.doFilter(new MyHttpServletRequest(request), response);
             return;
         }
 
