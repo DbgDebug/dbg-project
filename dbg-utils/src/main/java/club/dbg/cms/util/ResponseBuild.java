@@ -17,6 +17,10 @@ public class ResponseBuild<T> {
         this.message = message;
     }
 
+    public static <T> ResponseBuild<T> ok(T data){
+        return new ResponseBuild<>(20000, data, "");
+    }
+
     public static <T>  ResponseEntity<ResponseBuild<T>> build(T data){
         ResponseBuild<T> resultEntity = new ResponseBuild<>(20000, data, "");
         return ResponseEntity.ok(resultEntity);
