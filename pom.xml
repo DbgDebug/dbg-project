@@ -14,6 +14,7 @@
         <module>dbg-interface-rpc</module>
         <module>dbg-common</module>
         <module>dbg-service-video</module>
+        <module>dbg-service-pay</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
