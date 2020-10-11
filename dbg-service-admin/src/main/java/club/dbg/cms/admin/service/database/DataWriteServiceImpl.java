@@ -22,7 +22,7 @@ public class DataWriteServiceImpl implements DataBaseService {
         dataWriteThread.submit(dataWriteTask);
     }
 
-    private static class DataWriteThread implements Runnable {
+    private final static class DataWriteThread implements Runnable {
         private final LinkedBlockingQueue<DataWriteTask> dataWriteTasks = new LinkedBlockingQueue<>();
 
         public void submit(DataWriteTask dataWriteTask) throws InterruptedException {
