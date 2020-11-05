@@ -21,6 +21,10 @@ public class ResponseBuild<T> {
         return new ResponseBuild<>(20000, data, "");
     }
 
+    public static <T> ResponseBuild<T> bad(String message){
+        return new ResponseBuild<>(40000, null, message);
+    }
+
     public static <T>  ResponseEntity<ResponseBuild<T>> build(T data){
         ResponseBuild<T> resultEntity = new ResponseBuild<>(20000, data, "");
         return ResponseEntity.ok(resultEntity);

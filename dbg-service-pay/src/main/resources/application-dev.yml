@@ -1,0 +1,19 @@
+server:
+  port: 8910
+  servlet:
+    context-path: "/v1/pay"
+spring:
+  application:
+    name: dbg-service-pay
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+alipay:
+  serverUrl: ${SERVER_URL:https://openapi.alipaydev.com/gateway.do}
+  appId: ${APP_ID:xxxxxxxxxxxxxx}
+  privateKey: ${PRIVATE_KEY:xxxxxxxxxxxxxxx}
+  alipayPublicKey: ${ALIPAY_PUBLIC_KEY:xxxxxxxxxxxxxxxx}
+  notifyUrl: ${NOTIFY_URL:https://xxx.com/pay/alipay/notify}
