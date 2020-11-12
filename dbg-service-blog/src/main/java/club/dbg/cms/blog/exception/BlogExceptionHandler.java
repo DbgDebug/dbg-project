@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @Component
-public class BlogExceptionHandler {
-    private static final Logger log = LoggerFactory.getLogger(BlogExceptionHandler.class);
+public class BlogExceptionHandle {
+    private static final Logger log = LoggerFactory.getLogger(BlogExceptionHandle.class);
 
     @ExceptionHandler(value = Exception.class)
     public ExceptionReponse exception(Exception e) {
