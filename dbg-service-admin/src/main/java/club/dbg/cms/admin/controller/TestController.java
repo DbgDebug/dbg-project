@@ -9,13 +9,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
+import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * @author dbg
@@ -28,18 +33,35 @@ public class TestController {
 
     private final RoleMapper roleMapper;
 
-    public TestController(RoleMapper roleMapper) {
+    private final WebApplicationContext applicationContext;
+
+    public TestController(WebApplicationContext applicationContext, RoleMapper roleMapper) {
+        this.applicationContext = applicationContext;
         this.roleMapper = roleMapper;
     }
 
-    @RequestMapping(value = "test", method = RequestMethod.POST)
-    public ResponseEntity<String> test(@RequestParam("set")HashSet<Integer> set) {
-        HashSet<Integer> setA = new HashSet<>();
-        setA.add(2);
-        setA.add(3);
-        setA.add(4);
-        set.addAll(setA);
-        return ResponseEntity.ok(JSON.toJSONString(set));
+    @RequestMapping(value = "test", method = RequestMethod.GET)
+    public ResponseEntity<String> test() {
+        RequestMappingHandlerMapping mapping = applicationContext.getBean(RequestMappingHandlerMapping.class);
+        Map<RequestMappingInfo, HandlerMethod> urlMap = mapping.getHandlerMethods();
+        List<Map<String, String>> list = new ArrayList<>();
+        for(Map.Entry<RequestMappingInfo, HandlerMethod> m : urlMap.entrySet()){
+            Map<String, String> map = new HashMap<>();
+            RequestMappingInfo requestMappingInfo = m.getKey();
+            HandlerMethod handlerMethod = m.getValue();
+            PatternsRequestCondition p = requestMappingInfo.getPatternsCondition();
+            for (String url : p.getPatterns()) {
+                map.put("url", url);
+            }
+            map.put("className", handlerMethod.getMethod().getDeclaringClass().getName());
+            map.put("method", handlerMethod.getMethod().getName());
+            RequestMethodsRequestCondition methodsCondition = requestMappingInfo.getMethodsCondition();
+            for (RequestMethod requestMethod : methodsCondition.getMethods()) {
+                map.put("type", requestMethod.toString());
+            }
+            list.add(map);
+        }
+        return ResponseEntity.ok(JSON.toJSONString(list));
     }
 
     @RequestMapping(value = "jmeter", method = RequestMethod.GET)

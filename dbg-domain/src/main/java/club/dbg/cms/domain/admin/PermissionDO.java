@@ -4,7 +4,8 @@ import java.util.Objects;
 
 /**
  * @author dbg
- * hashCode重写，equals只判断permissionId是否相同
+ * hashCode重写，以permissionId作为hashCode
+ * equals重写只判断permissionId是否相同
  */
 public class PermissionDO {
     private Integer id;

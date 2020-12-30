@@ -1,6 +1,6 @@
 package club.dbg.cms.admin.service.program;
 
-import club.dbg.cms.util.bilibili.JavaPatternUtils;
+import club.dbg.cms.util.JavaPatternUtils;
 import org.junit.Test;
 
 import java.net.URISyntaxException;

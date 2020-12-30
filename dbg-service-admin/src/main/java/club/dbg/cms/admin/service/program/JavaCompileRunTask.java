@@ -2,7 +2,7 @@ package club.dbg.cms.admin.service.program;
 
 import club.dbg.cms.domain.admin.ProgramDO;
 import club.dbg.cms.util.FileUtils;
-import club.dbg.cms.util.bilibili.JavaPatternUtils;
+import club.dbg.cms.util.JavaPatternUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -104,7 +104,7 @@ public class RoleServiceImpl implements RoleService {
         } catch (Exception e) {
             log.info("添加角色异常:", e);
             transactionManager.rollback(transStatus);
-            throw new BusinessException("添加角色失败");
+            throw e;
         }
         permissionCacheService.refreshRoleCache(roleDO.getId());
         return true;

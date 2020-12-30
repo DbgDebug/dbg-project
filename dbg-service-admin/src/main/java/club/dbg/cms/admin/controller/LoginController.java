@@ -24,11 +24,8 @@ public class LoginController {
     private final
     LoginService loginService;
 
-    private final CommonService commonService;
-
-    public LoginController(LoginService loginService, CommonService commonService) {
+    public LoginController(LoginService loginService) {
         this.loginService = loginService;
-        this.commonService = commonService;
     }
 
     @RequestMapping(value = "/login", name = "登录", method = RequestMethod.POST)

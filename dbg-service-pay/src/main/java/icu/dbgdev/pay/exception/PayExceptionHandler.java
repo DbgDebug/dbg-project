@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class PayExceptionHandle {
-    private static final Logger log = LoggerFactory.getLogger(PayExceptionHandle.class);
+public class PayExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(PayExceptionHandler.class);
 
     @ExceptionHandler(value = AlipayApiException.class)
     public ResponseBuild<String> alipayApiException(AlipayApiException alipayApiException) {

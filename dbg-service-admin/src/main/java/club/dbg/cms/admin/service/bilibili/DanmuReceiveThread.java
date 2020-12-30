@@ -73,7 +73,7 @@ public class DanmuReceiveThread implements Runnable {
                 socket = new Socket(danmuConf.getHost(), danmuConf.getPort());
                 // 获取数据输出流
                 dataOutputStream = new DataOutputStream(socket.getOutputStream());
-                // 获取输出流
+                // 获取输入流
                 InputStream inputStream = socket.getInputStream();
                 // 发送加入信息
                 sendJoinMsg(roomId, danmuConf.getToken());

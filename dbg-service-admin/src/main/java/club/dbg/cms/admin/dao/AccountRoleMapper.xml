@@ -9,7 +9,7 @@
     <sql id="base_column_list">
         id, account_id, role_id
     </sql>
-    <resultMap id="AccountRoleDetailMap" type="club.dbg.cms.admin.service.role.pojo.AccountRoleDetail">
+    <resultMap id="AccountRoleDetailMap" type="club.dbg.cms.admin.icu.dbgdev.pay.service.role.pojo.AccountRoleDetail">
         <id column="id" property="id" jdbcType="INTEGER"/>
         <result column="account_id" property="accountId" jdbcType="INTEGER"/>
         <result column="role_id" property="roleId" jdbcType="INTEGER"/>

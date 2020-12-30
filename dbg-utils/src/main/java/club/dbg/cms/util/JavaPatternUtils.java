@@ -1,4 +1,4 @@
-package club.dbg.cms.util.bilibili;
+package club.dbg.cms.util;
 
 import java.util.regex.Pattern;
 

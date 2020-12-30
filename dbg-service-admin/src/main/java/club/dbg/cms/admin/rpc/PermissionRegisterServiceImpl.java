@@ -42,7 +42,8 @@ public class PermissionRegisterServiceImpl implements PermissionRegisterService 
 
     public PermissionRegisterServiceImpl(
             @Value("${system.permissionKey}")
-                    String permissionKey, RoleConfig roleConfig,
+                    String permissionKey,
+            RoleConfig roleConfig,
             PermissionMapper permissionMapper,
             ServiceMapper serviceMapper,
             RolePermissionMapper rolePermissionMapper,

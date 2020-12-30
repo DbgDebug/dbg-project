@@ -12,7 +12,7 @@
         <result column="status" property="status"/>
         <result column="method" property="method"/>
     </resultMap>
-    <resultMap id="PermissionDetail" type="club.dbg.cms.admin.service.permission.pojo.PermissionDetailDTO">
+    <resultMap id="PermissionDetail" type="club.dbg.cms.admin.icu.dbgdev.pay.service.permission.pojo.PermissionDetailDTO">
         <id column="id" property="id" jdbcType="INTEGER"/>
         <result column="service_id" property="serviceId" jdbcType="INTEGER"/>
         <result column="service_name" property="serviceName" jdbcType="VARCHAR"/>
