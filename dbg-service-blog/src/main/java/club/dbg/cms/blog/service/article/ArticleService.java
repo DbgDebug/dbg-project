@@ -75,7 +75,7 @@ public class ArticleService implements IArticleService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean add(ArticleDTO articleDTO) {
+    public Integer add(ArticleDTO articleDTO) {
         articleDTO.setCreateTime(System.currentTimeMillis() / 1000);
         articleDTO.setUpdateTime(articleDTO.getCreateTime());
         ArticleDO articleDO = new ArticleDO(articleDTO);
@@ -90,7 +90,7 @@ public class ArticleService implements IArticleService {
         if (articleCategoryMapper.inserts(articleCategoryDOS) != articleCategoryDOS.size()) {
             throw new BlogException("添加失败");
         }
-        return true;
+        return articleDO.getId();
     }
 
     @Override

@@ -28,7 +28,6 @@ public class ArticleDTO {
         return articleDTO;
     }
 
-    @Range
     private Integer id;
 
     @Length(min = 1, max = 20)

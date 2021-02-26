@@ -12,7 +12,7 @@ public interface IArticleService {
 
     ArticleDTO get(Integer id);
 
-    Boolean add(ArticleDTO article);
+    Integer add(ArticleDTO article);
 
     Boolean edit(ArticleDTO article);
 

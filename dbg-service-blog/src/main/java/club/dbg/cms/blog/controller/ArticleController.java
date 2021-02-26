@@ -10,10 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@Validated
 @RestController
 @RequestMapping("/article")
 public class ArticleController {
@@ -42,7 +44,7 @@ public class ArticleController {
     }
 
     @RequestMapping(method = RequestMethod.POST, name = "创建文章")
-    public ResponseEntity<ResponseBuild<Boolean>> addArticle(@RequestBody @Valid ArticleDTO articleDTO) {
+    public ResponseEntity<ResponseBuild<Integer>> addArticle(@RequestBody @Valid ArticleDTO articleDTO) {
         return ResponseBuild.build(articleService.add(articleDTO));
     }
 
