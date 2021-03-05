@@ -88,28 +88,20 @@ public class NettyTest implements Runnable {
     protected ByteBuf sendDataPack(ByteBuf buf, int action, String body) {
         // 数据部分，以 UTF-8 编码解析成 Byte
         byte[] bodyBytes = body.getBytes(StandardCharsets.UTF_8);
-
         // 封包总长度，因为头部固定为 16 字长，故加上 16
         int length = bodyBytes.length + 16;
-
         // 写入 4 字长的封包总大小数据，所以为 int
         buf.writeInt(length);
-
         // 写入 2 字长的头部长度数据，头部长度固定为 16
         buf.writeShort((short) 16);
-
         // 写入 2 字长的协议版本数据，默认为 1
         buf.writeShort((short) 1);
-
         // 写入 4 字长的操作码，操作码有 2,3,5,7,8
         buf.writeInt(action);
-
         // 写入 4 字长的 sequence，意味不明，取常数 1
         buf.writeInt(1);
-
         // 写入数据
         buf.writeBytes(bodyBytes);
-
         // 写入输出数据流中
         return buf;
     }

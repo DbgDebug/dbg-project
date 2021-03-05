@@ -31,53 +31,53 @@ public class ArticleController {
     }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET, name = "获取文章列表")
-    public ResponseEntity<ResponseBuild<ArticleListDTO>> articleList(
+    public ResponseBuild<ArticleListDTO> articleList(
             @RequestParam(value = "keyWord", required = false) String keyWord,
             @RequestParam("page") Integer page,
             @RequestParam("pageSize") Integer pageSize) {
-        return ResponseBuild.build(articleService.list(keyWord, page, pageSize));
+        return ResponseBuild.ok(articleService.list(keyWord, page, pageSize));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, name = "获取文章")
-    public ResponseEntity<ResponseBuild<ArticleDTO>> getArticle(@PathVariable("id") Integer id) {
-        return ResponseBuild.build(articleService.get(id));
+    public ResponseBuild<ArticleDTO> getArticle(@PathVariable("id") Integer id) {
+        return ResponseBuild.ok(articleService.get(id));
     }
 
     @RequestMapping(method = RequestMethod.POST, name = "创建文章")
-    public ResponseEntity<ResponseBuild<Integer>> addArticle(@RequestBody @Valid ArticleDTO articleDTO) {
-        return ResponseBuild.build(articleService.add(articleDTO));
+    public ResponseBuild<Integer> addArticle(@RequestBody @Valid ArticleDTO articleDTO) {
+        return ResponseBuild.ok(articleService.add(articleDTO));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, name = "更新文章")
-    public ResponseEntity<ResponseBuild<Boolean>> editArticle(
+    public ResponseBuild<Boolean> editArticle(
             @PathVariable("id") Integer id,
             @RequestBody @Valid ArticleDTO articleDTO) {
         articleDTO.setId(id);
-        return ResponseBuild.build(articleService.edit(articleDTO));
+        return ResponseBuild.ok(articleService.edit(articleDTO));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, name = "删除文章")
-    public ResponseEntity<ResponseBuild<Boolean>> deleteArticle(@PathVariable("id") Integer id) {
-        return ResponseBuild.build(articleService.delete(id));
+    public ResponseBuild<Boolean> deleteArticle(@PathVariable("id") Integer id) {
+        return ResponseBuild.ok(articleService.delete(id));
     }
 
     @RequestMapping(value = "/tag/{tag}", method = RequestMethod.GET, name = "获取文章（Tag）")
-    public ResponseEntity<ResponseBuild<ArticleListDTO>> getArticleByTag(@PathVariable("tag") String tag) {
-        return ResponseBuild.build(articleService.tag(tag));
+    public ResponseBuild<ArticleListDTO> getArticleByTag(@PathVariable("tag") String tag) {
+        return ResponseBuild.ok(articleService.tag(tag));
     }
 
     @RequestMapping(value = "/tag", method = RequestMethod.POST, name = "创建文章Tag")
-    public ResponseEntity<ResponseBuild<Boolean>> createArticleTag(@RequestBody @Valid ArticleTagDTO articleTagDTO) {
-        return ResponseBuild.build(articleTagService.createArticleTag(articleTagDTO));
+    public ResponseBuild<Boolean> createArticleTag(@RequestBody @Valid ArticleTagDTO articleTagDTO) {
+        return ResponseBuild.ok(articleTagService.createArticleTag(articleTagDTO));
     }
 
     @RequestMapping(value = "/tag", method = RequestMethod.PUT, name = "更新文章Tag")
-    public ResponseEntity<ResponseBuild<Boolean>> updateArticleTag(@RequestBody @Valid ArticleTagDTO articleTagDTO) {
-        return ResponseBuild.build(articleTagService.updateArticleTag(articleTagDTO));
+    public ResponseBuild<Boolean> updateArticleTag(@RequestBody @Valid ArticleTagDTO articleTagDTO) {
+        return ResponseBuild.ok(articleTagService.updateArticleTag(articleTagDTO));
     }
 
     @RequestMapping(value = "/tag/{id}", method = RequestMethod.DELETE, name = "删除文章Tag")
-    public ResponseEntity<ResponseBuild<Boolean>> deleteArticleTag(@PathVariable("id") Integer id) {
-        return ResponseBuild.build(articleTagService.deleteArticleTag(id));
+    public ResponseBuild<Boolean> deleteArticleTag(@PathVariable("id") Integer id) {
+        return ResponseBuild.ok(articleTagService.deleteArticleTag(id));
     }
 }

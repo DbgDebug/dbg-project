@@ -1,11 +1,13 @@
 package club.dbg.cms.rpc.pojo;
 
+import club.dbg.cms.rpc.OperatorInterface;
+
 import java.util.HashSet;
 
 /**
  * @author dbg
  */
-public class Operator {
+public class Operator implements OperatorInterface {
     private Integer id;
     private String username;
     private String accessToken;
@@ -16,6 +18,7 @@ public class Operator {
     private Integer roleLevel;
     private String ip;
 
+    @Override
     public Integer getId() {
         return id;
     }
