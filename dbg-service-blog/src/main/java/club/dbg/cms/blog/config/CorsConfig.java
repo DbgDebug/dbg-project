@@ -30,7 +30,8 @@ public class CorsConfig {
         }
 
         // 允许所有访问
-        config.addAllowedOrigin("*");
+        config.addAllowedOriginPattern("*");
+        // config.addAllowedOrigin("");
         // 限制 HEADER 或 METHOD
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
