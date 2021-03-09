@@ -1,4 +1,4 @@
-package club.dbg.cms.blog.service.lock;
+package club.dbg.cms.blog.aop.lock;
 
 import club.dbg.cms.blog.exception.BlogException;
 import org.junit.Test;

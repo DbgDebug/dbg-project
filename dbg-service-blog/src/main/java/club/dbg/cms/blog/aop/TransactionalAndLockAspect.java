@@ -1,9 +1,8 @@
 package club.dbg.cms.blog.aop;
 
 import club.dbg.cms.blog.aop.annotation.TransactionalAndLock;
-import club.dbg.cms.blog.service.lock.LockService;
+import club.dbg.cms.blog.aop.lock.LockService;
 import club.dbg.cms.rpc.pojo.Operator;
-import club.dbg.cms.util.MD5;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,6 +19,9 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import java.lang.reflect.Method;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * 测试中
+ */
 @Aspect
 @Component
 @Lazy(false)
@@ -67,6 +69,9 @@ public class TransactionalAndLockAspect {
     }
 
     /**
+     * 根据LockMode获取可重入锁
+     * 当获取不到指定模式的锁的时候将获取默认锁
+     *
      * @param joinPoint            切入点
      * @param transactionalAndLock 注解
      */
@@ -84,40 +89,43 @@ public class TransactionalAndLockAspect {
         return defaultLock(joinPoint);
     }
 
-    private TransactionStatus getTransactionStatus() {
-        DefaultTransactionDefinition transDefinition = new DefaultTransactionDefinition();
-        transDefinition.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        return dataSourceTransactionManager.getTransaction(transDefinition);
-    }
-
     public ReentrantLock defaultLock(ProceedingJoinPoint joinPoint) {
         return lockService.defaultLock(getMethodName(joinPoint));
     }
 
+    /**
+     * 当获取不到账号锁的时候将获取默认锁
+     *
+     * @param joinPoint            切入点
+     * @param transactionalAndLock 注解
+     */
     public ReentrantLock accountLock(ProceedingJoinPoint joinPoint, TransactionalAndLock transactionalAndLock) {
         Object[] params = joinPoint.getArgs();
-        Operator operator = null;
+        Operator operator;
         int paramIndex = transactionalAndLock.paramIndex();
-        if (paramIndex == -1 || paramIndex >= params.length) {
-            for (Object param : params) {
-                if (param instanceof Operator) {
-                    operator = (Operator) param;
-                    break;
-                }
-            }
-            if (operator != null) {
-                return lockService.accountLock(operator.getId());
-            }
-        } else {
-            Object param = params[paramIndex];
-            if (param instanceof Operator) {
-                operator = (Operator) param;
+
+        Object param = params[paramIndex];
+        if (param instanceof Operator) {
+            operator = (Operator) param;
+            return lockService.accountLock(operator.getId());
+        }
+
+        for (Object obj : params) {
+            if (obj instanceof Operator) {
+                operator = (Operator) obj;
                 return lockService.accountLock(operator.getId());
             }
         }
+
         return lockService.defaultLock(getMethodName(joinPoint));
     }
 
+    /**
+     * 当获取不到订单锁的时候将获取默认锁
+     *
+     * @param joinPoint            切入点
+     * @param transactionalAndLock 注解
+     */
     public ReentrantLock orderLock(ProceedingJoinPoint joinPoint, TransactionalAndLock transactionalAndLock) {
         Object[] params = joinPoint.getArgs();
         Integer lockIndex;
@@ -130,6 +138,11 @@ public class TransactionalAndLockAspect {
         return lockService.defaultLock(getMethodName(joinPoint));
     }
 
+    /**
+     * 获取访问的方法名（全路径名：className + method）
+     *
+     * @param joinPoint 切入点
+     */
     public String getMethodName(ProceedingJoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
         Class<?> targetClass = joinPoint.getTarget().getClass();
@@ -153,5 +166,11 @@ public class TransactionalAndLockAspect {
         // 拿到方法定义的注解信息
         // 返回
         return objMethod.getDeclaredAnnotation(TransactionalAndLock.class);
+    }
+
+    private TransactionStatus getTransactionStatus() {
+        DefaultTransactionDefinition transDefinition = new DefaultTransactionDefinition();
+        transDefinition.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        return dataSourceTransactionManager.getTransaction(transDefinition);
     }
 }
