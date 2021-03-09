@@ -8,5 +8,7 @@ import club.dbg.cms.rpc.pojo.Operator;
 public interface LoginCacheService {
     boolean set(String accessToken, Operator operator);
 
-    boolean remove(Integer accountId);
+    Operator get(String accessToken);
+
+    boolean remove(String token);
 }

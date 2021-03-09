@@ -121,7 +121,7 @@ public class AuthFilter implements Filter {
 
     private void refreshToken(String accessToken, int userId) {
         redisUtils.expire(loginRedisHeader + accessToken, loginTimeout);
-        redisUtils.expire(loginRedisHeader + userId, loginTimeout);
+        // redisUtils.expire(loginRedisHeader + userId, loginTimeout);
     }
 
     private void responseResult(HttpServletResponse response) throws IOException {

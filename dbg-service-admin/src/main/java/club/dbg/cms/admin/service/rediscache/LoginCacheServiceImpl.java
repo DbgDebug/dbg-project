@@ -30,20 +30,17 @@ public class LoginCacheServiceImpl implements LoginCacheService {
 
     @Override
     public boolean set(String accessToken, Operator operator) {
-        remove(operator.getId());
         accessToken = loginRedisHeader + accessToken;
-        redisUtils.set(accessToken, operator, loginTimeOut);
-        redisUtils.set(loginRedisHeader + operator.getId(), accessToken, loginTimeOut);
-        return false;
+        return redisUtils.set(accessToken, operator, loginTimeOut);
     }
 
     @Override
-    public boolean remove(Integer accountId) {
-        String tokenStr = (String) redisUtils.get(loginRedisHeader + accountId);
-        if (tokenStr != null) {
-            redisUtils.delete(tokenStr);
-            redisUtils.delete(loginRedisHeader + accountId);
-        }
-        return true;
+    public Operator get(String accessToken) {
+        return (Operator) redisUtils.get(loginRedisHeader + accessToken);
+    }
+
+    @Override
+    public boolean remove(String accessToken) {
+        return redisUtils.delete(loginRedisHeader + accessToken);
     }
 }

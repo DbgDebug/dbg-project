@@ -92,7 +92,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
      public Boolean logout(Integer id, String token){
-        loginCacheService.remove(id);
+        loginCacheService.remove(token);
         return true;
      }
 
