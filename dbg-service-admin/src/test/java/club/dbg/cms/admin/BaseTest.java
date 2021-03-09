@@ -1,8 +1,8 @@
 package club.dbg.cms.admin;
 
-import javafx.application.Application;
 import org.junit.Test;
 
+import javax.ws.rs.core.Application;
 import java.io.*;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;

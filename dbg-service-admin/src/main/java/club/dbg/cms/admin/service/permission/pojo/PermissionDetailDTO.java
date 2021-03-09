@@ -1,7 +1,5 @@
 package club.dbg.cms.admin.service.permission.pojo;
 
-import java.util.Date;
-
 /**
  * @author dbg
  */
