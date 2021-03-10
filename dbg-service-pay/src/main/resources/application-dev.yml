@@ -11,9 +11,13 @@ spring:
       max-file-size: 5MB
       max-request-size: 5MB
 
-alipays:
+alipay:
   serverUrl: ${SERVER_URL:https://openapi.alipaydev.com/gateway.do}
   appId: ${APP_ID:}
   privateKey: ${PRIVATE_KEY:}
-  alipayPublicKey: ${ALIPAY_PUBLIC_KEY:MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuYUYVi9phHuSS2NTyWoXZ36l5mTaVeM+gwdM+xuhR3aZEx9NQiINi7gW9cm1q7my3jyYeAHk422k81YvuBQAd2ZnPITm7iRPfLjnhwMHdBJPghdlpRRXGp4Z1v1RIGSFG0/3S2HVWDV9ryobHMn5VlgmZHLzThK+ZJ1Dva2YRTAMS1kMY6tTGewXht2PnwY0q0TEqE390zulKRZWaQurFPWKjeiakvh2LsSJvBDFJ0cXvU0GUcZIqM9pHSYkOITnmskNtjJd2OVMwU2koN/X9kESrMgp/Dh2saTaXwi4TlZmI5DdlIfYLjvcsOCOJCuz2f5fquvv5nUQXSZlCSUEYQIDAQAB}
+  alipayPublicKey: ${ALIPAY_PUBLIC_KEY:}
   notifyUrl: ${NOTIFY_URL:}
+
+swagger2:
+  #test.frp.dbg-dev.icu:8000
+  host: ${SWAGGER2_HOST:127.0.0.1:8910}
