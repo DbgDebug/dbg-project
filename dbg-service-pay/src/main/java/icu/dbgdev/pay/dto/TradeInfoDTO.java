@@ -1,8 +1,11 @@
 package icu.dbgdev.pay.dto;
 
+import java.math.BigDecimal;
+
 public class TradeInfoDTO {
     private String outTradeNo;
-    private String totalAmount;
+    private BigDecimal totalAmount;
+    // 商品的标题/交易标题/订单标题/订单关键字等
     private String subject;
 
     public String getOutTradeNo() {
@@ -13,11 +16,11 @@ public class TradeInfoDTO {
         this.outTradeNo = outTradeNo;
     }
 
-    public String getTotalAmount() {
+    public BigDecimal getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(String totalAmount) {
+    public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
     }
 

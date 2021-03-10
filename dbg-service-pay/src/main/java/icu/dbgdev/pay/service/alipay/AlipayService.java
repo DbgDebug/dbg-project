@@ -31,26 +31,25 @@ public class AlipayService implements IAlipayService {
         this.notifyUrl = notifyUrl;
     }
 
-    public QRCodePayResponseDTO createPay(TradeInfoDTO tradeInfoDTO) throws AlipayApiException {
+    @Override
+    public QRCodePayResponseDTO createPayQRCode(TradeInfoDTO tradeInfoDTO) throws AlipayApiException {
         AlipayTradePrecreateRequest request = new AlipayTradePrecreateRequest();
         request.setNotifyUrl(notifyUrl);
 
         Map<String, String> bizContentMap = new HashMap<>();
         bizContentMap.put("out_trade_no", tradeInfoDTO.getOutTradeNo());
-        bizContentMap.put("total_amount", tradeInfoDTO.getTotalAmount());
+        bizContentMap.put("total_amount", tradeInfoDTO.getTotalAmount().toPlainString());
         bizContentMap.put("subject", tradeInfoDTO.getSubject());
         bizContentMap.put("timeout_express", "30m");
 
         request.setBizContent(JSON.toJSONString(bizContentMap));
 
         AlipayTradePrecreateResponse response = alipayClient.execute(request);
-        final String FAILED = "40000";
         if (!response.isSuccess()) {
             log.warn("alipay.trade.precreate call failed:{}", response.getBody());
-            return new QRCodePayResponseDTO(FAILED);
+            return new QRCodePayResponseDTO();
         }
-        final String SUCCESS = "20000";
         log.info("alipay.trade.precreate:{}", response.getBody());
-        return new QRCodePayResponseDTO(SUCCESS, tradeInfoDTO.getOutTradeNo(), response.getQrCode());
+        return new QRCodePayResponseDTO(tradeInfoDTO.getOutTradeNo(), response.getQrCode());
     }
 }

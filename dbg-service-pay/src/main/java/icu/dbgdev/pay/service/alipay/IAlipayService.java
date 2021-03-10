@@ -5,5 +5,5 @@ import icu.dbgdev.pay.dto.QRCodePayResponseDTO;
 import icu.dbgdev.pay.dto.TradeInfoDTO;
 
 public interface IAlipayService {
-    QRCodePayResponseDTO createPay(TradeInfoDTO tradeInfoDTO) throws AlipayApiException;
+    QRCodePayResponseDTO createPayQRCode(TradeInfoDTO tradeInfoDTO) throws AlipayApiException;
 }

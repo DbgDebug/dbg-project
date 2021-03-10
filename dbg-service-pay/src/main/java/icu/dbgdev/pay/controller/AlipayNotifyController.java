@@ -24,7 +24,7 @@ public class AlipayNotifyController {
     }
 
     @RequestMapping(value = "/notify")
-    public String payNotify(@RequestParam Map<String, String> map) throws AlipayApiException {
+    public String createQRPay(@RequestParam Map<String, String> map) throws AlipayApiException {
         log.info("支付宝扫码支付回调：{}", JSON.toJSONString(map));
         AlipaySignature.rsaCheckV1(map, alipayPublicKey, "utf-8", "RSA2");
         return "success";

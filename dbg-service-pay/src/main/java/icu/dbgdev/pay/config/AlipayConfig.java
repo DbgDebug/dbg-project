@@ -12,16 +12,18 @@ public class AlipayConfig {
     private final String appId;
     private final String privateKey;
     private final String alipayPublicKey;
-    public AlipayConfig(@Value("${alipay.serverUrl}") String serverUrl,
-                        @Value("${alipay.appId}") String appId,
-                        @Value("${alipay.privateKey}") String privateKey,
-                        @Value("${alipay.alipayPublicKey}") String alipayPublicKey) {
 
+    public AlipayConfig(
+            @Value("${alipay.serverUrl}") String serverUrl,
+            @Value("${alipay.appId}") String appId,
+            @Value("${alipay.privateKey}") String privateKey,
+            @Value("${alipay.alipayPublicKey}") String alipayPublicKey) {
         this.serverUrl = serverUrl;
         this.appId = appId;
         this.privateKey = privateKey;
         this.alipayPublicKey = alipayPublicKey;
     }
+
     @Bean
     public AlipayClient alipayClient() {
         return new DefaultAlipayClient(serverUrl, appId, privateKey, "json",

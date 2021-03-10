@@ -1,7 +1,6 @@
 package icu.dbgdev.pay.dto;
 
 public class QRCodePayResponseDTO {
-    private String code;
     private String outTradeNo;
     private String subject;
     private String totalAmount;
@@ -11,30 +10,17 @@ public class QRCodePayResponseDTO {
 
     }
 
-    public QRCodePayResponseDTO(String code) {
-        this.code = code;
-    }
 
-    public QRCodePayResponseDTO(String code, String outTradeNo, String qrCodeUrl) {
-        this.code = code;
+    public QRCodePayResponseDTO(String outTradeNo, String qrCodeUrl) {
         this.outTradeNo = outTradeNo;
         this.qrCodeUrl = qrCodeUrl;
     }
 
     public QRCodePayResponseDTO(String code, String outTradeNo, String subject, String totalAmount, String qrCodeUrl) {
-        this.code = code;
         this.outTradeNo = outTradeNo;
         this.subject = subject;
         this.totalAmount = totalAmount;
         this.qrCodeUrl = qrCodeUrl;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public String getOutTradeNo() {
