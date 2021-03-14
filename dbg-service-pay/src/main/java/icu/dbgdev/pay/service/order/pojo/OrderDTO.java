@@ -1,9 +1,11 @@
 package icu.dbgdev.pay.service.order.pojo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class OrderDTO {
     private Long orderId;
+    private BigDecimal totalAmount;
     private Integer createTime;
     private Integer paymentTime;
     private Integer deliveryTime;
@@ -19,6 +21,14 @@ public class OrderDTO {
 
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     public Integer getCreateTime() {

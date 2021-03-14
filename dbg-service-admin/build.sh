@@ -12,5 +12,6 @@ cd $base_dir/docker
 
 dos2unix run.sh
 
-docker build --tag=ip:port/dbg-service-admin:v1.0 . || exit $?
-docker push ip:port/dbg-service-admin:v1.0 || exit $?
+docker build -t dbg-service-admin:v1.0 . || exit $?
+#docker build --tag=ip:port/dbg-service-admin:v1.0 . || exit $?
+#docker push ip:port/dbg-service-admin:v1.0 || exit $?

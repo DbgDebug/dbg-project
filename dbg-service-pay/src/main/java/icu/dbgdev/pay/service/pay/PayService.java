@@ -1,10 +1,10 @@
 package icu.dbgdev.pay.service.pay;
 
-import com.alipay.api.AlipayApiException;
 import icu.dbgdev.pay.dto.QRCodePayResponseDTO;
 import icu.dbgdev.pay.dto.TradeInfoDTO;
 import icu.dbgdev.pay.exception.PayException;
 import icu.dbgdev.pay.service.alipay.IAlipayService;
+import icu.dbgdev.pay.service.product.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,10 +14,14 @@ import java.math.BigDecimal;
 @Service
 public class PayService implements IPayService {
     private final Logger log = LoggerFactory.getLogger(PayService.class);
+
     private final IAlipayService alipayService;
 
-    public PayService(IAlipayService alipayService) {
+    private final ProductService productService;
+
+    public PayService(IAlipayService alipayService, ProductService productService) {
         this.alipayService = alipayService;
+        this.productService = productService;
     }
 
     @Override

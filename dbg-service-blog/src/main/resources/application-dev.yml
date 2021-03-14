@@ -60,10 +60,10 @@ mybatis:
   mapper-locations: classpath:club/dbg/cms/blog/dao/xml/*.xml
 
 system:
-  permissionRegister: ${PERMISSION_REHISTER:true}
+  permissionRegister: ${PERMISSION_REHISTER:false}
   permissionKey: ${PERMISSION_KEY:12345678}
   permissionRegisterUrl: ${PERMISSION_REHISTER_URL:http://localhost/v1/rpc/permission/register}
-  isDebug: ${IS_DEBUG:false}
+  isDebug: ${IS_DEBUG:true}
 
 session:
   tokenHeader: ${TOKEN_HEADER:X-Access-Token}

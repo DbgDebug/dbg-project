@@ -12,3 +12,4 @@ logs
 .DS_Store
 dist
 web/docker/dist/**
+application-local.yml

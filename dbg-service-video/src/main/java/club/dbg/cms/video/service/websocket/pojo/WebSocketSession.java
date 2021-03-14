@@ -2,9 +2,10 @@ package club.dbg.cms.video.service.websocket.pojo;
 
 import javax.websocket.Session;
 
-public class WSSession {
+public class WebSocketSession {
     private Integer id;
     private Session session;
+    private Boolean isEncode;
 
     public Integer getId() {
         return id;
@@ -20,5 +21,13 @@ public class WSSession {
 
     public void setSession(Session session) {
         this.session = session;
+    }
+
+    public Boolean isEncode() {
+        return isEncode;
+    }
+
+    public void setEncode(Boolean encode) {
+        isEncode = encode;
     }
 }

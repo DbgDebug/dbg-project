@@ -1,7 +1,6 @@
 package club.dbg.cms.admin;
 
 import club.dbg.cms.admin.dao.AccountMapper;
-import club.dbg.cms.util.AESUtils;
 import club.dbg.cms.util.MD5;
 import com.alibaba.fastjson.JSON;
 import org.junit.Test;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.*;
-import java.util.Arrays;
 
 @RunWith(SpringRunner.class)
 @MybatisTest

@@ -1,5 +1,7 @@
 package club.dbg.cms.video.service.websocket;
 
+import java.io.IOException;
+
 public interface IWebSocketSendTask {
-    void task();
+    void task() throws IOException;
 }

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+</head>
+
+<body>
+  <div>
+    <video id="video" width="640" height="360"></video>
+    <!-- <canvas id="canvas" width="640" height="360"></canvas> -->
+  </div>
+  <!--
+  <div style="margin-bottom: 10px;">
+    <button id="start" style="width: 120px; height: 60px;">播放</button>
+  </div>
+  -->
+  <script>
+    /*
+    document.getElementById("start").addEventListener("click", function () {
+
+    });
+    */
+    let ws;
+    createWebSocket({});
+    let videoName = '18.mp4';
+    let video = document.getElementById('video');
+    let mimeCodec = 'video/webm; codecs="vp8"';
+    let mc = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+
+    let mediaSource;
+    if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
+      mediaSource = new MediaSource();
+      //console.log(mediaSource.readyState); // closed
+      video.src = URL.createObjectURL(mediaSource);
+      mediaSource.addEventListener('sourceopen', sourceOpen);
+    } else {
+      console.error('Unsupported MIME type or codec: ', mimeCodec);
+    }
+
+    let sourceBuffer;
+    function sourceOpen() {
+      console.log(this.readyState); // open
+      sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
+      sourceBuffer.addEventListener('updateend', onUpdateEnd);
+      sourceBuffer.mode = 'sequence';
+      /*
+      data('http://localhost/' + videoName).then(function (videoData) {
+        console.log('1:' + sourceBuffer.updating);
+        sourceBuffer.appendBuffer(videoData);
+      });
+      */
+    };
+
+    let play = true;
+    let loadBuf = true;
+    let mediaSegments = []
+    function onUpdateEnd() {
+      if (play) {
+        video.play();
+        play = false;
+      }
+      if (!mediaSegments.length) {
+        return;
+      }
+      sourceBuffer.appendBuffer(mediaSegments.shift());
+    }
+
+    function addMediaSegment(bytes) {
+      mediaSegments.push(bytes);
+    }
+
+    function data(url) {
+      return new Promise(function (resolve, reject) {
+        let xhr = new XMLHttpRequest;
+        xhr.open('GET', url)
+        xhr.responseType = 'arraybuffer';
+        xhr.send()
+        xhr.onload = function () {
+          resolve(xhr.response)
+        };
+      })
+    }
+
+    function createWebSocket(msg) {
+      if ("WebSocket" in window) {
+        // 打开一个 web socket
+        ws = new WebSocket('ws://127.0.0.1:8600/v1/video/user');
+        // ws = new WebSocket('wss://websocket.dbg-dev.icu:9700/ws/WebSocket');
+        //
+        ws.binaryType = 'arraybuffer';
+        ws.onopen = function () {
+          // Web Socket 已连接上，使用 send() 方法发送数据
+          // ws.send(JSON.stringify(msg))
+          //console.info("数据发送中...");
+        };
+        ws.onmessage = function (evt) {
+          let msg
+          let received_msg = evt.data
+          if (typeof(received_msg) == 'string') {
+            let jsonObj = JSON.parse(received_msg)
+            let type = jsonObj.type
+            if (type === 1) {
+              let data = jsonObj.data
+              console.log(data);
+              return;
+            }
+            if (type === 200) {
+              document.getElementById("loginStatus").innerText = "已登录"
+              return
+            }
+          } else {
+            sourceBuffer.mod = 'sequence';
+            if(!sourceBuffer.updating && !mediaSegments.length) {
+              sourceBuffer.appendBuffer(evt.data);
+            } else {
+              mediaSegments.push(evt.data)
+            }
+          }
+        };
+        ws.onclose = function () {
+          console.log('连接已关闭');
+        };
+      } else {
+        // 浏览器不支持 WebSocket
+        alert("您的浏览器不支持 WebSocket!")
+      }
+    }
+  </script>
+</body>
+
+</html>

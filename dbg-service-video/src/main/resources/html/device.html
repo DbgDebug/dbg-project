@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<!-- saved from url=(0047)https://websocket.dbg-test.club:9700/video.html -->
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>拍照</title>
+</head>
+
+<body>
+    <div>
+        <video id="video" width="640" height="360" autoplay="autoplay"></video>
+        <!--描绘video截图-->
+        <canvas id="canvas" width="640" height="360"></canvas>
+    </div>
+    <div style="margin-bottom: 10px;">
+        <form>
+            <label>设备名：</label>
+            <input type="text" name="name" id="name" />
+            <label>密码：</label>
+            <input type="password" name="password" id="password" autocomplete/>
+        </form>
+    </div>
+    <div style="margin-bottom: 10px;">
+        <button id="camera" style="width: 120px; height: 60px;">请求摄像头</button>
+        <button id="start" style="width: 120px; height: 60px;">开始传输</button>
+        <button id="stop" style="width: 120px; height: 60px;">停止传输</button>
+        <button id="login" style="width: 120px; height: 60px;">登录</button>
+    </div>
+    <div>
+        <label id="loginStatus"></label>
+    </div>
+    <script>
+        let video = document.getElementById("video");
+        let canvas = document.createElement("canvas");
+        canvas.width = 640;
+        canvas.height = 360;
+        // canvas.getContext("2d");
+        let context = canvas.getContext("2d");
+
+
+        let ws;
+        let width = 1280;
+        let height = 720;
+        // image左上角 X , Y 轴坐标，从坐标的sx和sy开始，选择框的宽度，选择框的高度
+        let sx = 0, sy = 0, sWidth = width, sHeight = height;
+        // canvas上 X 轴坐标，canvas上 Y 轴坐标，缩放宽度和高度
+        let dx = 0, dy = 0, dWidth = 640, dHeight = 360;
+        // 帧数
+        let frameRate = 5;
+        let frameTime = 1000 / frameRate
+        // 头大小
+        let headerSize = 8;
+        let deviceId = 1;
+
+        let interval;
+        let sendFlag = true;
+        let arrayFrame = [];
+        let isLogin = false;
+
+        document.getElementById("name").value = getCookie('device_name')
+        document.getElementById("password").value = getCookie('device_password')
+        document.getElementById("camera").addEventListener("click", cc);
+
+        async function cc() {
+            await createWebSocket({});
+            await camera();
+        }
+
+        document.getElementById("start").addEventListener("click", function () {
+            send();
+        });
+        document.getElementById("stop").addEventListener("click", function () {
+            clearInterval(interval);
+        });
+        document.getElementById("login").addEventListener("click", function () {
+            loginWebSocket()
+        });
+
+        async function loginWebSocket() {
+            if (isLogin) {
+                return;
+            }
+            let userName = document.getElementById("name").value
+            let password = document.getElementById("password").value
+            login(userName, password).then(function (loginResult) {
+                let loginObj = JSON.parse(loginResult);
+                if (loginObj.code === 20000) {
+                    isLogin = true
+                    let tokenObj = loginObj.data
+                    let token = tokenObj.token
+                    setCookie('device_token', token)
+                    setCookie('device_name', userName)
+                    setCookie('device_password', password)
+                    getWebSocketToken().then(function (responseText) {
+                        let responseObj = JSON.parse(responseText);
+                        if (responseObj.code === 20000) {
+                            let msg = {
+                                type: 0,
+                                token: responseObj.data.token
+                            }
+                            createWebSocket(msg);
+                        }
+                    })
+                }
+            })
+        }
+
+        function login(userName, password) {
+            return new Promise(function (resolve, reject) {
+                let data = {
+                    userName: userName,
+                    password: password
+                }
+                let xhr = new XMLHttpRequest()
+                xhr.open('POST', '/ws/device/login')
+                xhr.setRequestHeader("Content-type", "application/json;charset=UTF-8");
+                xhr.send(JSON.stringify(data))
+                xhr.onreadystatechange = function (e) {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            resolve(xhr.responseText)
+                        }
+                    }
+                }
+            })
+        }
+
+        function getWebSocketToken() {
+            return new Promise(function (resolve, reject) {
+                let xhr = new XMLHttpRequest()
+                xhr.open('GET', '/ws/device/getWebSocketToken')
+                let deviceToken = getCookie("device_token")
+                xhr.setRequestHeader("X-Access-Token", deviceToken);
+                xhr.send()
+                xhr.onreadystatechange = function (e) {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            resolve(xhr.responseText)
+                        }
+                    }
+                }
+            })
+        }
+
+        let cameraType = 'user' //environment 后置
+        let restream;
+        async function camera() {
+            // 老的浏览器可能根本没有实现 mediaDevices，所以我们可以先设置一个空的对象
+            if (navigator.mediaDevices === undefined) {
+                navigator.mediaDevices = {};
+            }
+
+            // 一些浏览器部分支持 mediaDevices。我们不能直接给对象设置 getUserMedia
+            // 因为这样可能会覆盖已有的属性。这里我们只会在没有getUserMedia属性的时候添加它。
+            if (navigator.mediaDevices.getUserMedia === undefined) {
+                navigator.mediaDevices.getUserMedia = function (constraints) {
+
+                    // 首先，如果有getUserMedia的话，就获得它
+                    let getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+                    // 一些浏览器根本没实现它 - 那么就返回一个error到promise的reject来保持一个统一的接口
+                    if (!getUserMedia) {
+                        return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+                    }
+
+                    // 否则，为老的navigator.getUserMedia方法包裹一个Promise
+                    return new Promise(function (resolve, reject) {
+                        getUserMedia.call(navigator, constraints, resolve, reject);
+                    });
+                }
+            }
+            //let mimeCodec = 'video/webm;codecs=vp9';//'video/x-matroska;codecs=avc1';
+            //默认使用前摄像头，强制使用后置摄像头如下设置
+            // let constraints = {video: { facingMode: { exact: "environment" } }};
+            console.log(navigator.mediaDevices.getSupportedConstraints())
+            let count = 0;
+            let stream;
+            let deviceIsOpen = false;
+            let constraints = { audio: { sampleRate: 16000 }, video: { width: width, height: height, facingMode: { exact: "environment" } } };
+            try{
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                deviceIsOpen = true;
+            } catch (e) {
+                console.log(e);
+            }
+            if (!deviceIsOpen) {
+                constraints = { video: { width: width, height: height } };
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+            }
+            restream = stream;
+            if ("srcObject" in video) {
+                video.srcObject = stream;
+            } else {
+                // 防止在新的浏览器里使用它，应为它已经不再支持了
+                video.src = window.URL.createObjectURL(stream);
+            }
+            video.onloadedmetadata = function (e) {
+                video.play();
+            };
+            recordVideo(stream);
+        }
+        let recorder;
+        let chunks = [];
+
+        function recordVideo() {
+            let options = {
+                audioBitsPerSecond: 16000,
+                videoBitsPerSecond: 2000000,
+                mimeType: 'video/webm;codecs=vp8'
+            }
+            recorder = new MediaRecorder(restream, options);
+            recorder.ondataavailable = e => {chunks.push(e.data)};
+            recorder.onstop = e => sendToServer(new Blob(chunks));
+            // setTimeout(()=> recorder.stop(), 5000); // we'll have a 5s media file
+            // recorder.start();
+        }
+
+        function videoRecord() {
+            recorder.stop()
+            recorder.start()
+        }
+
+        function sendToServer(blob) {
+            console.log(blob)
+            ws.send(blob);
+            chunks = []
+        }
+
+        function sendHeartbeat() {
+            const heartbeat = {
+                type: 0,
+                data: '',
+                number: 0
+            }
+            ws.send(JSON.stringify(heartbeat))
+        }
+        
+        function push() {
+
+        }
+
+        function send() {
+            recorder.start()
+            interval = setInterval(videoRecord, 5000);
+            setInterval(sendHeartbeat, 5000);
+            if (true) {
+                return;
+            }
+            interval = setInterval(() => {
+                context.drawImage(video, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+                //兼容windows mobile 10 EDGE
+                if (!HTMLCanvasElement.prototype.toBlob) {
+                    Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
+                        value: function (callback, type, quality) {
+                            let canvas = this;
+                            setTimeout(function () {
+                                let binStr = atob(canvas.toDataURL(type, quality).split(',')[1]);
+                                let len = binStr.length;
+                                let arr = new Uint8Array(len);
+
+                                for (let i = 0; i < len; i++) {
+                                    arr[i] = binStr.charCodeAt(i);
+                                }
+                                callback(new Blob([arr], { type: type || 'image/png' }));
+                            });
+                        }
+                    });
+                }
+                canvas.toBlob((blob) => {
+                    arrayFrame.push(blob);
+                    if (arrayFrame.length >= frameRate) {
+                        mergeBlob(arrayFrame);
+                    }
+                }, "image/jpeg", 0.7);
+            }, frameTime);
+        }
+
+        // 合并二进制数据
+        function mergeBlob(arrayFrame) {
+            let size = 0;
+            let arrTempBlob = [];
+            let arrFrameSize = [];
+            for (let i = 0; i < frameRate; i++) {
+                let blobTemp = arrayFrame.shift();
+                size += blobTemp.size;
+                arrFrameSize.push(blobTemp.size);
+                arrTempBlob.push(blobTemp);
+            }
+            let arrayBuf = new ArrayBuffer(size + headerSize + frameRate * 4);
+            let dataView = new DataView(arrayBuf);
+            let version = 10;
+            dataView.setUint8(0, version);
+            dataView.setUint32(2, deviceId);
+            dataView.setUint16(6, arrFrameSize.length);
+            for (let i = 0; i < arrFrameSize.length; i++) {
+                dataView.setUint32(i * 4 + headerSize, arrFrameSize[i]);
+            }
+
+            let int8View = new Int8Array(dataView.buffer);
+            mergeArrayBuffer(int8View, arrTempBlob, arrFrameSize)
+        }
+
+        // 合并二进制数据
+        function mergeArrayBuffer(int8View, arrTempBlob, arrFrameSize) {
+            let blobTemp = arrTempBlob.shift();
+            if (blobTemp == undefined) {
+                if (sendFlag) {
+                    sendFlag = false;
+                    console.log(int8View.buffer);
+                    ws.send(int8View.buffer);
+                    sendFlag = true;
+                }
+                return;
+            }
+            readAsArrayBuffer(blobTemp).then(function (result) {
+                // 偏移字节数，头部固定大小 + 帧数 * 4(int占4字节)
+                let byteOffset = headerSize + frameRate * 4;
+                let index = arrTempBlob.length + 1;
+                for (let i = 0; i < arrFrameSize.length - index; i++) {
+                    byteOffset += arrFrameSize[i];
+                }
+                int8View.set(new Int8Array(result.target.result), byteOffset);
+                mergeArrayBuffer(int8View, arrTempBlob, arrFrameSize);
+            })
+        }
+
+        function readAsArrayBuffer(blob) {
+            return new Promise(function (resolve, reject) {
+                let reader = new FileReader()
+                reader.readAsArrayBuffer(blob)
+                reader.onload = function (result) {
+                    resolve(result)
+                }
+            })
+        }
+
+        function createWebSocket(msg) {
+            if ("WebSocket" in window) {
+                // 打开一个 web socket
+                ws = new WebSocket('ws://127.0.0.1:8600/v1/video/device');
+                // ws = new WebSocket('wss://websocket.dbg-dev.icu:9700/ws/WebSocket');
+
+                ws.binaryType = 'arraybuffer';
+                ws.onopen = function () {
+                    // Web Socket 已连接上，使用 send() 方法发送数据
+                    // ws.send(JSON.stringify(msg))
+                    //console.info("数据发送中...");
+                };
+
+                ws.onmessage = function (evt) {
+                    let msg
+                    let received_msg = evt.data
+                    console.info(received_msg)
+
+                    if (typeof (received_msg) == 'string') {
+                        let jsonObj = JSON.parse(received_msg)
+                    }
+                };
+
+                ws.onclose = function () {
+                    // 关闭 websocket
+                    isLogin = false
+                    console.log("连接已关闭,重新连接中");
+                    // loginWebSocket()
+                };
+            } else {
+                // 浏览器不支持 WebSocket
+                alert("您的浏览器不支持 WebSocket!")
+            }
+        }
+
+        function request(data, method, url) {
+            let xhr = new XMLHttpRequest();
+            xhr.open(method, url);
+            xhr.send(data);
+            xhr.onreadystatechange = function (e) {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log(xhr.responseText);
+                    }
+                }
+            }
+        }
+
+        function upload(binary) {
+            let fd = new FormData();
+            fd.append("file", new Blob([binary]))
+            let xhr = new XMLHttpRequest();
+            // xhr.open("POST", "https://websocket.dbg-test.club:9700/ws/upload");
+            xhr.open("POST", "http://127.0.0.1:8600/v1/video/upload/mp4");
+            //xhr.overrideMimeType("application/octet-stream");
+            xhr.send(fd);
+            //直接发送二进制数据
+            /*if(xhr.sendAsBinary){
+                xhr.sendAsBinary(binary);
+            }else{
+                xhr.send(binary);
+            }*/
+            // 监听变化
+            xhr.onreadystatechange = function (e) {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        sendFlag = true;
+                        console.log(Math.round(new Date()));
+                    }
+                }
+            }
+        }
+
+        function setCookie(name, value) {
+            let Days = 30;
+            let exp = new Date();
+            exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+            document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+        }
+
+        //读取cookies
+        function getCookie(name) {
+            let arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+
+            if (arr = document.cookie.match(reg))
+
+                return unescape(arr[2]);
+            else
+                return null;
+        }
+
+        //删除cookies
+        function delCookie(name) {
+            let exp = new Date();
+            exp.setTime(exp.getTime() - 1);
+            let cval = getCookie(name);
+            if (cval != null)
+                document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+        }
+    </script>
+
+
+</body>
+
+</html>

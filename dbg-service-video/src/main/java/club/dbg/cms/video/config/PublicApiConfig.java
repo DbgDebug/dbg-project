@@ -1,17 +1,13 @@
 package club.dbg.cms.video.config;
 
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 import java.util.HashSet;
 
-@Component
 public class PublicApiConfig {
-    public static HashSet<String> apiSet = new HashSet<>();
-
-    @PostConstruct
-    public void init(){
+    public static HashSet<String> apiSet = new HashSet<>(){{
         apiSet.add("/device/login");
         apiSet.add("/user/login");
-    }
+        apiSet.add("/WebSocket");
+        apiSet.add("/device/video");
+        apiSet.add("/user/video");
+    }};
 }

@@ -1,13 +1,12 @@
 package club.dbg.cms.video.filter;
 
 
+import club.dbg.cms.util.JWTUtils;
 import club.dbg.cms.video.config.PublicApiConfig;
+import club.dbg.cms.video.config.SaltConfig;
 import club.dbg.cms.video.pojo.ExceptionMessage;
-import club.dbg.cms.video.redis.RedisUtils;
 import com.alibaba.fastjson.JSON;
-import club.dbg.cms.video.pojo.DeviceSession;
 import club.dbg.cms.video.pojo.TokenDTO;
-import club.dbg.cms.video.pojo.UserSession;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +36,6 @@ public class AuthFilter implements Filter {
 
     private final String tokenName;
 
-    private final Integer loginTimeout;
-
-    private final RedisUtils redisUtils;
-
     @Autowired
     public AuthFilter(
             @Value("${system.isDebug}")
@@ -48,15 +43,10 @@ public class AuthFilter implements Filter {
             @Value("${session.tokenHeader}")
             String tokenHeader,
             @Value("${session.tokenName}")
-            String tokenName,
-            @Value("${login.timeout}")
-            Integer loginTimeout,
-            RedisUtils redisUtils) {
+            String tokenName) {
         this.isDebug = isDebug;
         this.tokenHeader = tokenHeader;
         this.tokenName = tokenName;
-        this.loginTimeout = loginTimeout;
-        this.redisUtils = redisUtils;
     }
 
     @Override
@@ -82,64 +72,13 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        if (request.getServletPath().indexOf("/WebSocket") == 0) {
-            myRequest = new MyHttpServletRequest(request);
-            filterChain.doFilter(myRequest, response);
-            return;
-        }
-
-        if (request.getServletPath().indexOf("/device/video") == 0) {
-            myRequest = new MyHttpServletRequest(request);
-            filterChain.doFilter(myRequest, response);
-            return;
-        }
-
-        if (request.getServletPath().indexOf("/user/video") == 0) {
-            myRequest = new MyHttpServletRequest(request);
-            filterChain.doFilter(myRequest, response);
-            return;
-        }
-
         TokenDTO token = getToken(request);
         if (token.getToken() == null || token.getToken().isEmpty()) {
             responseResult(response);
             return;
         }
 
-        if (request.getServletPath().indexOf("/device") == 0) {
-            log.info("device");
-            DeviceSession deviceSession = getDeviceSession(token);
-            if (deviceSession == null) {
-                responseResult(response);
-                return;
-            }
-            refreshDeviceToken(token.getToken(), deviceSession.getId());
-            myRequest = new MyHttpServletRequest(request);
-            myRequest.setId(deviceSession.getId());
-            myRequest.setToken(token.getToken());
-            filterChain.doFilter(myRequest, response);
-        } else if (request.getServletPath().indexOf("/user") == 0) {
-            UserSession userSession = getUserSession(token);
-            if (userSession == null) {
-                responseResult(response);
-                return;
-            }
-            refreshUserToken(token.getToken(), userSession.getId());
-            myRequest = new MyHttpServletRequest(request);
-            myRequest.setId(userSession.getId());
-            myRequest.setToken(token.getToken());
-            filterChain.doFilter(myRequest, response);
-        } else {
-            filterChain.doFilter(request, response);
-        }
-    }
-
-    private DeviceSession getDeviceSession(TokenDTO tokenDTO) {
-        return (DeviceSession) redisUtils.get("DEVICE-" + tokenDTO.getToken());
-    }
-
-    private UserSession getUserSession(TokenDTO tokenDTO) {
-        return (UserSession) redisUtils.get("USER-" + tokenDTO.getToken());
+        JWTUtils.verifyToken(token.getToken(), JWTUtils.getClaimByName(token.getToken(), "accountId").asString() + SaltConfig.SALT);
     }
 
     @Override
@@ -164,16 +103,6 @@ public class AuthFilter implements Filter {
             }
         }
         return token;
-    }
-
-    private void refreshDeviceToken(String accessToken, int userId) {
-        redisUtils.expire("DEVICE-" + accessToken, loginTimeout);
-        redisUtils.expire("DEVICE_ID-" + userId, loginTimeout);
-    }
-
-    private void refreshUserToken(String accessToken, int userId) {
-        redisUtils.expire("USER-" + accessToken, loginTimeout);
-        redisUtils.expire("USER_ID-" + userId, loginTimeout);
     }
 
     private void responseResult(HttpServletResponse response) throws IOException {

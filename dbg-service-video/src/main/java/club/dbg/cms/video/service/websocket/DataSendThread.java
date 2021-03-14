@@ -3,6 +3,7 @@ package club.dbg.cms.video.service.websocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class DataSendThread implements Runnable {
@@ -22,7 +23,7 @@ public class DataSendThread implements Runnable {
             try {
                 IWebSocketSendTask task = dataTaskQueue.take();
                 task.task();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | IOException e) {
                 log.warn("数据发送失败");
             }
         }

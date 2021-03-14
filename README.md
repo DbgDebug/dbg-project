@@ -34,9 +34,14 @@
 ### dbg-service-gateway
 gateway 测试
 
+### dbg-service-pay
+支付宝、微信的支付接口测试
+
 ### dbg-service-upload
 测试 spring cloud alibaba 的远程调用(服务消费者)
 
+### dbg-service-video
+通过网页实现简易的视频直播（测试中）
 
 ### dbg-utils
 通用工具类
