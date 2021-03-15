@@ -14,7 +14,7 @@ import club.dbg.cms.video.service.video.pojo.ImageByte;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
@@ -26,17 +26,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * @author dbg
  */
-@RestController
+@Component
 @ServerEndpoint("/device")
 public class DeviceWebSocket {
     private static final Logger log = LoggerFactory.getLogger(DeviceWebSocket.class);
     private static final DataSendThread dataSendThread = DataSendThread.getInstance();
-    private final IVideoEncodeService videoEncodeService;
+    private IVideoEncodeService videoEncodeService = null;
     private Integer deviceId;
 
     public DeviceWebSocket() {
-        ApplicationContext applicationContext = ApplicationContextRegister.getApplicationContext();
-        videoEncodeService = applicationContext.getBean(IVideoEncodeService.class);
+
     }
 
     // 存储会话信息
@@ -54,8 +53,20 @@ public class DeviceWebSocket {
         }
     }
 
+    private void init() {
+        if (videoEncodeService == null) {
+            synchronized (DeviceWebSocket.class) {
+                if (videoEncodeService == null) {
+                    ApplicationContext applicationContext = ApplicationContextRegister.getApplicationContext();
+                    videoEncodeService = applicationContext.getBean(IVideoEncodeService.class);
+                }
+            }
+        }
+    }
+
     @OnOpen
     public void onOpen(Session session) throws IOException {
+        init();
         log.info("Open a websocket.");
         session.setMaxBinaryMessageBufferSize(5000000);
         WebSocketSession webSocketSession = new WebSocketSession();
@@ -92,7 +103,7 @@ public class DeviceWebSocket {
         var liveGroup = UserWebSocket.getLiveGroup();
         var sessions = liveGroup.get(wsSession.getId());
         if (sessions == null) {
-            sessions =  new ConcurrentLinkedQueue<>();
+            sessions = new ConcurrentLinkedQueue<>();
             liveGroup.put(wsSession.getId(), sessions);
         }
         if (!wsSession.isEncode()) {

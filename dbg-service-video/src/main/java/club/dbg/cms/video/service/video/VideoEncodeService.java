@@ -2,14 +2,17 @@ package club.dbg.cms.video.service.video;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
+@Lazy(value = false)
 public class VideoEncodeService implements IVideoEncodeService {
     private final static Logger log = LoggerFactory.getLogger(VideoEncodeService.class);
+
     private final static ConcurrentHashMap<Integer, LinkedBlockingQueue<IVideoEncodeTask>> h264Map = new ConcurrentHashMap<>();
     private final static ConcurrentHashMap<Integer, VideoEncodeThread> encodeThreadMap = new ConcurrentHashMap<>();
     private final static ThreadPoolExecutor encodePoolExecutor = new ThreadPoolExecutor(
