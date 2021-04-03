@@ -1,6 +1,10 @@
 # dbg-project
 这是一个练习使用的项目
 
+[GitHub](https://github.com/DbgDebug/dbg-project)
+
+[Gitee](https://gitee.com/dbge/dbg-project)
+
 ### 说明
 * 项目基于 spring boot 开发
 * 模块下的 build.sh 文件用于打包当前模块、构建 docker 镜像并上传到私有镜像仓库
