@@ -50,7 +50,7 @@ public class TestController {
             RequestMappingInfo requestMappingInfo = m.getKey();
             HandlerMethod handlerMethod = m.getValue();
             PatternsRequestCondition p = requestMappingInfo.getPatternsCondition();
-            for (String url : p.getPatterns()) {
+            for (String url : Objects.requireNonNull(p).getPatterns()) {
                 map.put("url", url);
             }
             map.put("className", handlerMethod.getMethod().getDeclaringClass().getName());

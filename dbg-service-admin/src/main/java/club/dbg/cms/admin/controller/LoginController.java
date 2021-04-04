@@ -2,10 +2,13 @@ package club.dbg.cms.admin.controller;
 
 import club.dbg.cms.admin.config.ConfigConsts;
 import club.dbg.cms.admin.filter.pojo.MyHttpServletRequest;
+import club.dbg.cms.admin.pojo.VerificationCodeDTO;
 import club.dbg.cms.admin.service.common.CommonService;
 import club.dbg.cms.admin.service.login.LoginService;
 import club.dbg.cms.admin.service.login.pojo.LoginRequest;
 import club.dbg.cms.rpc.pojo.ResponseResultDTO;
+import club.dbg.cms.rpc.pojo.TokenDTO;
+import club.dbg.cms.util.ResponseBuild;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +32,7 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/login", name = "登录", method = RequestMethod.POST)
-    public ResponseEntity<ResponseResultDTO> login(
+    public ResponseBuild<TokenDTO> login(
             MyHttpServletRequest request,
             @Length(min = ConfigConsts.USERNAME_MIN,
                     max = ConfigConsts.USERNAME_MAX,
@@ -48,27 +51,23 @@ public class LoginController {
         loginRequest.setVerificationCode(verificationCode);
         loginRequest.setVerificationToken(verificationToken);
         loginRequest.setIp(request.getOperator().getIp());
-        ResponseResultDTO response = new ResponseResultDTO();
-        response.setData(loginService.login(loginRequest));
-        return ResponseEntity.ok(response);
+        return ResponseBuild.ok(loginService.login(loginRequest));
     }
 
     @RequestMapping(value = "/logout", name = "登出", method = RequestMethod.GET)
-    public ResponseEntity<ResponseResultDTO> logout(MyHttpServletRequest request) {
+    public ResponseBuild<Boolean> logout(MyHttpServletRequest request) {
         int id = request.getOperator().getId();
         String token = request.getOperator().getAccessToken();
-        return ResponseEntity.ok(new ResponseResultDTO(loginService.logout(id, token)));
+        return ResponseBuild.ok(loginService.logout(id, token));
     }
 
     @RequestMapping(value = "/get_verification_code", name = "获取验证码", method = RequestMethod.GET)
-    public ResponseEntity<ResponseResultDTO> getVerificationCode() {
-        ResponseResultDTO response = new ResponseResultDTO();
-        response.setData(loginService.getVerificationCode());
-        return ResponseEntity.ok(response);
+    public ResponseBuild<VerificationCodeDTO> getVerificationCode() {
+        return ResponseBuild.ok(loginService.getVerificationCode());
     }
 
     @RequestMapping(value = "/get_email_code", name = "获取邮箱验证码", method = RequestMethod.GET)
-    public ResponseEntity<ResponseResultDTO> getEmailCode() {
-        return ResponseEntity.ok(null);
+    public ResponseBuild<VerificationCodeDTO> getEmailCode() {
+        return ResponseBuild.ok(null);
     }
 }

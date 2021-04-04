@@ -4,6 +4,7 @@ import club.dbg.cms.admin.config.ConfigConsts;
 import club.dbg.cms.admin.filter.pojo.MyHttpServletRequest;
 import club.dbg.cms.admin.service.account.AccountService;
 import club.dbg.cms.admin.service.account.pojo.AccountDTO;
+import club.dbg.cms.admin.service.account.pojo.AccountListDTO;
 import club.dbg.cms.rpc.pojo.Operator;
 import club.dbg.cms.rpc.pojo.ResponseResultDTO;
 import club.dbg.cms.util.ResponseBuild;
@@ -36,20 +37,20 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/get_account_list", method = RequestMethod.GET, name = "获取用户列表")
-    public ResponseEntity<ResponseResultDTO> getAccountList(@RequestParam(value = "username", required = false) String username,
-                                                            @RequestParam("page") Integer page,
-                                                            @RequestParam("pageSize") Integer pageSize) {
-        return ResponseEntity.ok(new ResponseResultDTO(accountService.getAccountList(username, page, pageSize)));
+    public ResponseBuild<AccountListDTO> getAccountList(@RequestParam(value = "username", required = false) String username,
+                                                        @RequestParam("page") Integer page,
+                                                        @RequestParam("pageSize") Integer pageSize) {
+        return ResponseBuild.ok(accountService.getAccountList(username, page, pageSize));
     }
 
     @RequestMapping(value = "/user_info", method = RequestMethod.GET, name = "获取用户信息")
-    public ResponseEntity<ResponseResultDTO> getAccountDetail(MyHttpServletRequest request) {
+    public ResponseBuild<AccountDTO> getAccountDetail(MyHttpServletRequest request) {
         Integer accountId = request.getOperator().getId();
-        return ResponseEntity.ok(new ResponseResultDTO(accountService.getAccountDetail(accountId)));
+        return ResponseBuild.ok(accountService.getAccountDetail(accountId));
     }
 
     @RequestMapping(value = "/add_account", method = RequestMethod.POST, name = "创建账号")
-    public ResponseEntity<ResponseResultDTO> addAccount(
+    public ResponseBuild<Boolean> addAccount(
             MyHttpServletRequest request,
             @Length(min = ConfigConsts.USERNAME_MIN,
                     max = ConfigConsts.USERNAME_MAX,
@@ -81,11 +82,11 @@ public class AccountController {
         accountDTO.setSex(sex);
         accountDTO.setStatus(status);
         accountDTO.setRoleIds(roleIds);
-        return ResponseEntity.ok(new ResponseResultDTO(accountService.addAccount(operator, accountDTO)));
+        return ResponseBuild.ok(accountService.addAccount(operator, accountDTO));
     }
 
     @RequestMapping(value = "/edit_account", method = RequestMethod.POST, name = "编辑账号")
-    public ResponseEntity<ResponseResultDTO> editAccount(
+    public ResponseBuild<Boolean> editAccount(
             MyHttpServletRequest request,
             @Range
             @RequestParam("id") Integer id,
@@ -110,33 +111,30 @@ public class AccountController {
         accountDTO.setSex(sex);
         accountDTO.setStatus(status);
         accountDTO.setRoleIds(roleIds);
-        return ResponseEntity.ok(new ResponseResultDTO(accountService.editAccount(operator, accountDTO)));
+        return ResponseBuild.ok(accountService.editAccount(operator, accountDTO));
     }
 
     @RequestMapping(value = "/delete_account", method = RequestMethod.POST, name = "删除账号")
-    public ResponseEntity<ResponseResultDTO> deleteAccount(
+    public ResponseBuild<Boolean> deleteAccount(
             MyHttpServletRequest request,
             @NotNull(message = "id不能为空")
             @Min(value = 0, message = "id大于等于0")
             @RequestParam("id") Integer id) {
         Operator operator = request.getOperator();
-        return ResponseEntity.ok(new ResponseResultDTO(accountService.deleteAccount(operator, id)));
+        return ResponseBuild.ok(accountService.deleteAccount(operator, id));
     }
 
     @RequestMapping(value = "/delete_accounts", method = RequestMethod.POST, name = "删除账号（批量）")
-    public ResponseEntity<ResponseResultDTO> deleteAccounts(@RequestParam("idList") List<Integer> idList) {
-        System.out.println(JSON.toJSONString(idList));
-        ResponseResultDTO response = new ResponseResultDTO();
-        response.setCode(40000);
-        response.setMessage("暂不提供服务");
-        return ResponseEntity.ok(response);
+    public ResponseBuild<String> deleteAccounts(@RequestParam("idList") List<Integer> idList) {
+        return ResponseBuild.bad("暂不提供服务");
     }
 
     @RequestMapping(value = "/update_password", method = RequestMethod.POST, name = "修改密码")
-    public ResponseEntity<ResponseBuild<Boolean>> changePassword(MyHttpServletRequest request,
-                                                                 @RequestParam("passwordOld") String passwordOld,
-                                                                 @RequestParam("passwordNew") String passwordNew) {
+    public ResponseBuild<Boolean> changePassword(
+            MyHttpServletRequest request,
+            @RequestParam("passwordOld") String passwordOld,
+            @RequestParam("passwordNew") String passwordNew) {
         Integer id = request.getOperator().getId();
-        return ResponseBuild.build(accountService.changePassword(id, passwordOld, passwordNew));
+        return ResponseBuild.ok(accountService.changePassword(id, passwordOld, passwordNew));
     }
 }

@@ -1,11 +1,14 @@
 package club.dbg.cms.admin.controller;
 
+import club.dbg.cms.admin.service.permission.pojo.PermissionListDTO;
+import club.dbg.cms.admin.service.permission.pojo.PermissionTree;
 import club.dbg.cms.domain.admin.PermissionDO;
 import club.dbg.cms.domain.admin.ServiceDO;
 import club.dbg.cms.admin.config.ConfigConsts;
 import club.dbg.cms.admin.service.permission.PermissionService;
 import club.dbg.cms.admin.service.permission.pojo.ServiceListDTO;
 import club.dbg.cms.rpc.pojo.ResponseResultDTO;
+import club.dbg.cms.util.ResponseBuild;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author dbg
@@ -32,7 +37,7 @@ public class PermissionController {
     }
 
     @RequestMapping(value = "get_service_list", name = "获取服务列表", method = RequestMethod.GET)
-    public ResponseEntity<ResponseResultDTO> getServiceList(
+    public ResponseBuild<ServiceListDTO> getServiceList(
             @Length(max = ConfigConsts.QUERY_SERVICE_NAME_MAX,
                     message = ConfigConsts.QUERY_SERVICE_NAME_DESCRIBE)
             @RequestParam("serviceName") String serviceName,
@@ -44,14 +49,11 @@ public class PermissionController {
                     max = ConfigConsts.PAGE_SIZE_MAX,
                     message = ConfigConsts.PAGE_SIZE_DESCRIBE)
             @RequestParam("pageSize") int pageSize) {
-        ServiceListDTO serviceList = permissionService.getServiceList(serviceName, page, pageSize);
-        ResponseResultDTO response = new ResponseResultDTO();
-        response.setData(serviceList);
-        return ResponseEntity.ok(response);
+        return ResponseBuild.ok(permissionService.getServiceList(serviceName, page, pageSize));
     }
 
     @RequestMapping(value = "add_service", name = "添加服务", method = RequestMethod.POST)
-    public ResponseEntity<ResponseResultDTO> addService(
+    public ResponseBuild<Boolean> addService(
             @Length(min = ConfigConsts.SERVICE_NAME_MIN,
                     max = ConfigConsts.SERVICE_NAME_MAX,
                     message = ConfigConsts.SERVICE_NAME_DESCRIBE)
@@ -68,13 +70,11 @@ public class PermissionController {
         serviceData.setServiceName(serviceName);
         serviceData.setDisplayName(displayName);
         serviceData.setStatus(status);
-        ResponseResultDTO response = new ResponseResultDTO();
-        response.setData(permissionService.addService(serviceData));
-        return ResponseEntity.ok(response);
+        return ResponseBuild.ok(permissionService.addService(serviceData));
     }
 
     @RequestMapping(value = "edit_service", name = "编辑服务", method = RequestMethod.POST)
-    public ResponseEntity<ResponseResultDTO> editService(
+    public ResponseBuild<Boolean> editService(
             @Range(max = ConfigConsts.ID_MAX,
                     message = ConfigConsts.ID_DESCRIBE)
             @RequestParam("id") Integer id,
@@ -95,20 +95,16 @@ public class PermissionController {
         serviceData.setServiceName(serviceName);
         serviceData.setDisplayName(displayName);
         serviceData.setStatus(status);
-        ResponseResultDTO response = new ResponseResultDTO();
-        response.setData(permissionService.editService(serviceData));
-        return ResponseEntity.ok(response);
+        return ResponseBuild.ok(permissionService.editService(serviceData));
     }
 
     @RequestMapping(value = "delete_service", name = "删除服务", method = RequestMethod.POST)
-    public ResponseEntity<ResponseResultDTO> deleteService(@RequestParam("id") int id) {
-        ResponseResultDTO response = new ResponseResultDTO();
-        response.setData(permissionService.deleteService(id));
-        return ResponseEntity.ok(response);
+    public ResponseBuild<Boolean> deleteService(@RequestParam("id") int id) {
+        return ResponseBuild.ok(permissionService.deleteService(id));
     }
 
     @RequestMapping(value = "get_permission_list", name = "获取权限列表", method = RequestMethod.GET)
-    public ResponseEntity<ResponseResultDTO> getPermissionList(
+    public ResponseBuild<PermissionListDTO> getPermissionList(
             @Range(min = ConfigConsts.QUERY_SERVICE_ID_MIN,
                     max = ConfigConsts.QUERY_SERVICE_ID_MAX,
                     message = ConfigConsts.QUERY_SERVICE_ID_DESCRIBE)
@@ -128,18 +124,16 @@ public class PermissionController {
                     max = ConfigConsts.PAGE_SIZE_MAX,
                     message = ConfigConsts.PAGE_SIZE_DESCRIBE)
             @RequestParam("pageSize") int pageSize) {
-        ResponseResultDTO response = new ResponseResultDTO();
-        response.setData(permissionService.getPermissionList(serviceId, permissionName, status, page, pageSize));
-        return ResponseEntity.ok(response);
+        return ResponseBuild.ok(permissionService.getPermissionList(serviceId, permissionName, status, page, pageSize));
     }
 
     @RequestMapping(value = "get_permission_tree", name = "获取权限列表（树形结构）", method = RequestMethod.GET)
-    public ResponseEntity<ResponseResultDTO> getPermissionTree() {
-        return ResponseEntity.ok(new ResponseResultDTO(permissionService.getPermissionTree()));
+    public ResponseBuild<List<PermissionTree>> getPermissionTree() {
+        return ResponseBuild.ok(permissionService.getPermissionTree());
     }
 
     @RequestMapping(value = "add_permission", name = "添加权限", method = RequestMethod.POST)
-    public ResponseEntity<ResponseResultDTO> addPermission(
+    public ResponseBuild<Boolean> addPermission(
             @Range(min = ConfigConsts.DATA_SERVICE_ID_MIN,
                     max = ConfigConsts.DATA_SERVICE_ID_MAX,
                     message = ConfigConsts.DATA_SERVICE_ID_DESCRIBE)
@@ -161,14 +155,11 @@ public class PermissionController {
         permission.setPermissionName(permissionName);
         permission.setPath(path);
         permission.setStatus(status);
-
-        ResponseResultDTO response = new ResponseResultDTO();
-        response.setData(permissionService.addPermission(permission));
-        return ResponseEntity.ok(response);
+        return ResponseBuild.ok(permissionService.addPermission(permission));
     }
 
     @RequestMapping(value = "set_permission_status", name = "设置权限状态", method = RequestMethod.POST)
-    public ResponseEntity<ResponseResultDTO> setPermission(
+    public ResponseBuild<Boolean> setPermission(
             @Range(max = ConfigConsts.ID_MAX,
                     message = ConfigConsts.ID_DESCRIBE)
             @RequestParam("id") Integer id,
@@ -181,18 +172,13 @@ public class PermissionController {
         PermissionDO permission = new PermissionDO();
         permission.setId(id);
         permission.setStatus(status);
-
-        ResponseResultDTO response = new ResponseResultDTO();
-        response.setData(permissionService.updatePermission(permission));
-        return ResponseEntity.ok(response);
+        return ResponseBuild.ok(permissionService.updatePermission(permission));
     }
 
     @RequestMapping(value = "delete_permission", name = "删除权限", method = RequestMethod.POST)
-    public ResponseEntity<ResponseResultDTO> deletePermission(
+    public ResponseBuild<Boolean> deletePermission(
             @Range(max = ConfigConsts.ID_MAX, message = ConfigConsts.ID_DESCRIBE)
             @RequestParam("id") int id) {
-        ResponseResultDTO response = new ResponseResultDTO();
-        response.setData(permissionService.deletePermission(id));
-        return ResponseEntity.ok(response);
+        return ResponseBuild.ok(permissionService.deletePermission(id));
     }
 }

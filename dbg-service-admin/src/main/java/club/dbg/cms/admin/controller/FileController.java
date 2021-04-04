@@ -1,7 +1,9 @@
 package club.dbg.cms.admin.controller;
 
 import club.dbg.cms.admin.service.file.FileService;
+import club.dbg.cms.admin.service.file.pojo.FileDir;
 import club.dbg.cms.rpc.pojo.ResponseResultDTO;
+import club.dbg.cms.util.ResponseBuild;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,13 +26,10 @@ public class FileController {
     }
 
     @RequestMapping(value = "get_file_dir", name = "获取目录文件", method = RequestMethod.GET)
-    public ResponseEntity<ResponseResultDTO> getFileDir(
+    public ResponseBuild<FileDir> getFileDir(
             @DecimalMax(value = "255", message = "路径长度不能大于255")
             @RequestParam(value = "path", defaultValue = "./") String path,
             @RequestParam(value = "only_file", defaultValue = "false") Boolean onlyFile) {
-        ResponseResultDTO response = new ResponseResultDTO();
-        response.setCode(20000);
-        response.setData(fileService.getFileDir(path, onlyFile));
-        return ResponseEntity.ok(response);
+        return ResponseBuild.ok(fileService.getFileDir(path, onlyFile));
     }
 }

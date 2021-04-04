@@ -22,7 +22,7 @@ public class PermissionRegisterController {
     }
 
     @RequestMapping(value = "/register")
-    public ResponseEntity<ResponseBuild<Boolean>> permissionRegister(@RequestBody PermissionRegisterDTO permissionRegisterDTO) {
-        return ResponseBuild.build(permissionRegisterService.permissionRegister(permissionRegisterDTO));
+    public ResponseBuild<Boolean> permissionRegister(@RequestBody PermissionRegisterDTO permissionRegisterDTO) {
+        return ResponseBuild.ok(permissionRegisterService.permissionRegister(permissionRegisterDTO));
     }
 }
