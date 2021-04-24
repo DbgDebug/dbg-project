@@ -11,10 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,7 +25,7 @@ public class OrderService {
 
     private final Map<Long, OrderDTO> orderMap = new ConcurrentHashMap<>();
 
-    private final ReentrantLock reentrantLock = new ReentrantLock();
+    private final ReentrantLock refreshLock = new ReentrantLock();
 
     private final AtomicInteger atomicInteger = new AtomicInteger();
 
@@ -39,27 +36,24 @@ public class OrderService {
     public OrderDTO createOrder(OrderForm orderForm) {
         log.info(JSON.toJSONString(orderForm));
         BigDecimal totalAmount = new BigDecimal("0.00");
-        List<ProductForm> productFormList = orderForm.getProductList();
-        for (ProductForm productForm : productFormList) {
+        List<ProductDTO> productList = new ArrayList<>(orderForm.getProductList().size());
+        for (ProductForm productForm : orderForm.getProductList()) {
             ProductDTO productDTO = productService.getProductDetail(productForm.getProductId());
             BigDecimal productTotal = productDTO.getPrice().multiply(new BigDecimal(productForm.getQuantity()));
             totalAmount = totalAmount.add(productTotal);
+            productList.add(productDTO);
         }
         int timestamp = (int) (System.currentTimeMillis() / 1000);
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setTotalAmount(totalAmount);
         orderDTO.setCreateTime(timestamp);
-        orderDTO.setProductList(orderForm.getProductList());
-        reentrantLock.unlock();
-        try {
-            orderDTO.setOrderId(System.currentTimeMillis());
-            orderMap.put(orderDTO.getOrderId(), orderDTO);
-            if(atomicInteger.addAndGet(1) > 100) {
-                atomicInteger.set(0);
-                CompletableFuture.runAsync(this::refreshOrderMap);
-            }
-        } finally {
-            reentrantLock.unlock();
+        orderDTO.setProductList(productList);
+        orderDTO.setOrderId(System.currentTimeMillis());
+        orderMap.put(orderDTO.getOrderId(), orderDTO);
+
+        if (atomicInteger.addAndGet(1) > 100) {
+            atomicInteger.set(0);
+            CompletableFuture.runAsync(this::refreshOrderMap);
         }
 
         return orderDTO;
@@ -70,7 +64,8 @@ public class OrderService {
     }
 
     public void refreshOrderMap() {
-        if (!reentrantLock.tryLock()) {
+        final ReentrantLock lock = refreshLock;
+        if (!lock.tryLock()) {
             return;
         }
         try {
@@ -80,12 +75,12 @@ public class OrderService {
             while (iterator.hasNext()) {
                 Map.Entry<Long, OrderDTO> entry = iterator.next();
                 OrderDTO orderDTO = entry.getValue();
-                if (timestamp - orderDTO.getCreateTime() > 600) {
+                if (timestamp - orderDTO.getCreateTime() > 1700) {
                     iterator.remove();
                 }
             }
         } finally {
-            reentrantLock.unlock();
+            lock.unlock();
         }
 
     }

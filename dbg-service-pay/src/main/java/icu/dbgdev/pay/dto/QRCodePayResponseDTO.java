@@ -5,6 +5,7 @@ public class QRCodePayResponseDTO {
     private String subject;
     private String totalAmount;
     private String qrCodeUrl;
+    private Long createTime;
 
     public QRCodePayResponseDTO() {
 
@@ -14,6 +15,7 @@ public class QRCodePayResponseDTO {
     public QRCodePayResponseDTO(String outTradeNo, String qrCodeUrl) {
         this.outTradeNo = outTradeNo;
         this.qrCodeUrl = qrCodeUrl;
+        createTime = System.currentTimeMillis() / 1000;
     }
 
     public QRCodePayResponseDTO(String code, String outTradeNo, String subject, String totalAmount, String qrCodeUrl) {
@@ -21,6 +23,7 @@ public class QRCodePayResponseDTO {
         this.subject = subject;
         this.totalAmount = totalAmount;
         this.qrCodeUrl = qrCodeUrl;
+        createTime = System.currentTimeMillis() / 1000;
     }
 
     public String getOutTradeNo() {
@@ -53,6 +56,14 @@ public class QRCodePayResponseDTO {
 
     public void setTotalAmount(String totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
     }
 
     @Override

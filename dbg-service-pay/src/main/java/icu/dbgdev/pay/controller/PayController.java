@@ -17,7 +17,7 @@ public class PayController {
         this.payService = payService;
     }
 
-    @RequestMapping(value = "/get_pay_qrcode", method = RequestMethod.GET)
+    @RequestMapping(value = "/pay_qrcode", method = RequestMethod.POST)
     public ResponseBuild<QRCodePayResponseDTO> getPaymentQRCode(
             @RequestParam("paymentWay") String paymentWay,
             @RequestParam("orderId") Long orderId) {

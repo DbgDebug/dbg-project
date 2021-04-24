@@ -1,5 +1,7 @@
 package icu.dbgdev.pay.service.order.pojo;
 
+import icu.dbgdev.pay.service.product.pojo.ProductDTO;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -13,7 +15,7 @@ public class OrderDTO {
     private Integer finishTime;
     private Integer splitTime;
     private String splitReason;
-    private List<ProductForm> productList;
+    private List<ProductDTO> productList;
 
     public Long getOrderId() {
         return orderId;
@@ -87,11 +89,11 @@ public class OrderDTO {
         this.splitReason = splitReason;
     }
 
-    public List<ProductForm> getProductList() {
+    public List<ProductDTO> getProductList() {
         return productList;
     }
 
-    public void setProductList(List<ProductForm> productList) {
+    public void setProductList(List<ProductDTO> productList) {
         this.productList = productList;
     }
 }

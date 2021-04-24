@@ -4,6 +4,8 @@ import icu.dbgdev.pay.dto.QRCodePayResponseDTO;
 import icu.dbgdev.pay.dto.TradeInfoDTO;
 import icu.dbgdev.pay.exception.PayException;
 import icu.dbgdev.pay.service.alipay.IAlipayService;
+import icu.dbgdev.pay.service.order.OrderService;
+import icu.dbgdev.pay.service.order.pojo.OrderDTO;
 import icu.dbgdev.pay.service.product.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,18 +21,28 @@ public class PayService implements IPayService {
 
     private final ProductService productService;
 
-    public PayService(IAlipayService alipayService, ProductService productService) {
+    private final OrderService orderService;
+
+    public PayService(
+            IAlipayService alipayService,
+            ProductService productService,
+            OrderService orderService) {
         this.alipayService = alipayService;
         this.productService = productService;
+        this.orderService = orderService;
     }
 
     @Override
     public QRCodePayResponseDTO getPaymentQRCode(String paymentWay, Long orderId) {
+        OrderDTO order = orderService.getOrderDetail(orderId);
+        if (order == null) {
+            throw PayException.build("订单不存在");
+        }
         QRCodePayResponseDTO qrCodePayResponseDTO = null;
         TradeInfoDTO tradeInfoDTO = new TradeInfoDTO();
-        tradeInfoDTO.setOutTradeNo(orderId.toString());
-        tradeInfoDTO.setTotalAmount(new BigDecimal("100.00"));
-        tradeInfoDTO.setSubject("SSD存储设备");
+        tradeInfoDTO.setOutTradeNo(order.getOrderId().toString());
+        tradeInfoDTO.setTotalAmount(order.getTotalAmount());
+        tradeInfoDTO.setSubject("肥宅零食");
         try {
             switch (paymentWay) {
                 case "alipay":

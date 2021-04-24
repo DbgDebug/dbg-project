@@ -4,10 +4,7 @@ import club.dbg.cms.util.ResponseBuild;
 import icu.dbgdev.pay.service.order.OrderService;
 import icu.dbgdev.pay.service.order.pojo.OrderDTO;
 import icu.dbgdev.pay.service.order.pojo.OrderForm;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/order")
@@ -21,5 +18,10 @@ public class OrderController {
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public ResponseBuild<OrderDTO> createOrder(@RequestBody OrderForm orderForm) {
         return ResponseBuild.ok(orderService.createOrder(orderForm));
+    }
+
+    @RequestMapping(value = "/detail", method = RequestMethod.POST)
+    public ResponseBuild<OrderDTO> detail(@RequestParam("id") Long id) {
+        return ResponseBuild.ok(orderService.getOrderDetail(id));
     }
 }
