@@ -3,6 +3,7 @@ package club.dbg.cms.admin.service.bilibili;
 import club.dbg.cms.admin.service.bilibili.pojo.*;
 import club.dbg.cms.util.ZLibUtils;
 import club.dbg.cms.util.bilibili.DanmuPatternUtils;
+import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +13,7 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 
 /**
@@ -70,6 +72,7 @@ public class DanmuReceiveThread implements Runnable {
             count++;
             try {
                 // 连接
+                System.out.println(JSON.toJSONString(danmuConf));
                 socket = new Socket(danmuConf.getHost(), danmuConf.getPort());
                 // 获取数据输出流
                 dataOutputStream = new DataOutputStream(socket.getOutputStream());
@@ -105,15 +108,13 @@ public class DanmuReceiveThread implements Runnable {
      * 协议 sequence int
      */
     private void inputStreamHandle(InputStream inputStream) throws Exception {
+        final int headerSize = 16;
+        byte[] buf = new byte[headerSize];
         while (!Thread.currentThread().isInterrupted()) {
-            // 开始读取数据流，先开辟缓存区
-            int headerSize = 16;
-            byte[] buf = new byte[headerSize];
-            int count = headerSize;
             // 已经成功读取的字节的个数
             int readCount = 0;
-            while (readCount < count) {
-                readCount += inputStream.read(buf, readCount, count - readCount);
+            while (readCount < headerSize) {
+                readCount += inputStream.read(buf, readCount, headerSize - readCount);
             }
             ByteBuffer byteBuffer = ByteBuffer.wrap(buf);
             // 头部的长度数据
@@ -124,16 +125,15 @@ public class DanmuReceiveThread implements Runnable {
                 continue;
             }
             // 剔除头部长度，进行读取
-            byte[] bodyByte = new byte[length - headerSize];
-            count = length - headerSize;
-            // 已经成功读取的字节的个数
-            readCount = 0;
-            while (readCount < count) {
-                readCount += inputStream.read(bodyByte, readCount, count - readCount);
-            }
+            // byte[] bodyByte = new byte[length - headerSize];
             byte[] bytes = new byte[length];
+            //count = length;
+            // 已经成功读取的字节的个数
+            readCount = headerSize;
+            while (readCount < length) {
+                readCount += inputStream.read(bytes, readCount, length - readCount);
+            }
             System.arraycopy(buf, 0, bytes, 0, headerSize);
-            System.arraycopy(bodyByte, 0, bytes, headerSize, bodyByte.length);
             byteHandle(bytes);
         }
     }
@@ -180,14 +180,14 @@ public class DanmuReceiveThread implements Runnable {
                 try {
                     messageHandleService.danmuMsg(roomId, msg);
                 } catch (InterruptedException ie) {
-                    log.info("弹幕处理异常:", ie);
+                    log.warn("弹幕处理异常:", ie);
                 }
                 break;
             case "SEND_GIFT":
                 try {
                     messageHandleService.gifMsg(roomId, msg);
                 } catch (InterruptedException ie) {
-                    log.info("礼物处理异常:", ie);
+                    log.warn("礼物处理异常:", ie);
                 }
                 break;
             case "WELCOME":
@@ -219,17 +219,17 @@ public class DanmuReceiveThread implements Runnable {
      * @param roomId 真实的直播房间 ID
      */
     private void sendJoinMsg(Integer roomId, String token) {
-        // 生成随机的 UID
-        long clientId = System.currentTimeMillis();
+        // UID,未登录为0
+        long uid = 0;
         // 发送验证包
         sendDataPack(7,
                 String.format("{\"uid\": %d, " +
                         "\"roomid\": %d, " +
                         "\"protover\": 1, " +
                         "\"platform\": \"web\", " +
-                        "\"clientver\": \"1.8.2\", " +
+                        "\"clientver\": \"1.14.3\", " +
                         "\"type\": 2, " +
-                        "\"key\": \"%s\"}", clientId, roomId, token));
+                        "\"key\": \"%s\"}", uid, roomId, token));
     }
 
     /**
@@ -241,7 +241,27 @@ public class DanmuReceiveThread implements Runnable {
 
     /**
      * 固定的发包方法
-     *
+     *     HANDSHAKE = 0
+     *     HANDSHAKE_REPLY = 1
+     *     HEARTBEAT = 2
+     *     HEARTBEAT_REPLY = 3
+     *     SEND_MSG = 4
+     *     SEND_MSG_REPLY = 5
+     *     DISCONNECT_REPLY = 6
+     *     AUTH = 7
+     *     AUTH_REPLY = 8
+     *     RAW = 9
+     *     PROTO_READY = 10
+     *     PROTO_FINISH = 11
+     *     CHANGE_ROOM = 12
+     *     CHANGE_ROOM_REPLY = 13
+     *     REGISTER = 14
+     *     REGISTER_REPLY = 15
+     *     UNREGISTER = 16
+     *     UNREGISTER_REPLY = 17
+     *     # B站业务自定义OP
+     *     # MinBusinessOp = 1000
+     *     # MaxBusinessOp = 10000
      * @param action 操作码，可选 2,3,5,7,8
      * @param body   发送的数据本体部分
      */
