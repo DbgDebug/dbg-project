@@ -79,6 +79,7 @@ public class AuthFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+        response.addHeader("Access-Control-Max-Age", "1800");
         log.info("{}:{}", request.getMethod(), request.getServletPath());
 
         if (isDebug) {
@@ -132,7 +133,7 @@ public class AuthFilter implements Filter {
 
     private String getIpAddr(HttpServletRequest request) {
         String unknown = "unknown";
-        String ip = request.getHeader("x-forwarded-for");
+        String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
         }
