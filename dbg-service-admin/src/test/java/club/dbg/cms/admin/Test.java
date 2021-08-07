@@ -1,11 +1,5 @@
 package club.dbg.cms.admin;
 
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.function.Supplier;
-
 public class Test {
     @org.junit.Test
     public void bit() {
@@ -29,5 +23,15 @@ public class Test {
                 System.out.println(2);
             }
         }
+    }
+
+    @org.junit.Test
+    public void testStr() throws InterruptedException {
+        String[] arr = new String[330000];
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = new String(String.valueOf(System.currentTimeMillis()));
+        }
+
+        Thread.sleep(30000);
     }
 }

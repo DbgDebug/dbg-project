@@ -103,7 +103,7 @@ public class PermissionRegister {
             String classPath = "";
             RequestMapping classRequestMapping = classed.getAnnotation(RequestMapping.class);
             if (classRequestMapping != null) {
-                String[] classPaths = classRequestMapping.path();
+                String[] classPaths = classRequestMapping.value();
                 if (classPaths.length > 0) {
                     if (classPaths[0].indexOf("/") != 0) {
                         classPath = "/" + classPaths[0];

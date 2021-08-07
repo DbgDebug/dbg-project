@@ -59,7 +59,7 @@ logging:
   path: ./logs
 
 system:
-  permissionRegister: ${PERMISSION_REHISTER:true}
+  permissionRegister: ${PERMISSION_REHISTER:false}
   permissionKey: ${PERMISSION_KEY:12345678}
   isDebug: ${IS_DEBUG:false}
 

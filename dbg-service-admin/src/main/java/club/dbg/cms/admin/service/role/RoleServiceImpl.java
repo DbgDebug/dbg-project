@@ -102,7 +102,7 @@ public class RoleServiceImpl implements RoleService {
             }
             transactionManager.commit(transStatus);
         } catch (Exception e) {
-            log.info("添加角色异常:", e);
+            log.warn("添加角色异常:", e);
             transactionManager.rollback(transStatus);
             throw e;
         }
@@ -127,7 +127,7 @@ public class RoleServiceImpl implements RoleService {
         if (roleCheck.getRoleLevel() < operator.getRoleLevel()) {
             throw new BusinessException("无权限编辑此角色");
         }
-        // 角色等级相同，操作角色不是被操作角色创建者时
+        // 角色等级相同，操作角色不是被操作角色的创建者时
         if (roleCheck.getRoleLevel().equals(operator.getRoleLevel())
                 && !roleCheck.getCreatorId().equals(operator.getRoleId())) {
             throw new BusinessException("无权限编辑此角色");
@@ -189,7 +189,7 @@ public class RoleServiceImpl implements RoleService {
                 for(RolePermissionDO rolePermissionDO : rolePermissionDOS) {
                     rolePermissionIds.add(rolePermissionDO.getId());
                 }
-                System.out.println(JSON.toJSONString(rolePermissionIds));
+                // System.out.println(JSON.toJSONString(rolePermissionIds));
                 if (!rolePermissionSetOld.isEmpty()) {
                     if (rolePermissionMapper.deleteByIds(rolePermissionIds) < 0) {
                         log.info("删除旧权限错误");
@@ -203,13 +203,13 @@ public class RoleServiceImpl implements RoleService {
                 roleDO.setId(roleDTO.getId());
                 roleDO.setUpdateTime(System.currentTimeMillis() / 1000);
                 if (roleMapper.updateRole(roleDO) != 1) {
-                    log.info("更新最后更新时间失败");
+                    log.warn("更新最后更新时间失败");
                     throw new BusinessException("编辑角色失败");
                 }
                 transactionManager.commit(transStatus);
             }
         } catch (Exception e) {
-            log.info("编辑角色异常:", e);
+            log.warn("编辑角色异常:", e);
             transactionManager.rollback(transStatus);
             throw new BusinessException("编辑角色失败");
         }
@@ -318,13 +318,12 @@ public class RoleServiceImpl implements RoleService {
         if (accountRoleMapper.insertAccountRoles(accountRoleList) != accountRoleList.size()) {
             throw new BusinessException("赋予角色失败");
         }
-        log.info("修改成功");
         return true;
     }
 
     private TransactionStatus getTransactionStatus() {
         DefaultTransactionDefinition transDefinition = new DefaultTransactionDefinition();
-        transDefinition.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        transDefinition.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRED);
         return transactionManager.getTransaction(transDefinition);
     }
 

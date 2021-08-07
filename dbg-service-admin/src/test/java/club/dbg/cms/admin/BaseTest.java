@@ -13,6 +13,12 @@ import java.util.function.Supplier;
 public class BaseTest {
 
     @Test
+    public void shiftOperationTest() {
+        System.out.println((-10 >>> 1));
+        System.out.println(Integer.MAX_VALUE);
+    }
+
+    @Test
     public void testAsync() throws InterruptedException {
         BaseTest baseTest = new BaseTest();
         baseTest.test2();

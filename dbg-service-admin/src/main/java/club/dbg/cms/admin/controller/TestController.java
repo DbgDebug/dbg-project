@@ -71,7 +71,7 @@ public class TestController {
         FileInputStream in = null;
         try {
             //in = new FileInputStream(new File("D:\\DevelopmentEnvironment\\nginx-1.14.2\\html\\" + name));
-            in = new FileInputStream(new File("D:\\Project\\JAVA\\dbg-project\\dbg-camera\\ws.h264"));
+            in = new FileInputStream("D:\\Project\\JAVA\\dbg-project\\dbg-camera\\ws.h264");
             //设置文件头：最后一个参数是设置下载文件名
             //response.setHeader("Content-Disposition", "attachment;fileName="+fileName);
             out = response.getOutputStream();

@@ -58,7 +58,7 @@ public class PermissionRegisterServiceImpl implements PermissionRegisterService 
 
     /**
      * 验证需要注册权限的服务是否已添加到服务表，没有则不能注册
-     * 检测注册权限是否已存在，存在则更新，不存在则添加
+     * 检测新注册的权限是否已存在，存在则更新，不存在则添加
      * 当新注册的权限与该服务原有注册权限不一致时，将不存在于该次注册中的旧权限设置为停用
      * 新加权限默认赋予超级管理员
      * 刷新redis权限缓存
@@ -77,7 +77,7 @@ public class PermissionRegisterServiceImpl implements PermissionRegisterService 
         log.info("permissions:{}", JSON.toJSONString(permissionRegisterDTO));
         ServiceDO serviceInfo = serviceMapper.selectServiceByName(permissionRegisterDTO.getServiceName());
         if (serviceInfo == null) {
-            log.info("{}服务不存在", permissionRegisterDTO.getServiceName());
+            log.info("服务不存在:{}", permissionRegisterDTO.getServiceName());
             return false;
         }
         List<PermissionDO> permissionsDb = permissionMapper.selectByServiceId(serviceInfo.getId());
@@ -92,8 +92,8 @@ public class PermissionRegisterServiceImpl implements PermissionRegisterService 
                 insertList.add(permission);
             }
             permissionMapper.insertPermissions(insertList);
-            superAdminAuthorize(insertList);
             permissionCacheService.refreshPermissionCache();
+            superAdminAuthorize(insertList);
             log.info("新权限添加成功");
             return true;
         }
@@ -129,7 +129,6 @@ public class PermissionRegisterServiceImpl implements PermissionRegisterService 
         }
         if (!insertList.isEmpty()) {
             permissionMapper.insertPermissions(insertList);
-            superAdminAuthorize(insertList);
             log.info("新权限添加成功");
         }
         if (!updateList.isEmpty()) {
@@ -148,6 +147,7 @@ public class PermissionRegisterServiceImpl implements PermissionRegisterService 
             }
         }
         permissionCacheService.refreshPermissionCache();
+        superAdminAuthorize(insertList);
         return true;
     }
 

@@ -1,6 +1,6 @@
 package club.dbg.cms.blog.service;
 
-import club.dbg.cms.blog.aop.LockMode;
+import org.dbg.common.aop.lock.LockMode;
 
 public class BaseTest {
     public void test() {

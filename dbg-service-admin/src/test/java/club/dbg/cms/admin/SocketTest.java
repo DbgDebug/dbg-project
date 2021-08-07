@@ -17,10 +17,6 @@ public class SocketTest {
         Socket socket = server.accept();
         InputStream inputStream = socket.getInputStream();
         OutputStream outputStream = socket.getOutputStream();
-        String str = "\r\n";
-        System.out.println(Arrays.toString(str.getBytes()));
-        boolean isEnter = false;
-        boolean isLine = false;
         int endCount =0;
         int readIndex = 0;
         byte[] bytes = new byte[2048];
@@ -44,9 +40,8 @@ public class SocketTest {
             readIndex++;
             endCount = 0;
         }
-        String end = "HTTP/1.1 200 OK\r\n\r\n1";
-        outputStream.write(end.getBytes());
+        String response = "HTTP/1.1 200 OK\r\n\r\n1";
+        outputStream.write(response.getBytes());
         socket.close();
-        //Thread.sleep(1000);
     }
 }

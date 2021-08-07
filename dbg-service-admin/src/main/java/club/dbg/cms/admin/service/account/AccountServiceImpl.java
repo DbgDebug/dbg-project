@@ -129,7 +129,7 @@ public class AccountServiceImpl implements AccountService {
             }
             transactionManager.commit(transactionStatus);
         } catch (Exception e) {
-            log.info("添加用户异常：", e);
+            log.warn("添加用户异常：", e);
             transactionManager.rollback(transactionStatus);
             throw e;
         }
@@ -164,7 +164,7 @@ public class AccountServiceImpl implements AccountService {
                 transactionManager.commit(transactionStatus);
             }
         } catch (Exception e) {
-            log.info("修改用户信息异常：", e);
+            log.warn("修改用户信息异常：", e);
             transactionManager.rollback(transactionStatus);
             throw e;
         }
@@ -283,7 +283,7 @@ public class AccountServiceImpl implements AccountService {
 
     private TransactionStatus getTransactionStatus() {
         DefaultTransactionDefinition transDefinition = new DefaultTransactionDefinition();
-        transDefinition.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        transDefinition.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRED);
         return transactionManager.getTransaction(transDefinition);
     }
 }

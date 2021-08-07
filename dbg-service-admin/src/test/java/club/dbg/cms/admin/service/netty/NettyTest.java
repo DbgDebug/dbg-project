@@ -27,7 +27,7 @@ import java.util.regex.Matcher;
 public class NettyTest implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(NettyTest.class);
 
-    private final int roomId = 1512103;
+    private final int roomId = 1029;
 
     @Override
     public void run() {

@@ -86,7 +86,7 @@ public class VerificationCodeUtils {
         if (!redisUtils.set(redisHeader + token, code, timeout)) {
 
         }
-        String imageBase64 = ImageUtils.getImageByBase64(code);
+        String imageBase64 = ImageUtils.getImageBase64(code);
         verificationCode.setVerificationToken(token);
         verificationCode.setVerificationCode(imageBase64);
         return verificationCode;

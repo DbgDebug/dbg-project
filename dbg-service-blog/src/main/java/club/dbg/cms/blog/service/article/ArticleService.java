@@ -126,7 +126,7 @@ public class ArticleService implements IArticleService {
 
     private TransactionStatus getTransactionStatus() {
         DefaultTransactionDefinition transDefinition = new DefaultTransactionDefinition();
-        transDefinition.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        transDefinition.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRED);
         return transactionManager.getTransaction(transDefinition);
     }
 }

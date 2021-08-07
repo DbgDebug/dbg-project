@@ -27,6 +27,10 @@ public class ArticleServiceTest {
 
     @Test
     public void bitTest() {
-        System.out.println(2 >> 1);
+        short x;
+        int x0;
+        x=0x1122;
+        x0 = x & 0xFF;
+        System.out.printf("%x\n", x0);
     }
 }
