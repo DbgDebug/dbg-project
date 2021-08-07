@@ -29,7 +29,7 @@ public class DataSendThread implements Runnable {
         }
     }
 
-    public void submit(IWebSocketSendTask task)  {
+    public static void submit(IWebSocketSendTask task)  {
         try {
             dataTaskQueue.put(task);
         } catch (InterruptedException e) {

@@ -1,7 +1,5 @@
 package club.dbg.cms.video.service.device;
 
-import club.dbg.cms.video.controller.UserWebSocket;
-import club.dbg.cms.video.service.video.pojo.H264Byte;
 import club.dbg.cms.video.service.websocket.BinaryDataTask;
 import club.dbg.cms.video.service.websocket.IWebSocketSendTask;
 

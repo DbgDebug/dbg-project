@@ -9,7 +9,6 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class H264CallbackTask implements IH264DataCallbackTask {
-    private final DataSendThread dataSendThread = DataSendThread.getInstance();
     private final ConcurrentLinkedQueue<Session> sessions;
 
     public H264CallbackTask(ConcurrentLinkedQueue<Session> sessions) {
@@ -18,6 +17,6 @@ public class H264CallbackTask implements IH264DataCallbackTask {
 
     @Override
     public void callback(H264Byte h264Byte) {
-        dataSendThread.submit(new H264SendTask(ByteBuffer.wrap(h264Byte.getH264Bytes()), sessions));
+        DataSendThread.submit(new H264SendTask(ByteBuffer.wrap(h264Byte.getH264Bytes()), sessions));
     }
 }

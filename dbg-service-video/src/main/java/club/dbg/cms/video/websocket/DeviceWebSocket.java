@@ -1,16 +1,16 @@
-package club.dbg.cms.video.controller;
+package club.dbg.cms.video.websocket;
 
+import club.dbg.cms.util.FileUtils;
 import club.dbg.cms.util.JWTUtils;
+import club.dbg.cms.util.UUIDUtils;
+import club.dbg.cms.video.service.file.FileWriteService;
 import club.dbg.cms.video.service.websocket.BinaryDataTask;
 import club.dbg.cms.video.service.websocket.DataSendThread;
 import club.dbg.cms.video.service.websocket.pojo.TextMessage;
 import club.dbg.cms.video.service.websocket.pojo.WebSocketSession;
 import com.alibaba.fastjson.JSON;
 import club.dbg.cms.video.config.ApplicationContextRegister;
-import club.dbg.cms.video.service.device.H264CallbackTask;
-import club.dbg.cms.video.service.device.ImagesToH264Task;
 import club.dbg.cms.video.service.video.IVideoEncodeService;
-import club.dbg.cms.video.service.video.pojo.ImageByte;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -30,12 +30,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @ServerEndpoint("/device")
 public class DeviceWebSocket {
     private static final Logger log = LoggerFactory.getLogger(DeviceWebSocket.class);
-    private static final DataSendThread dataSendThread = DataSendThread.getInstance();
-    private IVideoEncodeService videoEncodeService = null;
+    private volatile IVideoEncodeService videoEncodeService = null;
+    private FileWriteService fileWriteService = null;
     private Integer deviceId;
 
-    public DeviceWebSocket() {
+    private final String savePath;
 
+    public DeviceWebSocket() {
+        savePath = "E:/video/";
+        ApplicationContext applicationContext = ApplicationContextRegister.getApplicationContext();
+        videoEncodeService = applicationContext.getBean(IVideoEncodeService.class);
+        fileWriteService = applicationContext.getBean(FileWriteService.class);
     }
 
     // 存储会话信息
@@ -54,25 +59,19 @@ public class DeviceWebSocket {
     }
 
     private void init() {
-        if (videoEncodeService == null) {
-            synchronized (DeviceWebSocket.class) {
-                if (videoEncodeService == null) {
-                    ApplicationContext applicationContext = ApplicationContextRegister.getApplicationContext();
-                    videoEncodeService = applicationContext.getBean(IVideoEncodeService.class);
-                }
-            }
-        }
+
     }
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
         init();
         log.info("Open a websocket.");
-        session.setMaxBinaryMessageBufferSize(5000000);
+        session.setMaxBinaryMessageBufferSize(10000000);
         WebSocketSession webSocketSession = new WebSocketSession();
         webSocketSession.setId(1);
         webSocketSession.setSession(session);
         webSocketSession.setEncode(false);
+        webSocketSession.setVideoId(UUIDUtils.getUUIDNotHyphen());
         sessionMap.put(session.getId(), webSocketSession);
         deviceMap.put(webSocketSession.getId(), session);
         // session.getBasicRemote().sendBinary(ByteBuffer.wrap(FileUtils.readFileByBytes("E:\\video\\19.mp4")));
@@ -98,22 +97,22 @@ public class DeviceWebSocket {
      * @param session    会话信息
      */
     @OnMessage
-    public void onMessage(ByteBuffer byteBuffer, Session session) throws InterruptedException {
+    public void onMessage(ByteBuffer byteBuffer, Session session) throws InterruptedException, IOException {
         WebSocketSession wsSession = sessionMap.get(session.getId());
-        var liveGroup = UserWebSocket.getLiveGroup();
-        var sessions = liveGroup.get(wsSession.getId());
+        fileWriteService.writeAsync(savePath, wsSession.getVideoId() + ".webm", byteBuffer.array(), true);
+        ConcurrentHashMap<Integer, ConcurrentLinkedQueue<Session>> liveGroup = UserWebSocket.getLiveGroup();
+        ConcurrentLinkedQueue<Session> sessions = liveGroup.get(wsSession.getId());
         if (sessions == null) {
             sessions = new ConcurrentLinkedQueue<>();
             liveGroup.put(wsSession.getId(), sessions);
         }
-        if (!wsSession.isEncode()) {
-            dataSendThread.submit(BinaryDataTask.build(byteBuffer, sessions));
+        if (wsSession.isEncode()) {
+            // 需要进行编码
+            System.out.println("编码");
+            videoEncodeService.submit(deviceId, byteBuffer, sessions);
             return;
         }
-        ImageByte imageByte = new ImageByte(deviceId, byteBuffer);
-        H264CallbackTask h264CallbackTask = new H264CallbackTask(sessions);
-        ImagesToH264Task imagesToH264Task = new ImagesToH264Task(imageByte, h264CallbackTask);
-        videoEncodeService.submit(deviceId, imagesToH264Task);
+        DataSendThread.submit(BinaryDataTask.build(byteBuffer, sessions));
     }
 
     /**

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.websocket.Session;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -15,12 +16,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 public class WebSocketServiceImpl implements WebSocketService {
     private final static Logger log = LoggerFactory.getLogger(WebSocketServiceImpl.class);
 
+    private static final LinkedBlockingQueue<IWebSocketSendTask> dataTaskQueue = new LinkedBlockingQueue<>();
+
     private static final DataSendThread dataSendThread = DataSendThread.getInstance();
-
-    private ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1,
-            new BasicThreadFactory.Builder().namingPattern("").daemon(true).build());
-
-    private static ConcurrentHashMap<String, Session> concurrentHashMap = new ConcurrentHashMap<>();
 
     public WebSocketServiceImpl() {
         new Thread(dataSendThread).start();

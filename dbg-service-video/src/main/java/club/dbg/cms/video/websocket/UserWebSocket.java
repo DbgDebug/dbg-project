@@ -1,12 +1,10 @@
-package club.dbg.cms.video.controller;
+package club.dbg.cms.video.websocket;
 
 import club.dbg.cms.video.service.websocket.pojo.TextMessage;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
@@ -28,7 +26,7 @@ public class UserWebSocket {
     @OnOpen
     public void onOpen(Session session) throws InterruptedException, IOException {
         log.info("user open ws");
-        session.setMaxBinaryMessageBufferSize(5000000);
+        session.setMaxBinaryMessageBufferSize(8000000);
         joinLive(1, session);
     }
 

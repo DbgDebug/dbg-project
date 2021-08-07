@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/device")
+@RequestMapping("/device1")
 public class DeviceController {
     private static final Logger log = LoggerFactory.getLogger(DeviceController.class);
 

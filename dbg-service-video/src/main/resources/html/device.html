@@ -114,7 +114,7 @@
                     password: password
                 }
                 let xhr = new XMLHttpRequest()
-                xhr.open('POST', '/ws/device/login')
+                xhr.open('POST', '/v1/video/device/login')
                 xhr.setRequestHeader("Content-type", "application/json;charset=UTF-8");
                 xhr.send(JSON.stringify(data))
                 xhr.onreadystatechange = function (e) {
@@ -130,7 +130,7 @@
         function getWebSocketToken() {
             return new Promise(function (resolve, reject) {
                 let xhr = new XMLHttpRequest()
-                xhr.open('GET', '/ws/device/getWebSocketToken')
+                xhr.open('GET', '/v1/video/device/getWebSocketToken')
                 let deviceToken = getCookie("device_token")
                 xhr.setRequestHeader("X-Access-Token", deviceToken);
                 xhr.send()
@@ -339,8 +339,8 @@
         function createWebSocket(msg) {
             if ("WebSocket" in window) {
                 // 打开一个 web socket
-                ws = new WebSocket('ws://127.0.0.1:8600/v1/video/device');
-                // ws = new WebSocket('wss://websocket.dbg-dev.icu:9700/ws/WebSocket');
+                // ws = new WebSocket('ws://127.0.0.1:8600/v1/video/device');
+                ws = new WebSocket('wss://admin.dbg-dev.icu:9700/v1/video/device');
 
                 ws.binaryType = 'arraybuffer';
                 ws.onopen = function () {

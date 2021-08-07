@@ -6,6 +6,7 @@ public class WebSocketSession {
     private Integer id;
     private Session session;
     private Boolean isEncode;
+    private String videoId;
 
     public Integer getId() {
         return id;
@@ -29,5 +30,13 @@ public class WebSocketSession {
 
     public void setEncode(Boolean encode) {
         isEncode = encode;
+    }
+
+    public String getVideoId() {
+        return videoId;
+    }
+
+    public void setVideoId(String videoId) {
+        this.videoId = videoId;
     }
 }

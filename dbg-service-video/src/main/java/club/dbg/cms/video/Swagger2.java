@@ -64,7 +64,7 @@ public class Swagger2 {
      * @return this
      */
     private static Predicate<RequestHandler> basePackage(final String basePackage) {
-        return new Predicate<>() {
+        return new Predicate<RequestHandler>() {
             @Override
             public boolean apply(RequestHandler input) {
                 return declaringClass(input).map(handlerPackage(basePackage)).orElse(true);
