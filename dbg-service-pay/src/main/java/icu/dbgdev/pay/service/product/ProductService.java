@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Service
 public class ProductService {
-    private final Map<Integer, ProductDTO> productMap = new HashMap<>(){
+    private final Map<Integer, ProductDTO> productMap = new HashMap<Integer, ProductDTO>(){
         {
             put(1, new ProductDTO(1, "肥宅水", new BigDecimal("3.00")));
             put(2, new ProductDTO(2, "花生", new BigDecimal("2.50")));

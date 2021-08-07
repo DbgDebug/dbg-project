@@ -28,6 +28,6 @@ public class PayExceptionHandler {
     @ExceptionHandler(value = PayException.class)
     public ExceptionResponse payException(PayException payException) {
         log.warn("", payException);
-        return ExceptionResponse.build(payException.getCode(), "支付请求异常");
+        return ExceptionResponse.build(payException.getCode(), payException.getMessage());
     }
 }
