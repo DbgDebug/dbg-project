@@ -1,6 +1,6 @@
-package club.dbg.cms.blog.aop;
+package org.dbg.common.aop.aspect;
 
-import club.dbg.cms.blog.aop.annotation.AnnotationTest;
+import org.dbg.common.aop.annotation.AnnotationTest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -41,7 +41,7 @@ public class AspectTest {
      * // 有指定注解的方法
      * 7、execution(@annotation(com.lingyejun.annotation.Lingyejun))
      */
-    @Pointcut("@annotation(club.dbg.cms.blog.aop.annotation.AnnotationTest)")
+    @Pointcut("@annotation(org.dbg.common.aop.annotation.AnnotationTest)")
     private void cutMethod() {
 
     }

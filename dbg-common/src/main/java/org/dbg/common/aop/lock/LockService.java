@@ -1,15 +1,13 @@
-package club.dbg.cms.blog.aop.lock;
+package org.dbg.common.aop.lock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-@Service
 public class LockService {
     private final static Logger log = LoggerFactory.getLogger(LockService.class);
 
@@ -24,7 +22,21 @@ public class LockService {
     // 数量由使用默认锁的方法数量决定
     private final Map<String, ReentrantLock> defaultLockMap = new ConcurrentHashMap<>();
 
-    public LockService() {
+    private static volatile LockService lockService = null;
+
+    public static LockService getInstance() {
+        if (lockService == null) {
+            synchronized (LockService.class) {
+                if (lockService == null) {
+                    lockService = new LockService();
+                    return lockService;
+                }
+            }
+        }
+        return lockService;
+    }
+
+    private LockService() {
         for(int i = 0; i < ACCOUNT_LOCK_NUM; i++) {
             accountLockMap.put(i, new ReentrantLock());
         }

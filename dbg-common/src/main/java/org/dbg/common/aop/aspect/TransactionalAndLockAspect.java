@@ -1,18 +1,18 @@
-package club.dbg.cms.blog.aop;
+package org.dbg.common.aop.aspect;
 
-import club.dbg.cms.blog.aop.annotation.TransactionalAndLock;
-import club.dbg.cms.blog.aop.lock.LockService;
 import club.dbg.cms.rpc.pojo.Operator;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.dbg.common.aop.annotation.TransactionalAndLock;
+import org.dbg.common.aop.lock.LockMode;
+import org.dbg.common.aop.lock.LockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
@@ -23,7 +23,6 @@ import java.util.concurrent.locks.ReentrantLock;
  * 测试中
  */
 @Aspect
-@Component
 @Lazy(false)
 public class TransactionalAndLockAspect {
     private final static Logger log = LoggerFactory.getLogger(TransactionalAndLockAspect.class);
@@ -33,16 +32,14 @@ public class TransactionalAndLockAspect {
     private final LockService lockService;
 
     public TransactionalAndLockAspect(
-            DataSourceTransactionManager dataSourceTransactionManager,
-            LockService lockService) {
+            DataSourceTransactionManager dataSourceTransactionManager) {
         this.dataSourceTransactionManager = dataSourceTransactionManager;
-        this.lockService = lockService;
+        this.lockService = LockService.getInstance();
     }
 
     // 切入点，带有@TransactionalAndLock注解的方法
-    @Pointcut("@annotation(club.dbg.cms.blog.aop.annotation.TransactionalAndLock)")
+    @Pointcut("@annotation(org.dbg.common.aop.annotation.TransactionalAndLock)")
     private void cutMethod() {
-
     }
 
     /**
@@ -104,16 +101,24 @@ public class TransactionalAndLockAspect {
         Operator operator;
         int paramIndex = transactionalAndLock.paramIndex();
 
-        Object param = params[paramIndex];
-        if (param instanceof Operator) {
-            operator = (Operator) param;
-            return lockService.accountLock(operator.getId());
+        if (paramIndex >= 0 && params.length > paramIndex) {
+            Object param = params[paramIndex];
+            if (param instanceof Operator) {
+                operator = (Operator) param;
+                Integer id = operator.getId();
+                if (id != null) {
+                    return lockService.accountLock(id);
+                }
+            }
         }
 
         for (Object obj : params) {
             if (obj instanceof Operator) {
                 operator = (Operator) obj;
-                return lockService.accountLock(operator.getId());
+                Integer id = operator.getId();
+                if (id != null) {
+                    return lockService.accountLock(id);
+                }
             }
         }
 
@@ -130,11 +135,14 @@ public class TransactionalAndLockAspect {
         Object[] params = joinPoint.getArgs();
         Integer lockIndex;
         int paramIndex = transactionalAndLock.paramIndex();
-        Object param = params[paramIndex];
-        if (param instanceof Integer) {
-            lockIndex = (Integer) param;
-            return lockService.orderLock(lockIndex);
+        if (paramIndex >= 0 && params.length > paramIndex) {
+            Object param = params[paramIndex];
+            if (param instanceof Integer) {
+                lockIndex = (Integer) param;
+                return lockService.orderLock(lockIndex);
+            }
         }
+
         return lockService.defaultLock(getMethodName(joinPoint));
     }
 
@@ -170,7 +178,7 @@ public class TransactionalAndLockAspect {
 
     private TransactionStatus getTransactionStatus() {
         DefaultTransactionDefinition transDefinition = new DefaultTransactionDefinition();
-        transDefinition.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        transDefinition.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRED);
         return dataSourceTransactionManager.getTransaction(transDefinition);
     }
 }

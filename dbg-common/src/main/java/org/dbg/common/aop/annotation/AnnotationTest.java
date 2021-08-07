@@ -1,6 +1,4 @@
-package club.dbg.cms.blog.aop.annotation;
-
-import club.dbg.cms.blog.aop.LockMode;
+package org.dbg.common.aop.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TransactionalAndLock {
-    LockMode value() default  LockMode.DEFAULT_LOCK;
-    int paramIndex() default -1;
+public @interface AnnotationTest {
+    String value() default  "";
+    String name() default "";
 }

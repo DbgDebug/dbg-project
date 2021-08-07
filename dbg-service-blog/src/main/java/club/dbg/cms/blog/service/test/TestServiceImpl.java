@@ -1,6 +1,6 @@
 package club.dbg.cms.blog.service.test;
 
-import club.dbg.cms.blog.aop.annotation.TransactionalAndLock;
+import org.dbg.common.aop.annotation.TransactionalAndLock;
 import org.springframework.stereotype.Service;
 
 @Service
