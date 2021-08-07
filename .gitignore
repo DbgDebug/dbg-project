@@ -9,7 +9,10 @@ node_modules
 logs
 *.log
 *.jar
+*.prefs
 .DS_Store
+.project
+.classpath
 dist
 web/docker/dist/**
 application-local.yml
