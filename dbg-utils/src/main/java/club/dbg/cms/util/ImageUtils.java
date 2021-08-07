@@ -13,7 +13,7 @@ import java.util.Random;
  */
 
 public class ImageUtils {
-    public static String getImageByBase64(String code) {
+    public static String getImageBase64(String code) {
         int width = 100;
         int height = 40;
         int fontHeight = 30;

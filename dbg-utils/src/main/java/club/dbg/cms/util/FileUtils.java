@@ -6,7 +6,7 @@ public class FileUtils {
     public static byte[] readFileByBytes(String fileName) throws IOException {
         try (InputStream in = new BufferedInputStream(new FileInputStream(fileName));
              ByteArrayOutputStream out = new ByteArrayOutputStream();) {
-            byte[] tempBytes = new byte[in.available()];
+            byte[] tempBytes = new byte[8192];
             for (int i; (i = in.read(tempBytes)) != -1; ) {
                 out.write(tempBytes, 0, i);
             }

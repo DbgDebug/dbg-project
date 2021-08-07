@@ -1,6 +1,5 @@
 package club.dbg.cms.util;
 
-import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.binary.Base64;
 
 import java.util.Arrays;
