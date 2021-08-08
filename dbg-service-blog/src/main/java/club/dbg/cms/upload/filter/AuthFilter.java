@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,20 +28,28 @@ import java.nio.charset.Charset;
 public class AuthFilter implements Filter {
     private static final Logger log = LoggerFactory.getLogger(AuthFilter.class);
 
-    @Value("${system.isDebug}")
-    private Boolean isDebug;
+    private final Boolean isDebug;
 
-    @Value("${login.timeout}")
-    private Integer loginTimeout;
+    private final Integer loginTimeout;
 
-    @Value("${login.redisHeader}")
-    private String loginRedisHeader;
+    private final String loginRedisHeader;
 
     private final RedisUtils redisUtils;
 
     private final TokenUtils requestUtils;
 
-    public AuthFilter(RedisUtils redisUtils, TokenUtils requestUtils) {
+    public AuthFilter(
+            @Value("${system.isDebug}")
+                    Boolean isDebug,
+            @Value("${login.timeout}")
+                    Integer loginTimeout,
+            @Value("${login.redisHeader}")
+                    String loginRedisHeader,
+            RedisUtils redisUtils,
+            TokenUtils requestUtils) {
+        this.isDebug = isDebug;
+        this.loginTimeout = loginTimeout;
+        this.loginRedisHeader = loginRedisHeader;
         this.redisUtils = redisUtils;
         this.requestUtils = requestUtils;
     }
@@ -54,6 +63,7 @@ public class AuthFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+        response.addHeader("Access-Control-Max-Age", "1800");
         log.info("{}:{}", request.getMethod(), request.getServletPath());
 
         if (isDebug) {
