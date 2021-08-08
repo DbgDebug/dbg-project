@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/java/jdk:8u222-zulu-ubuntu
+FROM mcr.microsoft.com/java/jdk:11-zulu-ubuntu
 
 WORKDIR /opt/
 COPY dbg-service-pay-1.0.0-SNAPSHOT.jar /opt/
