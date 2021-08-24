@@ -46,9 +46,8 @@
         <dependency>
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-sdk-java</artifactId>
-            <version>4.10.159.ALL</version>
+            <version>4.16.2.ALL</version>
         </dependency>
-
 
         <!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
         <dependency>
