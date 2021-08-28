@@ -1,6 +1,6 @@
 package club.dbg.cms.upload.service.article;
 
-import club.dbg.cms.upload.controller.ArticleController;
+import club.dbg.cms.blog.controller.ArticleController;
 import org.junit.Test;
 import org.springframework.web.bind.annotation.RequestMapping;
 

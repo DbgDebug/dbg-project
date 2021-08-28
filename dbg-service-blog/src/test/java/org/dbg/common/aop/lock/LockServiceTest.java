@@ -1,6 +1,6 @@
 package org.dbg.common.aop.lock;
 
-import club.dbg.cms.upload.exception.BlogException;
+import club.dbg.cms.blog.exception.BlogException;
 import org.junit.Test;
 
 import java.util.HashMap;

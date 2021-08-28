@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="club.dbg.cms.blog.dao.CategoryMapper">
+    <resultMap id="BaseResultMap" type="club.dbg.cms.blog.domain.CategoryDO">
+        <id column="Id" property="id" jdbcType="INTEGER"/>
+        <result column="CategoryId" property="categoryId" jdbcType="VARCHAR"/>
+        <result column="CategoryName" property="categoryName" jdbcType="VARCHAR"/>
+        <result column="CreateTime" property="createTime" jdbcType="INTEGER"/>
+        <result column="UpdateTime" property="updateTime" jdbcType="INTEGER"/>
+        <result column="Status" property="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="base_column">
+        Id, CategoryId, CategoryName, CreateTime, UpdateTime, Status
+    </sql>
+
+    <select id="selectCategoryList" resultMap="BaseResultMap">
+        SELECT <include refid="base_column"/> FROM Category LIMIT #{page}, #{pageSize}
+    </select>
+</mapper>
