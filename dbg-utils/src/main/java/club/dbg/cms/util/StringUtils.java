@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class StringUilts {
+public class StringUtils {
     /**
      * 获取字符串中的图片链接
      * @param htmlStr html字符串

@@ -148,8 +148,7 @@ public class PermissionRegister {
                 }
                 PermissionDO permission = new PermissionDO();
                 permission.setPermissionId(MD5.md5(serviceName + classed.getName() + method.getName()));
-                String permissionName;
-                permissionName = requestMapping.name().equals("") ? method.getName() : requestMapping.name();
+                String permissionName = requestMapping.name().equals("") ? method.getName() : requestMapping.name();
                 permission.setPermissionName(permissionName);
                 permission.setMethod(classed.getName() + ": " + method.getName());
                 String[] methodPaths = requestMapping.value();
