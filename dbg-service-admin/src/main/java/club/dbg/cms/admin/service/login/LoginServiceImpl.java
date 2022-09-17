@@ -68,7 +68,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public TokenDTO login(LoginRequest login) {
+    public TokenDTO login(Operator session, LoginRequest login) {
         int count = verificationCode(login);
         AccountDO account = accountMapper.selectAccountByUsername(login.getUsername());
         if (account == null) {
@@ -91,7 +91,7 @@ public class LoginServiceImpl implements LoginService {
         // 移除登录计数
         redisUtils.delete(loginCountFlag + operator.getUsername());
         account.setLastTime(System.currentTimeMillis() / 1000);
-        account.setLastIp(login.getIp());
+        account.setLastIp(session.getIp());
         accountMapper.updateLoginInfo(account);
         // 设置返回的token
         TokenDTO token = new TokenDTO();

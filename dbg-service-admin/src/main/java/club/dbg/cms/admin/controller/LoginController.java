@@ -51,7 +51,7 @@ public class LoginController {
         loginRequest.setVerificationCode(verificationCode);
         loginRequest.setVerificationToken(verificationToken);
         loginRequest.setIp(request.getOperator().getIp());
-        return ResponseBuild.ok(loginService.login(loginRequest));
+        return ResponseBuild.ok(loginService.login(request.getOperator(), loginRequest));
     }
 
     @RequestMapping(value = "/logout", name = "登出", method = RequestMethod.GET)

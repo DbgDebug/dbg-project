@@ -1,4 +1,4 @@
-package club.dbg.cms.admin.exception;
+package club.dbg.cms.upload.exception;
 
 /**
  * @author dbg

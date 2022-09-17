@@ -61,4 +61,30 @@ public class ImageUtils {
 
         return "data:image/jpeg;base64," + imageBase64;
     }
+
+    public static boolean isPNG(byte[] bytes) {
+        return bytes[1] == (byte) 'P'
+                && bytes[2] == (byte) 'N'
+                && bytes[3] == (byte) 'G';
+    }
+
+    public static boolean isJPEG(byte[] bytes) {
+        if (bytes[6] == (byte) 'J'
+                && bytes[7] == (byte) 'F'
+                && bytes[8] == (byte) 'I'
+                && bytes[9] == (byte) 'F') {
+            return true;
+        } else if (bytes[6] == (byte) 'E'
+                && bytes[7] == (byte) 'x'
+                && bytes[8] == (byte) 'i'
+                && bytes[9] == (byte) 'f') {
+            return true;
+        } else if (bytes[6] == (byte) 'e'
+                && bytes[7] == (byte) 'x'
+                && bytes[8] == (byte) 'i'
+                && bytes[9] == (byte) 'f') {
+            return true;
+        }
+        return false;
+    }
 }

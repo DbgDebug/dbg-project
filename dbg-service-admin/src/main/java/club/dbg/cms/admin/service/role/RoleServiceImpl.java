@@ -67,6 +67,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     synchronized public Boolean addRole(Operator operator, RoleDTO role) {
         RoleDO roleCheck = roleMapper.selectRoleByRoleName(role.getRoleName());
+        System.out.println(JSON.toJSONString(operator));
         if (roleCheck != null) {
             throw new BusinessException("角色名已存在");
         }

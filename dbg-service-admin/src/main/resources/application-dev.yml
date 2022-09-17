@@ -7,9 +7,9 @@ spring:
     name: dbg-service-admin
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST:192.168.99.100}:${DB_PORT:3306}/${DB_NAME:dbg}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Hongkong&useSSL=FALSE&allowMultiQueries=true
+    url: jdbc:mysql://${DB_HOST:192.168.99.101}:${DB_PORT:3306}/${DB_NAME:dbg}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Hongkong&allowMultiQueries=true
     username: ${DB_USER:root}
-    password: ${DB_PWD:root}
+    password: ${DB_PWD:123456}
     type: com.alibaba.druid.pool.DruidDataSource
     # 初始化大小，最小，最大
     minIdle: 5
@@ -29,7 +29,7 @@ spring:
     #指明是否在归还到池中前进行检验
     testOnReturn: false
   redis:
-    host: ${REDIS_HOST:192.168.99.100}
+    host: ${REDIS_HOST:192.168.99.101}
     port: ${REDIS_PORT:6379}
     password: ${REDIS_PWD:}
     timeout: 5000ms
@@ -59,9 +59,9 @@ logging:
   path: ./logs
 
 system:
-  permissionRegister: ${PERMISSION_REHISTER:false}
+  permissionRegister: ${PERMISSION_REGISTER:true}
   permissionKey: ${PERMISSION_KEY:12345678}
-  isDebug: ${IS_DEBUG:false}
+  isDebug: ${IS_DEBUG:true}
 
 session:
   tokenHeader: ${TOKEN_HEADER:X-Access-Token}

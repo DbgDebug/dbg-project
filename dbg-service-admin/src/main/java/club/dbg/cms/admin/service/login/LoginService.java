@@ -2,6 +2,7 @@ package club.dbg.cms.admin.service.login;
 
 import club.dbg.cms.admin.pojo.VerificationCodeDTO;
 import club.dbg.cms.admin.service.login.pojo.LoginRequest;
+import club.dbg.cms.rpc.pojo.Operator;
 import club.dbg.cms.rpc.pojo.TokenDTO;
 
 /**
@@ -17,7 +18,7 @@ public interface LoginService {
      * @param loginRequest 登录信息
      * @return Response
      */
-    TokenDTO login(LoginRequest loginRequest);
+    TokenDTO login(Operator operator, LoginRequest loginRequest);
 
     /**
      * 登出

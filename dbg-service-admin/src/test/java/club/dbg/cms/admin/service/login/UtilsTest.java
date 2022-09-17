@@ -9,6 +9,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.junit.Test;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -20,7 +21,11 @@ public class UtilsTest {
 
     @Test
     public void byteTest() {
-        System.out.println(sum(10));
+        String path = "E:\\upload\\rom";
+        File file = new File(path);
+        System.out.println(file.exists());
+
+        System.out.println(file.mkdir());
     }
     int sum(int n) {
         if(n < 2){

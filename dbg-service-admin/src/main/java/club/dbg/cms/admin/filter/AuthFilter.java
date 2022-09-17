@@ -6,6 +6,7 @@ import club.dbg.cms.admin.redis.RedisUtils;
 import club.dbg.cms.admin.utils.TokenUtils;
 import club.dbg.cms.rpc.pojo.Operator;
 import club.dbg.cms.rpc.pojo.ResponseResultDTO;
+import club.dbg.cms.rpc.pojo.RoleDTO;
 import club.dbg.cms.rpc.pojo.TokenDTO;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.io.IOUtils;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.HashSet;
 
 /**
  * @author dbg
@@ -82,12 +84,22 @@ public class AuthFilter implements Filter {
         response.addHeader("Access-Control-Max-Age", "1800");
         log.info("{}:{}", request.getMethod(), request.getServletPath());
 
+        MyHttpServletRequest myHttpServletRequest;
         if (isDebug) {
-            filterChain.doFilter(new MyHttpServletRequest(request), response);
+            myHttpServletRequest = new MyHttpServletRequest(request);
+            Operator operator = new Operator();
+            operator.setId(1);
+            operator.setIp(this.getIpAddr(request));
+            operator.setRoleId(2);
+            operator.setRoleLevel(1);
+            operator.setRoleIds(new HashSet<>(){{add(2);}});
+            RoleDTO roleDTO = (RoleDTO) redisUtils.get("role_2");
+            operator.setPermissionSet(roleDTO.getPermissionSet());
+            myHttpServletRequest.setOperator(operator);
+            filterChain.doFilter(myHttpServletRequest, response);
             return;
         }
 
-        MyHttpServletRequest myHttpServletRequest;
         // 公开的接口不进行验证，可以直接访问
         if (publicApiConfig.contains(request.getServletPath())) {
             myHttpServletRequest = new MyHttpServletRequest(request);

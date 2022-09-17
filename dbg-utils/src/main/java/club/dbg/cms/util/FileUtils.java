@@ -23,6 +23,10 @@ public class FileUtils {
         }
     }
 
+    public static void writeFileByBytes(String path, String fileName, byte[] bytes) throws IOException {
+        writeFileByBytes(path, fileName, bytes, false);
+    }
+
     public static void writeFileByBytes(String path, String fileName, byte[] bytes, boolean isAppend) throws IOException {
         File file = new File(path);
         if (!file.exists()) {

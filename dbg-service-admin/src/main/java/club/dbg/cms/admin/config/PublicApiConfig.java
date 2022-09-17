@@ -23,6 +23,8 @@ public class PublicApiConfig {
 
     @PostConstruct
     public void init(){
+        apiSet.add("/esp/login");
+        apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.EspControllerlogin"));
         apiSet.add("/login");
         apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.LoginControllerlogin"));
         apiSet.add("/get_verification_code");

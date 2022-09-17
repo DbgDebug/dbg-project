@@ -72,7 +72,7 @@ public class MessageHandleServiceImpl implements MessageHandleService {
 
     @Override
     public void danmuHandle(DanmuDO danmu, Boolean writeNow) throws InterruptedException {
-        int danmuListMax = 100;
+        final int danmuListMax = 100;
         danmuCount.add(1L);
         if (!writeNow) {
             danmuLinkedQueue.offer(danmu);

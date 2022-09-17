@@ -1,5 +1,6 @@
 package club.dbg.cms.video.websocket;
 
+import club.dbg.cms.util.FileUtils;
 import club.dbg.cms.video.service.websocket.pojo.TextMessage;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
@@ -49,6 +50,13 @@ public class UserWebSocket {
      */
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
+        System.out.println(message);
+        for (int i = 1; i <= 3; i++) {
+            byte[] bytes = FileUtils.readFileByBytes("D:\\Project\\C++\\RGBA2YUV\\"+i +".h264");
+            session.getBasicRemote().sendBinary(ByteBuffer.wrap(bytes));
+        }
+
+        /*
         TextMessage textMessage = JSON.parseObject(message, TextMessage.class);
         if (textMessage.getType() == 1) {
             if (userQueue.contains(session)) {
@@ -56,6 +64,7 @@ public class UserWebSocket {
             }
             userQueue.add(session);
         }
+        */
     }
 
     @OnError

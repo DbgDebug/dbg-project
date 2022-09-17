@@ -1,5 +1,5 @@
 server:
-  port: 8400
+  port: 80
   #servlet:
     #context-path: "/v1"
 spring:
@@ -8,8 +8,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: 20MB
+      max-request-size: 20MB
   #cloud:
   #  nacos:
   #    discovery:
@@ -21,6 +21,12 @@ spring:
 #    address: spring-cloud://localhost
 #  cloud:
 #    subscribed-services: dbg-service-content
+
+fileUpload:
+  rootDir: ${ROOT_DIR:E:\upload}
+  imagesDir: ${IMAGES_DIR:\images\}
+  tempDir: ${IMAGES_DIR:\temp\}
+  gameRomDir: ${GAME_ROM_DIR:\game\rom}
 
 mybatis:
   config-location: classpath:mybatis-config.xml
