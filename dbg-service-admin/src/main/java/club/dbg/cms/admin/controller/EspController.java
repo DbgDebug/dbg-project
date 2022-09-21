@@ -4,8 +4,12 @@ import club.dbg.cms.admin.filter.pojo.MyHttpServletRequest;
 import club.dbg.cms.admin.service.esp.EspService;
 import club.dbg.cms.admin.service.esp.pojo.EspLoginDTO;
 import club.dbg.cms.admin.service.esp.pojo.EspWeatherDataDTO;
+import club.dbg.cms.domain.admin.WeatherDO;
+import club.dbg.cms.util.ResponseBuild;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/esp")
@@ -29,5 +33,10 @@ public class EspController {
             @RequestBody EspWeatherDataDTO loginDTO
     ) {
         return espService.receive(request.getOperator(), loginDTO);
+    }
+
+    @RequestMapping(value = "/weather-data", method = RequestMethod.GET, name = "获取气温数据")
+    public ResponseBuild<List<WeatherDO>> getWeatherDataList(@RequestParam("deviceId") Integer deviceId) {
+        return ResponseBuild.ok(espService.getWeatherDataList(deviceId));
     }
 }

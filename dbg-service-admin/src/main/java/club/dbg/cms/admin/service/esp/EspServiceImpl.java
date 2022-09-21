@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EspServiceImpl implements EspService {
     private final static Logger log = LoggerFactory.getLogger(EspServiceImpl.class);
@@ -51,5 +53,10 @@ public class EspServiceImpl implements EspService {
         weatherDO.setAtmosphericPressure(weatherDataDTO.getAp());
         weatherMapper.insert(weatherDO);
         return "OK";
+    }
+
+    @Override
+    public List<WeatherDO> getWeatherDataList(Integer deviceId) {
+        return weatherMapper.selectByDeviceId(deviceId);
     }
 }
