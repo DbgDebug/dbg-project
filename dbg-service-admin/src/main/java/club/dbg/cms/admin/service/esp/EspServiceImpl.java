@@ -56,7 +56,9 @@ public class EspServiceImpl implements EspService {
     }
 
     @Override
-    public List<WeatherDO> getWeatherDataList(Integer deviceId) {
-        return weatherMapper.selectByDeviceId(deviceId);
+    public List<WeatherDO> getWeatherDataList(Integer deviceId, Integer startTime, Integer endTime, Integer page) {
+        final int pageSize = 30;
+        page = (page - 1) * pageSize;
+        return weatherMapper.selectByDeviceId(deviceId, startTime, endTime, page);
     }
 }

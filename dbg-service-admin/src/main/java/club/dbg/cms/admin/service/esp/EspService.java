@@ -11,5 +11,5 @@ public interface EspService {
     String login(Operator operator, EspLoginDTO loginDTO);
     String receive(Operator operator, EspWeatherDataDTO weatherDataDTO);
 
-    List<WeatherDO> getWeatherDataList(Integer deviceId);
+    List<WeatherDO> getWeatherDataList(Integer deviceId, Integer startTime, Integer endTime, Integer page);
 }

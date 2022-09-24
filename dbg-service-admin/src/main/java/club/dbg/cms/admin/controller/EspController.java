@@ -36,7 +36,12 @@ public class EspController {
     }
 
     @RequestMapping(value = "/weather-data", method = RequestMethod.GET, name = "获取气温数据")
-    public ResponseBuild<List<WeatherDO>> getWeatherDataList(@RequestParam("deviceId") Integer deviceId) {
-        return ResponseBuild.ok(espService.getWeatherDataList(deviceId));
+    public ResponseBuild<List<WeatherDO>> getWeatherDataList(
+            @RequestParam("deviceId") Integer deviceId,
+            @RequestParam("startTime") Integer startTime,
+            @RequestParam("endTime") Integer endTime,
+            @RequestParam("page") Integer page
+    ) {
+        return ResponseBuild.ok(espService.getWeatherDataList(deviceId, startTime, endTime, page));
     }
 }

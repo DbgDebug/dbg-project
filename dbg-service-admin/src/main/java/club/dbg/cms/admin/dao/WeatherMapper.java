@@ -18,7 +18,16 @@ public interface WeatherMapper {
 
     @Select({
             "SELECT creation_time, temperature, humidity ",
-            "FROM tb_weather WHERE device_id = #{deviceId} ORDER BY id DESC LIMIT 30"
+            "FROM tb_weather ",
+            "WHERE device_id = #{deviceId} ",
+            "AND creation_time >= #{startTime} AND creation_time <= #{endTime} ",
+            "ORDER BY id DESC ",
+            "LIMIT #{page}, 30"
     })
-    List<WeatherDO> selectByDeviceId(@Param("deviceId") Integer deviceId);
+    List<WeatherDO> selectByDeviceId(
+            @Param("deviceId") Integer deviceId,
+            @Param("startTime") Integer startTime,
+            @Param("endTime") Integer endTime,
+            @Param("page") Integer page
+    );
 }
