@@ -3,6 +3,7 @@ package club.dbg.cms.admin.service.esp;
 import club.dbg.cms.admin.dao.WeatherMapper;
 import club.dbg.cms.admin.service.esp.pojo.EspLoginDTO;
 import club.dbg.cms.admin.service.esp.pojo.EspWeatherDataDTO;
+import club.dbg.cms.admin.service.esp.pojo.WeatherDataListDTO;
 import club.dbg.cms.admin.service.login.LoginService;
 import club.dbg.cms.admin.service.login.pojo.LoginRequest;
 import club.dbg.cms.domain.admin.WeatherDO;
@@ -56,9 +57,12 @@ public class EspServiceImpl implements EspService {
     }
 
     @Override
-    public List<WeatherDO> getWeatherDataList(Integer deviceId, Integer startTime, Integer endTime, Integer page) {
+    public WeatherDataListDTO getWeatherDataList(Integer deviceId, Integer startTime, Integer endTime, Integer page) {
         final int pageSize = 30;
         page = (page - 1) * pageSize;
-        return weatherMapper.selectByDeviceId(deviceId, startTime, endTime, page);
+        WeatherDataListDTO dataListDTO = new WeatherDataListDTO();
+        dataListDTO.setWeatherList(weatherMapper.selectByDeviceId(deviceId, startTime, endTime, page));
+        dataListDTO.setTotal(weatherMapper.countByDeviceId(deviceId, startTime, endTime));
+        return dataListDTO;
     }
 }

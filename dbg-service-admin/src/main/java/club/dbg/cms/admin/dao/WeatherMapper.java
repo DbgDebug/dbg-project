@@ -30,4 +30,16 @@ public interface WeatherMapper {
             @Param("endTime") Integer endTime,
             @Param("page") Integer page
     );
+
+    @Select({
+            "SELECT COUNT(*) ",
+            "FROM tb_weather ",
+            "WHERE device_id = #{deviceId} ",
+            "AND creation_time >= #{startTime} AND creation_time <= #{endTime} "
+    })
+    int countByDeviceId(
+            @Param("deviceId") Integer deviceId,
+            @Param("startTime") Integer startTime,
+            @Param("endTime") Integer endTime
+    );
 }

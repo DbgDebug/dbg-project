@@ -4,6 +4,7 @@ import club.dbg.cms.admin.filter.pojo.MyHttpServletRequest;
 import club.dbg.cms.admin.service.esp.EspService;
 import club.dbg.cms.admin.service.esp.pojo.EspLoginDTO;
 import club.dbg.cms.admin.service.esp.pojo.EspWeatherDataDTO;
+import club.dbg.cms.admin.service.esp.pojo.WeatherDataListDTO;
 import club.dbg.cms.domain.admin.WeatherDO;
 import club.dbg.cms.util.ResponseBuild;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,7 @@ public class EspController {
     }
 
     @RequestMapping(value = "/weather-data", method = RequestMethod.GET, name = "获取气温数据")
-    public ResponseBuild<List<WeatherDO>> getWeatherDataList(
+    public ResponseBuild<WeatherDataListDTO> getWeatherDataList(
             @RequestParam("deviceId") Integer deviceId,
             @RequestParam("startTime") Integer startTime,
             @RequestParam("endTime") Integer endTime,
