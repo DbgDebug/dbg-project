@@ -2,13 +2,12 @@ package club.dbg.cms.admin.controller;
 
 import club.dbg.cms.admin.service.file.FileService;
 import club.dbg.cms.admin.service.file.pojo.FileDir;
+import club.dbg.cms.admin.service.file.pojo.UploadResultDTO;
 import club.dbg.cms.rpc.pojo.ResponseResultDTO;
 import club.dbg.cms.util.ResponseBuild;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.DecimalMax;
 
@@ -31,5 +30,11 @@ public class FileController {
             @RequestParam(value = "path", defaultValue = "./") String path,
             @RequestParam(value = "only_file", defaultValue = "false") Boolean onlyFile) {
         return ResponseBuild.ok(fileService.getFileDir(path, onlyFile));
+    }
+
+    public ResponseBuild<UploadResultDTO> upload(
+            @RequestParam("file") MultipartFile file
+    ) {
+        return ResponseBuild.ok(null);
     }
 }
