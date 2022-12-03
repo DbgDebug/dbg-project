@@ -35,3 +35,8 @@ mybatis:
 logging:
   config: classpath:logback-spring.xml
   path: ./logs
+
+stableDiffusion:
+  privateKey: ${STABLE_DIFFUSION_PRIVATE_KEY:123456789}
+  uploadUrl: ${STABLE_DIFFUSION_UPLOAD_URL:https://api.ddbbgg.com:9800/v1/stable-diffusion/upload-image}
+  getTaskUrl: ${STABLE_DIFFUSION_GET_TASK_URL:https://api.ddbbgg.com:9800/v1/stable-diffusion/task}

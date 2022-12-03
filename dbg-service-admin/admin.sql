@@ -202,6 +202,21 @@ CREATE TABLE `dbg`.`tb_weather` (
   `atmospheric_pressure` FLOAT NULL DEFAULT -1 COMMENT 'hPa',
   PRIMARY KEY (`id`));
 
+CREATE TABLE `dbg`.`stable_diffusion_task` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `uuid` CHAR(36) NOT NULL,
+  `creation_time` INT NOT NULL,
+  `completion_time` INT NULL DEFAULT NULL,
+  `width` INT NOT NULL,
+  `height` INT NOT NULL,
+  `sampling_steps` INT NOT NULL,
+  `cfg_scale` FLOAT NOT NULL,
+  `seed` BIGINT NOT NULL,
+  `sampling_method` VARCHAR(16) NOT NULL,
+  `params` VARCHAR(2048) NOT NULL,
+  `image_path` VARCHAR(128) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`));
+
 
 INSERT INTO `tb_account` VALUES (1,'admin','$2a$10$VUgTuDlQtoBc.KCrYu3JuOQqNLLnGWMBnmvRRDEkSxAqQBoM1fM8u','admin',unix_timestamp(now()),unix_timestamp(now()),unix_timestamp(now()),unix_timestamp(now()),1,'admin@qq.com','127.0.0.1','https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',1);
 

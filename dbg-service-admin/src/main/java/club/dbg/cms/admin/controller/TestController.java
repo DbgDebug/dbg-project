@@ -45,7 +45,7 @@ public class TestController {
         RequestMappingHandlerMapping mapping = applicationContext.getBean(RequestMappingHandlerMapping.class);
         Map<RequestMappingInfo, HandlerMethod> urlMap = mapping.getHandlerMethods();
         List<Map<String, String>> list = new ArrayList<>();
-        for(Map.Entry<RequestMappingInfo, HandlerMethod> m : urlMap.entrySet()){
+        for (Map.Entry<RequestMappingInfo, HandlerMethod> m : urlMap.entrySet()) {
             Map<String, String> map = new HashMap<>();
             RequestMappingInfo requestMappingInfo = m.getKey();
             HandlerMethod handlerMethod = m.getValue();
@@ -64,14 +64,13 @@ public class TestController {
         return ResponseEntity.ok(JSON.toJSONString(list));
     }
 
-    @RequestMapping(value = "jmeter", method = RequestMethod.GET)
-    public void jmeter(HttpServletRequest request, HttpServletResponse response,
-                       @RequestParam("name") String name) throws IOException {
+    @RequestMapping(value = "jndi", method = RequestMethod.GET)
+    public void jndi(HttpServletRequest request, HttpServletResponse response) {
         ServletOutputStream out = null;
         FileInputStream in = null;
         try {
             //in = new FileInputStream(new File("D:\\DevelopmentEnvironment\\nginx-1.14.2\\html\\" + name));
-            in = new FileInputStream("D:\\Project\\JAVA\\dbg-project\\dbg-camera\\ws.h264");
+            in = new FileInputStream("D:\\Calc.class");
             //设置文件头：最后一个参数是设置下载文件名
             //response.setHeader("Content-Disposition", "attachment;fileName="+fileName);
             out = response.getOutputStream();
@@ -83,27 +82,62 @@ public class TestController {
             }
             out.flush();
         } catch (FileNotFoundException e) {
-            log.error("responseFileStream error:FileNotFoundException" + e.toString());
+            log.error("responseFileStream error:FileNotFoundException", e);
         } catch (Exception e) {
-            log.error("responseFileStream error:" + e.toString());
+            log.error("responseFileStream error:", e);
         } finally {
             try {
                 assert out != null;
                 out.close();
                 in.close();
             } catch (NullPointerException e) {
-                log.error("responseFileStream stream close() error:NullPointerException" + e.toString());
+                log.error("responseFileStream stream close() error:NullPointerException", e);
             } catch (Exception e) {
-                log.error("responseFileStream stream close() error:" + e.toString());
+                log.error("responseFileStream stream close() error:", e);
+            }
+        }
+    }
+
+    @RequestMapping(value = "jmeter", method = RequestMethod.GET)
+    public void jmeter(HttpServletRequest request, HttpServletResponse response,
+                       @RequestParam("name") String name) throws IOException {
+        ServletOutputStream out = null;
+        FileInputStream in = null;
+        try {
+            //in = new FileInputStream(new File("D:\\DevelopmentEnvironment\\nginx-1.14.2\\html\\" + name));
+            in = new FileInputStream("D:\\Project\\C++\\RGBA2YUV\\1.h264");
+            //设置文件头：最后一个参数是设置下载文件名
+            //response.setHeader("Content-Disposition", "attachment;fileName="+fileName);
+            out = response.getOutputStream();
+            // 读取文件流
+            int len = 0;
+            byte[] buffer = new byte[1024 * 10];
+            while ((len = in.read(buffer)) != -1) {
+                out.write(buffer, 0, len);
+            }
+            out.flush();
+        } catch (FileNotFoundException e) {
+            log.error("responseFileStream error:FileNotFoundException", e);
+        } catch (Exception e) {
+            log.error("responseFileStream error:" , e);
+        } finally {
+            try {
+                assert out != null;
+                out.close();
+                in.close();
+            } catch (NullPointerException e) {
+                log.error("responseFileStream stream close() error:NullPointerException", e);
+            } catch (Exception e) {
+                log.error("responseFileStream stream close() error:", e);
             }
         }
     }
 
     @RequestMapping(value = "con", method = RequestMethod.GET)
-    public ResponseEntity<Integer> con(){
-        log.info("test start:{}",System.currentTimeMillis());
+    public ResponseEntity<Integer> con() {
+        log.info("test start:{}", System.currentTimeMillis());
         roleMapper.selectRoleAll();
-        log.info("test end:{}",System.currentTimeMillis());
+        log.info("test end:{}", System.currentTimeMillis());
         return ResponseEntity.ok(0);
     }
 
@@ -112,9 +146,8 @@ public class TestController {
         if (!f.exists()) {
             throw new FileNotFoundException("file not exists");
         }
-        ByteArrayOutputStream bos = new ByteArrayOutputStream((int) f.length());
-        BufferedInputStream in = null;
-        try {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream((int) f.length())) {
+            BufferedInputStream in = null;
             in = new BufferedInputStream(new FileInputStream(f));
             int buf_size = 1024;
             byte[] buffer = new byte[buf_size];
@@ -126,13 +159,6 @@ public class TestController {
         } catch (IOException e) {
             e.printStackTrace();
             throw e;
-        } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            bos.close();
         }
     }
 }

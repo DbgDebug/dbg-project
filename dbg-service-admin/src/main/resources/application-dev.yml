@@ -47,8 +47,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 2MB
-      max-request-size: 2MB
+      max-file-size: 5MB
+      max-request-size: 6MB
 
 mybatis:
   config-location: classpath:mybatis-config.xml
@@ -101,3 +101,10 @@ bilibili:
   roomInitUrl: ${ROOM_INIT_URL:https://api.live.bilibili.com/room/v1/Room/room_init}
   getConf: https://api.live.bilibili.com/room/v1/Danmu/getConf
   baseLocalPort: ${BILIBILI_BASE_PORT:50000}
+
+file:
+  rootDir: ${FILE_ROOT_DIR:D:\upload}
+  imagesDir: ${FILE_IMAGES_DIR:\images\}
+
+stableDiffusion:
+  privateKey: ${STABLE_DIFFUSION_PRIVATE_KEY:123456789}

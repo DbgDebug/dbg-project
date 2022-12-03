@@ -1,13 +1,26 @@
 package club.dbg.cms.admin;
 
+import club.dbg.cms.util.UUIDUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.naming.NamingException;
+import java.rmi.RemoteException;
+
 public class Test {
+
+    @org.junit.Test
+    public void str() {
+        System.out.println(UUIDUtils.getUUID());
+    }
+    @org.junit.Test
+    public void jndiTest() throws NamingException, RemoteException {
+
+    }
+
     @org.junit.Test
     public void bit() {
-        int a = 123;
-        for (int i = 0; i < 32; i++) {
-            int bit = (a >> i) & 0x1;
-            System.out.print(bit);
-        }
+        System.out.println(0xFF);
     }
 
     public void pwd(String pwdStr) {

@@ -37,7 +37,12 @@ public class PublicApiConfig {
         //apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.LoginControllerlogout"));
         apiSet.add("/rpc/permission/register");
         apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controller.PermissionRegisterControllerpermissionRegister"));
-
+        apiSet.add("/stable-diffusion/create-task");
+        apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controllerStableDiffusionControllercreateTask"));
+        apiSet.add("/stable-diffusion/task");
+        apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controllerStableDiffusionControllergetTask"));
+        apiSet.add("/stable-diffusion/upload-image");
+        apiSet.add(MD5.md5(serviceName + "club.dbg.cms.admin.controllerStableDiffusionControlleruploadImage"));
     }
 
     public Boolean contains (String path) {

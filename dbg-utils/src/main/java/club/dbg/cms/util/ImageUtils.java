@@ -87,4 +87,39 @@ public class ImageUtils {
         }
         return false;
     }
+
+    public static String getImageType(byte[] bytes) {
+        String type = null;
+        if (bytes[1] == (byte) 'P'
+                && bytes[2] == (byte) 'N'
+                && bytes[3] == (byte) 'G') {
+            type = ".png";
+        } else if (bytes[6] == (byte) 'J'
+                && bytes[7] == (byte) 'F'
+                && bytes[8] == (byte) 'I'
+                && bytes[9] == (byte) 'F') {
+            type = ".jpg";
+        } else if (bytes[6] == (byte) 'E'
+                && bytes[7] == (byte) 'x'
+                && bytes[8] == (byte) 'i'
+                && bytes[9] == (byte) 'f') {
+            type = ".jpg";
+        } else if (bytes[6] == (byte) 'e'
+                && bytes[7] == (byte) 'x'
+                && bytes[8] == (byte) 'i'
+                && bytes[9] == (byte) 'f') {
+            type = ".jpg";
+        } else if (bytes[0] == (byte) 0xFF
+                && bytes[1] == (byte) 0xD8
+                && bytes[bytes.length - 2] == (byte) 0xFF
+                && bytes[bytes.length - 1] == (byte) 0xD9) {
+            type = ".jpg";
+        } else if (bytes[0] == (byte) 'G'
+                && bytes[1] == (byte) 'I'
+                && bytes[2] == (byte) 'F') {
+            type = ".gif";
+        }
+
+        return type;
+    }
 }

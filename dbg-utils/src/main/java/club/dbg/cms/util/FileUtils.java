@@ -28,10 +28,9 @@ public class FileUtils {
     }
 
     public static void writeFileByBytes(String path, String fileName, byte[] bytes, boolean isAppend) throws IOException {
-        File file = new File(path);
-        if (!file.exists()) {
-            //先得到文件的上级目录，并创建上级目录，在创建文件
-            if (!file.getParentFile().mkdir()) {
+        File targetFile = new File(path);
+        if (!targetFile.exists()) {
+            if(!targetFile.mkdirs()){
                 throw new IOException("Invalid file path");
             }
         }
